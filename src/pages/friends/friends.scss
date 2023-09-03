@@ -1,0 +1,319 @@
+@import '../../theme.scss';
+
+.friends-page {
+    @include themify($themes) {
+        $bg: themed('bg');
+        $bg1: themed('bgSoft');
+        $color: themed('textColor');
+        $color1: themed('textColorSoft');
+        $border: themed('border');
+
+        color: $color;
+        display: flex;
+        gap: 10px;
+        min-height: 100vh;
+        background-color: $bg;
+
+        .left {
+            flex: 1;
+            height: calc(100vh - 60px);
+            background-color: $bg1;
+
+            .top {
+
+                button {
+                    background-color: $border;
+
+                    svg {
+                        font-size: 1.6rem;
+                    }
+                }
+            }
+
+            .section {
+                a {
+                    .icon {
+
+                        &.first {
+                            background-color: $border;
+                        }
+
+                        &.last {
+                            height: auto;
+                            width: auto;
+
+                            * {
+                                font-size: 1.8rem;
+                            }
+                        }
+                    }
+
+                    &.active_link {
+                        .icon.first {
+                            background-color: rgb(77, 117, 249);
+                        }
+                    }
+
+                    &:hover,
+                    &.active_link {
+                        background-color: $border;
+                    }
+                }
+            }
+        }
+
+        .menu-title {
+            padding: 10px;
+            @apply flex;
+            @apply items-center;
+            @apply justify-between;
+            @apply gap-[20px];
+
+            h3 {
+                @apply font-bold;
+                @apply text-xl;
+            }
+
+            p {
+                @apply text-sm;
+                color: rgb(73, 73, 200);
+            }
+
+            .count {
+                @apply flex;
+                @apply items-center;
+                @apply gap-[5px];
+
+                .dot {
+                    @apply w-0;
+                    @apply aspect-square;
+                    @apply rounded-full;
+                    border: 2px solid $color1;
+                }
+                
+                p {
+                    color: $color1;
+                }
+            }
+        }
+
+        .menu {
+
+            .filter-search {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                height: 40px;
+                margin-bottom: 20px;
+
+                .sort {
+                    background-color: rgba(67, 111, 255, 0.6);
+                    color: $color;
+                }
+
+                .search {
+                    display: flex;
+                    align-items: center;
+                    background-color: $border;
+                    border-radius: 20px;
+                    width: 300px;
+                    margin-top: 10px;
+                    height: 100%;
+    
+                    label {
+                        padding-left: 10px;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    
+                    input {
+                        flex: 1;
+                        color: $color;
+                        height: 100%;
+                        outline: none;
+                        border: none;
+                        padding: 0 8px 0 13px;
+                    }
+                }
+            }
+
+            &:not(:first-child) {
+                margin-top: 20px;
+            }
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 15px;
+            padding: 10px;
+
+            .friend {
+                overflow: hidden;
+                border-radius: 8px;
+                background-color: $bg1;
+                border: 1px solid $border;
+
+                img {
+                    width: 100%;
+                    aspect-ratio: 1;
+                    background-color: $border;
+                }
+
+                .info {
+                    padding: 10px;
+
+                    .mutual {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+
+                        p {
+                            font-size: .9rem;
+                            margin-top: 3px;
+                        }
+
+                        .close {
+                            font-size: .8rem;
+                            color:rgb(77, 117, 249)
+                        }
+
+                        .dot {
+                            width: 0;
+                            border-radius: 50%;
+                            aspect-ratio: 1;
+                            border: 3px solid rgb(77, 117, 249);
+                        }
+                    }
+                }
+
+                .friends-list {
+                    display: flex;
+                    align-items: center;
+
+                    .friend-list {
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        border: 2px solid $bg1;
+                        background-color: $border;
+
+                        &:not(:first-child) {
+                            margin-left: -10px;
+                        }
+                    }
+                }
+
+                button {
+                    margin: 0 10px 10px;
+                    display: block;
+                    padding: 7px 10px;
+                    width: calc(100% - 20px);
+                    background-color: rgba(0, 76, 255, 0.4);
+                    color:rgb(190, 219, 255);
+                    border-radius: 5px;
+
+                    &.accept {
+                        background-color: rgb(77, 117, 249);
+                        color: $color1;
+                    }
+
+                    &:last-child {
+                        background-color: $border;
+                        color: $color1;
+                    }
+                }
+            }
+        }
+
+        .create-btn {
+            height: 100%;
+            padding: 5px 10px;
+            border-radius: 7px;
+            background-color: $border;
+            background-color: rgb(67, 111, 255);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+
+            &.more {
+                background-color: $bg1;
+            }
+        }
+
+        .custom-lists {
+            grid-template-columns: repeat(2, 1fr);
+
+            .custom-list {
+                padding: 4px;
+                background-color: $bg1;
+                border-radius: 10px;
+
+                .img-name {
+                    position: relative;
+                    height: 150px;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        border-radius: 10px;
+                        background-color: $bg;
+                    }
+
+                    .name {
+                        position: absolute;
+                        bottom: 5px;
+                        left: 5px;
+                        font-size: 2rem;
+                    }
+
+                    button {
+                        position: absolute;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        top: 5px;
+                        right: 5px;
+                        height: 30px;
+                        width: 30px;
+                        border-radius: 50%;
+                        background-color: $border;
+                    }
+                }
+
+                .info {
+                    padding: 10px 5px 5px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 5px;
+
+                    .members {
+                        font-size: .9rem;
+                    }
+
+                    .friends-list {
+                        display: flex;
+                        align-items: center;
+
+                        .friend-list {
+                            height: 20px;
+                            aspect-ratio: 1;
+                            border-radius: 50%;
+                            background-color: $bg1;
+                            border: 2px solid $bg;
+
+                            &:not(:first-child) {
+                                margin-left: -10px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

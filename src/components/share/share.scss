@@ -1,0 +1,70 @@
+@import "../../theme.scss";
+
+.share {
+  @include themify($themes) {
+    $bg1: themed('bgSoft');
+    $color: themed("textColor");
+    $color1: themed('textColorSoft');
+    $border: themed('border');
+
+    -webkit-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
+    -moz-box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
+    box-shadow: 0px 0px 25px -10px rgba(0, 0, 0, 0.38);
+    background-color: $bg1;
+    color: $color;
+
+    .container {
+      
+      .top {
+
+        input {
+          border: 1px solid $border;
+          color: $color;
+        }
+      }
+
+      hr {
+        background-color: $border;
+      }
+
+      .bottom {
+
+        .left {
+
+          .item {
+
+            button {
+
+              &:hover {
+                background-color: $border;
+              }
+
+              span {
+                color: $color1;
+              }
+            }
+
+            &:nth-child(2) {
+              color: rgb(14, 234, 54);
+            }
+
+            &:nth-child(3) {
+              color: rgb(255, 24, 62);
+            }
+
+            &:nth-child(4) {
+              color: rgb(244, 211, 20);
+            }
+          }
+        }
+
+        .right {
+          button {
+            background-color: #3b52b9;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+          }
+        }
+      }
+    }
+  }
+}

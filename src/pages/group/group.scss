@@ -1,0 +1,449 @@
+@import '../../theme.scss';
+
+.group {
+    @include themify($themes) {
+        $bg: themed("bg");
+        $bg1: themed("bgSoft");
+        $color: themed("textColor");
+        $color1: themed("textColorSoft");
+        $border: themed("border");
+
+        background-color: $bg;
+        color: $color;
+
+        .details-header {
+            background-color: $bg1;
+
+            .cover {
+                background-color: $bg;
+            }
+
+            .info {
+
+                .group-members {
+                    display: flex;
+                    align-items: center;
+
+                    .group-member {
+                        width: 40px;
+
+                        img {
+                            width: 100%;
+                            aspect-ratio: 1;
+                            border-radius: 50%;
+                            background-color: $bg;
+                            border: 2px solid $bg1;
+                        }
+
+                        &:not(:first-child) {
+                            margin-left: -10px;
+                        }
+                    }
+                }
+
+                .actions {
+
+                    button {
+                        &:first-child {
+                            background-color: rgb(82, 146, 255);
+                        }
+
+                        &:nth-child(2) {
+                            background-color: $border;
+                        }
+                    }
+                }
+            }
+
+            .nav {
+                @apply border-y;
+                border-color: $border;
+
+                .links {
+
+                    .link {
+
+                        &.active_link {
+                            color: rgb(82, 146, 255);
+
+                            &:before {
+                                content: "";
+                                position: absolute;
+                                bottom: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 3px;
+                                background-color: rgb(82, 146, 255);
+                            }
+                        }
+                    }
+                }
+
+                button {
+                    background-color: $border;
+                }
+            }
+        }
+
+        .group-det {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+
+            .left-side {
+                flex: 2;
+
+                .create-post {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    background-color: $bg1;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+
+                    .posts-top {
+                        margin: 10px;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+
+                        img {
+                            height: 40px;
+                            aspect-ratio: 1;
+                            border-radius: 50%;
+                            object-fit: cover;
+                            border: 1px solid $border;
+                        }
+
+                        input {
+                            border: none;
+                            outline: none;
+                            flex: 1;
+                            height: 40px;
+                            border-radius: 20px;
+                            background-color: $border;
+                            padding: 10px;
+                        }
+                    }
+
+                    .bottom {
+                        border-top: 1px solid $border;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 20px;
+                        margin: 10px;
+                        padding-top: 5px;
+
+                        button {
+                            font-size: .9rem;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 10px;
+                            padding: 10px 20px;
+                            border-radius: 10px;
+
+                            &:hover {
+                                background-color: $border;
+                            }
+
+                            &:last-child {
+                                background-color: rgb(43, 87, 163);
+                            }
+                        }
+                    }
+                }
+            }
+
+            .right-side {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+
+                .menu {
+                    padding: 10px;
+                    background-color: $bg1;
+                    border-radius: 10px;
+
+                    h3 {
+                        font-size: 1.3rem;
+                    }
+
+                    p {
+                        margin-top: 15px;
+                        text-align: center;
+                    }
+
+                    .details {
+                        margin-top: 10px;
+                        border-top: 1px solid $border;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 10px;
+
+                        li {
+                            display: flex;
+                            align-items: center;
+                            gap: 5px;
+
+                            span:last-child {
+                                font-weight: bold;
+                            }
+                        }
+                    }
+
+                    .categories {
+                        margin-top: 10px;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        flex-wrap: wrap;
+                        
+                        li {
+                            height: 35px;
+                            border-radius: 17.5px;
+                            border: 1px solid $border;
+                            padding: 0 15px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                    }
+
+                    .menu-top {
+                        display: flex;
+                        align-items: flex-end;
+                        justify-content: space-between;
+
+                        p {
+                            margin: 0;
+                            padding: 0;
+                        }
+                    }
+
+                    .photos {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        margin-top: 15px;
+                        gap: 10px;
+
+                        li {
+                            img {
+                                width: 100%;
+                                aspect-ratio: 1;
+                                border-radius: 8px;
+                                border: 1px solid $border;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .group-members-page {
+            padding: 20px 30px;
+
+            .search {
+                display: flex;
+                align-items: center;
+                width: 300px;
+                height: 40px;
+                border-radius: 20px;
+                background-color: $bg1;
+                padding: 0 15px;
+                
+                input {
+                    flex: 1;
+                    padding: 10px;
+                    outline: none;
+                    border: none;
+                }
+            }
+
+            .menu-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                margin-top: 20px;
+                padding: 10px;
+                border-radius: 10px;
+                background-color: $bg1;
+
+                button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    padding: 8px 10px;
+                    padding-right: 5px;
+                    border-radius: 8px;
+                    background-color: rgb(34, 95, 200);
+                }
+            }
+
+            .container {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                grid-gap: 10px;
+                margin-top: 20px;
+
+                .group-member {
+                    border-radius: 10px;
+                    background-color: $bg1;
+                    overflow: hidden;
+                    border: 1px solid $border;
+
+                    img {
+                        width: 100%;
+                        aspect-ratio: 1;
+                        background-color: $bg;
+                    }
+
+                    .bottom-info {
+                        padding: 10px;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 5px;
+
+                        .member-info {
+                            display: flex;
+                            flex-direction: column;
+
+                            .role {
+                                font-size: .8rem;
+                                color: rgb(82, 146, 255);
+                                display: flex;
+                                gap: 3px;
+                                align-items: center;
+                                justify-content: flex-start;
+
+                                &:before {
+                                    content: "";
+                                    width: 0;
+                                    height: 0;
+                                    border-radius: 50%;
+                                    border: 3px solid rgb(82, 146, 255);
+                                }
+                            }
+                        }
+
+                        button {
+                            padding: 7px 10px;
+                            border-radius: 3px;
+                            background-color: $border;
+
+                            &:nth-child(2) {
+                                background-color: rgba(34, 95, 200, 0.3);
+                                color: rgb(147, 187, 255);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        .group-photos {
+            padding: 20px 30px;
+
+            .title-filter {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                color: $color;
+                padding: 10px;
+                border-radius: 10px;
+                background-color: $bg1;
+
+                h3 {
+                    font-size: 1.4rem;
+                }
+
+                button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 5px;
+                    padding: 4px 5px 4px 10px;
+                    border-radius: 6px;
+                    background-color: rgba(34, 95, 200, 0.7);
+                }
+            }
+
+            .photos {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                grid-gap: 20px;
+                margin-top: 20px;
+    
+                .photo {
+                    position: relative;
+                    color: $color;
+
+                    .type {
+                        position: absolute;
+                        top: 10px;
+                        right: 10px;
+
+                        svg {
+                            font-size: 1.8em;
+                        }
+                    }
+    
+                    img {
+                        width: 100%;
+                        aspect-ratio: 1;
+                        border-radius: 5px;
+                        background-color: $bg1;
+                    }
+    
+                    .overlay {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 10px;
+                        opacity: 0;
+
+                        &:hover {
+                            opacity: 1;
+                            transition: 0.3s ease opacity;
+                        }
+
+                        .reaction {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 3px;
+                            align-items: center;
+                            justify-content: center;
+                            width: 65px;
+                            height: 65px;
+                            border-radius: 10px;
+                            background-color: $border;
+
+                            svg {
+                                font-size: 2rem;
+                            }
+
+                            span {
+                                font-size: 1rem;
+                            }
+
+                            &:nth-child(1) {
+                                color: rgb(255, 123, 123);
+                                background-color: rgba(255, 84, 84, 0.2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

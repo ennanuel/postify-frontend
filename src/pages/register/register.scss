@@ -1,0 +1,26 @@
+.register {
+
+    .card {
+
+        .left {
+            background: linear-gradient(rgba(38, 11, 96, 0.5), rgba(39, 11, 96, 0.5)), url('') center;
+            background-size: cover;
+
+            h1 {
+                line-height: 100px;
+            }
+        }
+
+        .right {
+
+            form {
+
+                input {
+                    border: none;
+                    border-bottom: 1px solid lightgray;
+                    padding: 20px 10px 5px;
+                }
+            }
+        }
+    }
+}

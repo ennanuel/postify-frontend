@@ -1,0 +1,245 @@
+@import '../../theme.scss';
+
+.outlet {
+    flex: 6;
+}
+  
+.navbar {
+    @include themify($themes) {
+        $bg: themed("bg");
+        $bg1: themed("bgSoft");
+        $color: themed("textColor");
+        $color1: themed("textColorSoft");
+        $logo: themed("logo");
+        $border: themed("border");
+        
+        background-color: $bg1;
+        color: $color;
+        border-bottom: 1px solid $border;
+        z-index: 999;
+
+        .nav-links {
+            justify-content: space-around;
+            gap: 20px;
+
+            li {
+
+                * {
+                    font-size: 1.85rem;
+                }
+
+                .nav-link {
+                    color: $color1;
+
+                    &:hover {
+                        color: $color;
+                    }
+
+                    &.active-nav-link {
+                        color: $color;
+
+                        &:before {
+                            content: "";
+                            position: absolute;
+                            bottom: -14px;
+                            left: 0;
+                            width: 100%;
+                            height: 3px;
+                            background-color: $color;
+                        }
+                    }
+                }
+            }
+        }
+    
+        .left {
+    
+            .logo {
+                color: $logo;
+            }
+    
+        .search {
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            
+            input {
+                color: $color;
+
+                &:focus {
+                    border: none;
+                    outline: none;
+                }
+
+                @include mobile {
+                    display: none;
+                }
+            }
+            
+            &:focus {
+                border: 1px solid $border;
+                outline: none;
+            }
+        }
+        }
+    
+        .right {
+
+            @include mobile {
+                display: none;
+            }
+
+            li {
+                background-color: $border;
+                
+                * {
+                    font-size: 1.3rem;
+                }
+            }
+        }
+    }
+}
+  
+.leftbar {
+    @include themify($themes) {
+        $bg: themed("bg");
+        $bg1: themed("bgSoft");
+        $color: themed("textColor");
+        $color1: themed("textColorSoft");
+        $logo: themed("logo");
+        $border: themed("border");
+        background-color: $bg;
+        
+        height: calc(100vh - 60px);
+        border-right: 1px solid $border;
+        background-color: $bg1;
+
+        @include mobile {
+            display: none;
+        }
+    
+        // Removes scrollbar from leftbar
+    
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    
+        hr {
+            background-color: $border;
+        }
+    
+        .container {
+
+            .bar-title {
+                color: $color1;
+            }
+    
+            .user {
+    
+                img {
+                    border: 1px solid $border;
+                }
+    
+                span {
+                    color: $color1;
+                }
+            }
+    
+            .menu {
+                color: $color;
+    
+                .item {
+            
+                    img {
+                        border: 1px solid $border;
+                    }
+            
+                    span {
+                        font-size: 14px;
+                    }
+                }
+            }
+        }
+
+        .logout {
+            border-top: 1px solid $border;
+
+            button {
+                color: $color1;
+
+                &:hover {
+                    background-color: $bg1;
+                }
+            }
+        }
+    }
+}
+
+.rightbar {
+    @include themify($themes) {
+        $bg: themed("bg");
+        $bg1: themed("bgSoft");
+        $color: themed("textColor");
+        $color1: themed("textColorSoft");
+        $logo: themed("logo");
+        $border: themed("border");
+
+        flex: 2.5;
+        position: sticky;
+        top: 60px;
+        height: calc(100vh - 60px);
+        overflow: scroll;
+        background-color: $bg;
+
+        @include tablet {
+        display: none;
+        }
+
+        @include mobile {
+        display: none;
+        }
+    
+        // Removes scrollbar from leftbar
+    
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bar-actions {
+            padding: 15px 20px 0;
+            color: $color;
+
+            .actions {
+                gap: 10px;
+            }
+        }
+    
+        .container {
+            padding: 5px;
+            gap: 5px;
+
+            .user {
+                gap: 10px;
+                padding: 5px 15px;
+
+                &:hover {
+                    background-color: $bg1;
+                }
+                
+                img {
+                    height: 30px;
+                    border: 1px solid $border;
+                }
+
+                span {
+                    color: $color1;
+                    flex: 1;
+                }
+            }
+
+            .active-indicator {
+                height: 6px;
+                background-color: greenyellow;
+            }
+        }
+    }
+}

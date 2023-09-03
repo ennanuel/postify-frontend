@@ -1,0 +1,238 @@
+@import '../../theme.scss';
+
+.shorts {
+    @include themify($themes) {
+        $bg: themed("bg");
+        $bg1: themed("bgSoft");
+        $color: themed("textColor");
+        $color1: themed("textColorSoft");
+        $border: themed("border");
+
+        width: 100%;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 99999;
+        display: flex;
+        background-color: #101010;
+        color: $color;
+        
+        .left {
+            padding: 10px;
+            flex: 2;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .video {
+                width: 400px;
+                height: 100%;
+                background-color: $bg1;
+                border-radius: 10px;
+            }
+            
+            button {
+                width: 40px;
+                height: 40px;
+                border-radius: 20px;
+                background-color: $bg1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                svg {
+                    font-size: 1.8rem;
+                }
+
+                &.close {
+                    transform: rotate(45deg);
+                    position: absolute;
+                    top: 20px;
+                    left: 20px;
+                }
+
+                &.mute {
+                    position: absolute;
+                    bottom: 20px;
+                    right: 20px;
+                }
+            }
+
+            .navigate-shorts {
+                position: absolute;
+                top: 50%;
+                right: 20px;
+                transform: translateY(-50%);
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        .right {
+            flex: 1;
+            background-color: $bg1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+
+            .info {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+                background-color: $bg;
+                border-radius: 10px;
+
+                .user {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+    
+                    img {
+                        width: 45px;
+                        aspect-ratio: 1;
+                        border-radius: 22.5px;
+                        background-color: $border;
+                    }
+
+                    .user-info {
+                        flex: 1;
+
+                        .date {
+                            font-size: .8rem;
+                        }
+                    }
+
+                    button {
+                        padding: 8px 15px;
+                        border-radius: 5px;
+                        background-color: rgb(67, 123, 255);
+                    }
+                }
+            }
+
+            .reactions {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 10px;
+
+                button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 4px;
+                    padding: 0 15px;
+                    height: 40px;
+                    border-radius: 20px;
+                    background-color: $bg;
+
+                    font-size: .8rem;
+                }
+            }
+
+            .short-comments {
+                margin-top: 20px;
+                flex: 1;
+
+                h3 {
+                    font-size: 1rem;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    border-top: 1px solid $border;
+                    margin-top: 20px;
+                    padding-top: 20px;
+
+                    .comment {
+                        display: flex;
+                        align-items: flex-start;
+                        justify-content: flex-start;
+                        gap: 10px;
+
+                        img {
+                            min-width: 40px;
+                            min-height: 40px;
+                            border-radius: 50%;
+                            background-color: $bg;
+                        }
+
+                        .info {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 0;
+                            padding: 10px;
+
+                            .time {
+                                font-size: .8rem;
+                            }
+
+                            .message {
+                                margin-top: 10px;
+                            }
+
+                            .reactions {
+                                display: flex;
+                                align-items: center;
+                                margin-top: 15px;
+                                gap: 5px;
+
+                                button {
+                                    background-color: $bg1;
+                                    height: 30px;
+                                    border-radius: 15px;
+
+                                    svg {
+                                        font-size: 1.2rem;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .leave-comment {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding-top: 10px;
+                border-top: 1px solid $border;
+
+                img {
+                    height: 40px;
+                    aspect-ratio: 1;
+                    border-radius: 50%;
+                    background-color: $bg;
+                }
+
+                input {
+                    flex: 1;
+                    height: 40px;
+                    border-radius: 20px;
+                    padding: 0 15px;
+                    background: $border;
+                    outline: none;
+                    border: none;
+                    color: $color;
+                }
+
+                button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 40px;
+                    width: 40px;
+                    border-radius: 50%;
+                    background-color: rgb(67, 123, 255);
+                }
+            }
+        }
+    }
+}
