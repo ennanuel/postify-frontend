@@ -1,5 +1,6 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+
 import { Layout } from './components'
 import { Home, Register, Login, Profile, Post, Friends, Groups, Group, Story, Shorts, Message, Channels } from './pages';
 import { ProfilePosts, ProfilePhotos, ProfileVideos, ProfileFriends } from "./scenes/profile"
@@ -8,9 +9,14 @@ import { AuthContext } from './context/authContext';
 import { GroupsList, Group as GroupInfo, GroupsPost, CreateGroup, GroupsDiscover, GroupMembers, GroupPhotos, GroupVideos, GroupInvites, GroupInvitedMembers } from './scenes/group';
 import { ChannelFeed, ChannelExplore, ChannelDetails, ChannelsAll, CreateChannel } from './scenes/channels/';
 
-
 function App() {
-  const { user } = useContext(AuthContext);
+  const { user, socket } = useContext(AuthContext)
+
+  useEffect(() => { 
+    socket.on('connect', () => {
+      socket.on('event-error', ({ message }) => alert(`Socket error: ${message}!`))
+    })
+  }, [])
 
   return (
     <div className="main">

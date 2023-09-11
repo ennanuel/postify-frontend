@@ -13,26 +13,14 @@ type UserType = {
 }
 
 const GroupMembers = () => {
-  const { user } = useContext(AuthContext)
-  const { owner:  groupOwner } = useContext(GroupContext);
+  const { user, socket } = useContext(AuthContext)
+  const { group: { owner: groupOwner }, refreshDet: refresh } = useContext(GroupContext);
 
   const { id } = useParams()
   const [groupMembers, setGroupMembers] = useState<UserType[]>([])
 
   const removeUser = async (user_id: string) => {
-    if (!groupOwner) return;
-    const requestBody = { user_id, group_id: id }
-    const fetchOptions = {
-      method: "DELETE",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/group/leave`, fetchOptions);
-    if (response.status !== 200) return alert('something went wrong');
-    alert('member removed!')
+    socket.emit('group-action', { user_id, group_id: id }, 'remove')
   }
 
   const fetchGroupMembers = async () => {
@@ -44,7 +32,7 @@ const GroupMembers = () => {
 
   useEffect(() => {
     fetchGroupMembers()
-  }, [])
+  }, [refresh])
   
   return (
     <div className="group-members-page">

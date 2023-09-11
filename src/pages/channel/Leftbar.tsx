@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { Search, TvRounded, Explore, VideoLibrary, Add, Settings, KeyboardArrowRight } from '@mui/icons-material'
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
+import { ChannelContext } from '.';
 
 type ChannelType = {
     id: string;
@@ -12,16 +13,19 @@ type ChannelType = {
 
 const Leftbar = () => {
     const { user } = useContext(AuthContext)
+    const { refresh } = useContext(ChannelContext);
     const [following, setFollowing] = useState<ChannelType[]>([])
 
     async function getFollowingChannels() { 
-        const response = await fetch(`${APIURL}/channel/following/${user.id}`)
+        const response = await fetch(`${APIURL}/channel/${user.id}?type=following`)
         if (response.status !== 200) return alert('something went wrong!');
         const res = await response.json();
         setFollowing(res);
     }
     
-    useEffect(() => { getFollowingChannels() }, [])
+    useEffect(() => {
+        getFollowingChannels();
+    }, [refresh])
 
     return (
         <div className="left-bar flex-[2] sticky top-[60px] p-4 flex flex-col gap-3">

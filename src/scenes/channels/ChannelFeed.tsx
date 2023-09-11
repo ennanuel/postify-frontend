@@ -3,6 +3,7 @@ import { Favorite, MessageOutlined } from '@mui/icons-material';
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { Link } from 'react-router-dom';
+import { ChannelContext } from '../../pages/channel';
 
 type ChannelType = {
   id: string;
@@ -25,21 +26,23 @@ type PostType = {
 }
 
 const ChannelFeed = () => {
-  const { user } = useContext(AuthContext)
-  const [channels, setChannels] = useState<ChannelType[]>([])
-  const [feed, setFeed] = useState<PostType[]>([])
+  const { user, socket } = useContext(AuthContext);
+  const { refresh } = useContext(ChannelContext);
+  
+  const [channels, setChannels] = useState<ChannelType[]>([]);
+  const [feed, setFeed] = useState<PostType[]>([]);
 
   async function getChannelsFeed() {
-    const response = await fetch(`${APIURL}/channel/feed/${user.id}`)
+    const response = await fetch(`${APIURL}/channel/feed/${user.id}?user_id=${user.id}`);
     if (response.status !== 200) return alert('something went wrong!');
     const res = await response.json();
     setFeed(res);
   }
 
   async function getChannels() {
-    const response = await fetch(`${APIURL}/channel/following/${user.id}`)
-
-    if (response.status !== 200) return alert('something went wrong')
+    const response = await fetch(`${APIURL}/channel/${user.id}?type=following`);
+  
+    if (response.status !== 200) return alert('something went wrong');
     const res = await response.json();
 
     setChannels(res);
@@ -47,8 +50,17 @@ const ChannelFeed = () => {
 
   useEffect(() => {
     getChannelsFeed();
-    getChannels();
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    getChannels()
+  }, [refresh])
+
+  useEffect(() => {
+    socket.on('post-event', ({ channel_id }) => {
+      if (channels.map(elem => elem.id).includes(channel_id)) alert('new channel post available');
+    })
+  }, [channels]);
 
   return (
     <div className='p-6'>

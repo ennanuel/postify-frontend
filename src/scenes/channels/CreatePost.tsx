@@ -11,7 +11,7 @@ type Props = {
 }
 
 const CreatePost = ({ show, setShow }: Props) => {
-    const { user } = useContext(AuthContext);
+    const { user, socket } = useContext(AuthContext);
     const { id } = useParams()
     const [{ post_desc, files }, setValues] = useState({ post_desc: '', files: [] })
 
@@ -38,7 +38,9 @@ const CreatePost = ({ show, setShow }: Props) => {
         const response = await fetch(`${APIURL}/channel/post`, fetchOptions);
         if(response.status !== 200) return alert('something went wrong')
         const res = await response.json()
-        return alert(res.message)
+        alert(res.message)
+        
+        socket.emit('post-action', { channel_id: id })
     }
 
     return (

@@ -13,25 +13,54 @@ type GroupType = {
     owner: boolean;
 }
 
-export const GroupContext = createContext<GroupType>({} as GroupType);
+type GroupContextType = {
+    group: GroupType;
+    refreshPost: boolean;
+    refreshDet: boolean;
+}
+
+export const GroupContext = createContext<GroupContextType>({ group: {} as GroupType, refreshPost: false, refreshDet: false });
 
 const Group = () => {
-    const { user: { id: user_id } } = useContext(AuthContext)
+    const { user, socket, getIds } = useContext(AuthContext)
     const { id } = useParams()
+
     const [groupInfo, setGroupInfo] = useState<GroupType>({} as GroupType);
+    const [refreshPost, setRefreshPost] = useState<boolean>(false)
+    const [refreshDet, setRefreshDet] = useState<boolean>(false)
 
     const fetchGroupInfo = async () => {
-        const response = await fetch(`${APIURL}/group/info/${id}`)
+        const response = await fetch(`${APIURL}/group/info/${id}?user_id=${user.id}`)
         if (response.status !== 200) return alert('something went wrong')
         const res = await response.json();
-        setGroupInfo({ ...res, owner: res.creator === user_id });
+        setGroupInfo(res);
     }
 
-    useEffect(() => { fetchGroupInfo() }, [])
+    useEffect(() => {
+        fetchGroupInfo();
+    }, [id])
+
+    useEffect(() => {
+        socket.on('group-event', ({ group_id, user_id }) => {
+            if (group_id === id) {
+                fetchGroupInfo();
+                setRefreshDet(!refreshDet)
+            };
+            if (user_id === user.id) {
+                getIds('group');
+            }
+        })
+
+        socket.on('post-event', ({ group_id }) => {
+            if (group_id === id) {
+                setRefreshPost(!refreshPost)
+            }
+        })
+    }, [socket, refreshPost, refreshDet])
 
     return (
         <div className="group w-full min-h-[100vh]">
-            <GroupContext.Provider value={groupInfo}>
+            <GroupContext.Provider value={{ group: groupInfo, refreshDet, refreshPost }}>
                 <DetailsHeader />
                 <div className="px-[13%]">
                     <Outlet />

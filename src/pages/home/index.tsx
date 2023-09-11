@@ -7,23 +7,28 @@ import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 
 const Home = () => {
-  const { user: { id: user_id } } = useContext(AuthContext)
+  const { user, friend, group, socket } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
+  const fetchPosts = async () => {
+    const response = await fetch(`${APIURL}/post/feed/${user.id}`)
+    if(response.status !== 200) {
+      alert('something went wrong')
+    }
+    else {
+      const res = await response.json();
+      setPosts(res || [])
+    }
+  }
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch(`${APIURL}/post/feed/${user_id}`)
-      if(response.status !== 200) {
-        alert('something went wrong')
-      }
-      else {
-        const res = await response.json();
-        setPosts(res || [])
-      }
-    }
-
     fetchPosts()
-  }, [])
+
+    socket.on('post-event', ({ user_id, group_id }: { user_id: string, group_id?: string }) => {
+      if (user_id == user.id || (friend.includes(user_id) && !group_id) || group.includes(group_id || '')) {
+        alert('someone posted something');
+      }
+    })
+  }, [friend, group])
 
   return (
     <div className="home">

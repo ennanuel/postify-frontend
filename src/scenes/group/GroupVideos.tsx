@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { FavoriteOutlined, KeyboardArrowDown, MessageOutlined, Videocam } from '@mui/icons-material'
 import { APIURL } from '../../assets/data';
 import { useParams } from 'react-router-dom';
+import { GroupContext } from '../../pages/group';
 
 type PostType = {
   id: string;
@@ -13,6 +14,9 @@ type PostType = {
 
 const GroupVideos = () => {
   const { id } = useParams()
+  
+  const { refreshPost : refresh } = useContext(GroupContext)
+
   const [videos, setVideos] = useState<PostType[]>([])
 
   const fetchVideos = async () => {
@@ -22,7 +26,9 @@ const GroupVideos = () => {
     setVideos(res)
   }
   
-  useEffect(() => { fetchVideos() }, [])
+  useEffect(() => {
+    fetchVideos()
+  }, [refresh])
 
   return (
     <div className="group-photos">

@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom'
 import { GroupContext } from '.';
 
 const DetailHeader = () => {
-    const { id, name, cover, member_pics, owner } = useContext(GroupContext)
+    const { group: { id, name, cover, member_pics, owner } } = useContext(GroupContext)
         
     return (
         <div className="details-header px-[12%] sticky top-[-317px]">

@@ -25,19 +25,19 @@ type PostType = {
 }
 
 const ChannelExplore = () => {
-  const { user } = useContext(AuthContext);
+  const { user, socket } = useContext(AuthContext);
   const [channels, setChannels] = useState<ChannelType[]>([])
   const [feed, setFeed] = useState<PostType[]>([])
 
   async function getExploreChannels() {
-    const response = await fetch(`${APIURL}/channel/${user.id}`)
+    const response = await fetch(`${APIURL}/channel/${user.id}?type=explore`)
     if (response.status !== 200) return alert('something went wrong!')
     const res = await response.json();
     setChannels(res);
   }
 
   async function getChannelsFeed() {
-    const response = await fetch(`${APIURL}/channel/feed/${user.id}?type=explore`)
+    const response = await fetch(`${APIURL}/channel/feed/${user.id}?user_id=${user.id}&type=explore`)
     if (response.status !== 200) return alert('something went wrong!');
     const res = await response.json();
     setFeed(res);
@@ -47,6 +47,12 @@ const ChannelExplore = () => {
     getExploreChannels();
     getChannelsFeed();
   }, [])
+
+  useEffect(() => { 
+    socket.on('post-event', ({ channel_id }) => {
+      if (channels.map(elem => elem.id).includes(channel_id)) alert('new channel post available');
+    })
+  }, [channels])
 
   return (
     <div className='p-6'>

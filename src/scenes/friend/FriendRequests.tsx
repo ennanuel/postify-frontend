@@ -1,21 +1,25 @@
 import { useState, useEffect, useContext } from 'react'
 import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext'
+import { friendContext } from '../../pages/friends';
 
 type FriendType = {
   id: string;
   name: string;
   profile_pic: string;
-  mutual_friends: [];
+  mutual_pics: string[];
 }
 
 const FriendRequests = () => {
-  const { user } = useContext(AuthContext);
+  const { user, socket } = useContext(AuthContext);
+  const { refresh } = useContext(friendContext);
+
   const [requests, setRequests] = useState<FriendType[]>([])
 
 
-  const getFriendRequests = async () => {
-    const response = await fetch(`${APIURL}/friend/received/${user.id}`)
+  async function getFriendRequests() {
+    const response = await fetch(`${APIURL}/friend/requests/${user.id}?type=received`)
+
     if(response.status !== 200) {
       alert('something went wrong');
       return;
@@ -26,48 +30,13 @@ const FriendRequests = () => {
   }
 
 
-  const acceptRequest = async (other_user_id : string) => {
-    const requestBody = { user_id: user.id, other_user_id };
-
-    const fetchOptions = {
-      method: "PUT",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/friend/accept`, fetchOptions);
-
-    if(response.status !== 200) {
-      alert('something went wrong')
-    } else {
-      alert('request accepted')
-    }
+  async function requestAction(other_user_id : string, type: string) {
+    socket.emit('friend-action', { user_id: user.id, other_user_id }, type);
   }
 
-
-  const declineRequest = async (other_user_id : string) => {
-    const requestBody = { user_id: user.id, other_user_id };
-
-    const fetchOptions = {
-      method: "DELETE",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/friend/remove`, fetchOptions);
-
-    if(response.status !== 200) {
-      alert('something went wrong')
-    } else {
-      alert('request declined')
-    }
-  }
-
-  useEffect(() => {getFriendRequests()}, [])
+  useEffect(() => {
+    getFriendRequests()
+  }, [ refresh ])
 
   return (
     <div className="menu">
@@ -78,23 +47,25 @@ const FriendRequests = () => {
 
       <div className="container">
         {
-          requests.map( request => (
-            <div className="friend">
-              <img src="" alt="" className='profile-pic' />
+          requests.map( ({ id, name, profile_pic, mutual_pics }) => (
+            <div key={id} className="friend">
+              <img src={profile_pic} alt="" className='profile-pic' />
               <div className="info">
-                <p className="name">{ request.name }</p>
-                <div className="mutual">
-                  <ul className="friends-list">
-                    <li className="friend-list"></li>
-                    <li className="friend-list"></li>
-                    <li className="friend-list"></li>
-                    <li className="friend-list"></li>
-                  </ul>
-                  <p>3 Mutual Friends</p>
-                </div>
+                <p className="name">{name}</p>
+                {
+                  mutual_pics.length > 0 &&
+                    <div className="mutual">
+                      <ul className="friends-list">
+                      {
+                        mutual_pics.map(pic => <li className="friend-list"><img src={pic} /></li> )
+                      }
+                      </ul>
+                      <p>{ mutual_pics.length } Mutual Friends</p>
+                    </div>
+                }
               </div>
-              <button className='accept' onClick={() => acceptRequest(request.id)}>Accept</button>
-              <button onClick={() => declineRequest(request.id)}>Decline</button>
+              <button className='accept' onClick={() => requestAction(id, 'accept')}>Accept</button>
+              <button onClick={() => requestAction(id, 'decline')}>Decline</button>
             </div>
           ))
         }

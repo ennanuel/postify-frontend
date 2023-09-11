@@ -8,7 +8,7 @@ import { APIURL } from "../../assets/data";
 const Share = () => {
   const [{ post_desc }, setPost] = useState({ post_desc: '' });
 
-  const { user } = useContext(AuthContext);
+  const { user, socket } = useContext(AuthContext);
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleChange : React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -26,17 +26,14 @@ const Share = () => {
       }
     }
 
-    console.log(user.id, post_desc)
-
     const response = await fetch(APIURL + '/post/create', fetchOptions);
 
     if(response.status !== 200) {
       alert('something went wrong');
       return;
+    } else {
+      socket.emit('post-action', { user_id: user.id })
     }
-
-    const res = await response.json();
-      alert(res.message);
   }
 
   return (

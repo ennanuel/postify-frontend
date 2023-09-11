@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext'
+import { friendContext } from '../../pages/friends';
 
 type FriendType = {
   id: string;
@@ -10,12 +11,13 @@ type FriendType = {
 }
 
 const SentRequests = () => {
-  const [requests, setRequests] = useState<FriendType[]>([])
-  const { user } = useContext(AuthContext)
+  const { user, socket } = useContext(AuthContext)
+  const { refresh } = useContext(friendContext)
 
+  const [requests, setRequests] = useState<FriendType[]>([])
 
   const getSentRequests = async () => {
-    const response = await fetch(`${APIURL}/friend/sent/${user.id}`)
+    const response = await fetch(`${APIURL}/friend/requests/${user.id}?type=sent`)
     if(response.status !== 200) {
       alert('something went wrong');
       return;
@@ -26,27 +28,13 @@ const SentRequests = () => {
   }
 
 
-  const removeRequest = async (other_user_id : string) => {
-    const requestBody = { user_id: user.id, other_user_id };
-
-    const fetchOptions = {
-      method: "DELETE",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/friend/remove`, fetchOptions);
-
-    if(response.status !== 200) {
-      alert('something went wrong')
-    } else {
-      alert('request declined')
-    }
+  const removeRequest = async (user_id: string) => {
+    socket.emit('friend-action', { user_id, other_user_id: user.id }, 'decline')
   }
 
-  useEffect(() => {getSentRequests()}, [])
+  useEffect(() => {
+    getSentRequests()
+  }, [refresh])
 
   return (
     <div className="menu">

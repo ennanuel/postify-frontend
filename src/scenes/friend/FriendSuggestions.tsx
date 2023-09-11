@@ -1,22 +1,24 @@
 import { useState, useContext, useEffect } from 'react'
 import { APIURL } from '../../assets/data';
 import { AuthContext } from '../../context/authContext'
+import { friendContext } from '../../pages/friends';
 
 type FriendType = {
   id: string;
   name: string;
   profile_pic: string;
-  mutual_friends: [];
+  mutual_pics: string[];
 }
 
 const FriendSuggestions = () => {
-  const { user } = useContext(AuthContext);
+  const { user, socket } = useContext(AuthContext);
+  const { refresh } = useContext(friendContext);
 
   const [suggestions, setSuggestions] = useState<FriendType[]>([])
   const [filters, setFilters] = useState<string[]>([])
 
   const getFriendSuggestions = async () => {
-    const response = await fetch(`${APIURL}/friend/suggestions/${user.id}`)
+    const response = await fetch(`${APIURL}/friend/requests/${user.id}?type=suggestions`)
     if(response.status !== 200) {
       alert('something went wrong');
       return;
@@ -25,27 +27,13 @@ const FriendSuggestions = () => {
       setSuggestions(res)
     }
   }
-  const sendRequest = async (other_user_id : string) => {
-    const requestBody = { user_id: user.id, other_user_id };
-
-    const fetchOptions = {
-      method: "PUT",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/friend/send`, fetchOptions);
-
-    if(response.status !== 200) {
-      alert('something went wrong')
-    } else {
-      alert('request sent')
-    }
+  const sendRequest = async (other_user_id: string) => {
+    socket.emit('friend-action', { user_id: user.id, other_user_id }, 'send')
   }
 
-  useEffect(() => {getFriendSuggestions()}, [])
+  useEffect(() => {
+    getFriendSuggestions()
+  }, [refresh])
 
   return (
     <div className="menu">
@@ -55,23 +43,27 @@ const FriendSuggestions = () => {
 
       <div className="container">
         {
-          suggestions.filter( friend => !filters.includes(friend.id) ).map( friend => (   
-            <div key={friend.id} className="friend">
-              <img src="" alt="" className='profile-pic' />
+          suggestions
+            .filter(friend => !filters.includes(friend.id))
+            .map(({ id, name, profile_pic, mutual_pics }) => (   
+            <div key={id} className="friend">
+              <img src={profile_pic} alt="" className='profile-pic' />
               <div className="info">
-                <p className="name">{friend.name}</p>
-                <div className="mutual">
-                  <ul className="friends-list">
-                    <li className="friend-list"></li>
-                    <li className="friend-list"></li>
-                    <li className="friend-list"></li>
-                    <li className="friend-list"></li>
-                  </ul>
-                  <p>3 Mutual Friends</p>
-                </div>
+                <p className="name">{name}</p>
+                {
+                  mutual_pics.length > 0 &&
+                    <div className="mutual">
+                      <ul className="friends-list">
+                      {
+                        mutual_pics.map(pic => <li className="friend-list"><img src={pic} /></li> )
+                      }
+                      </ul>
+                      <p>{ mutual_pics.length } Mutual Friends</p>
+                    </div>
+                }
               </div>
-              <button onClick={() => sendRequest(friend.id)}>Add Friend</button>
-              <button onClick={() => setFilters( prev => [...prev, friend.id])}>Remove</button>
+              <button onClick={() => sendRequest(id)}>Add Friend</button>
+              <button onClick={() => setFilters( prev => [...prev, id])}>Remove</button>
             </div>
           ))
         }

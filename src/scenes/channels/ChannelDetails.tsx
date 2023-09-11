@@ -5,6 +5,7 @@ import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { IconButton } from '@mui/material';
 import CreatePost from './CreatePost';
+import { ChannelContext } from '../../pages/channel';
 
 type ChannelDetailsType = {
   id: string;
@@ -35,7 +36,10 @@ type PostType = {
 
 const ChannelDetails = () => {
   const { id } = useParams()
-  const { user } = useContext(AuthContext);
+
+  const { refresh } = useContext(ChannelContext);
+  const { user, socket } = useContext(AuthContext);
+
   const [{ name, channel_desc, picture, cover, popularity, posts, tags, website, following }, setChannel] = useState({} as ChannelDetailsType)
   const [feed, setFeed] = useState<PostType[]>([])
   const [show, setShow] = useState(false)
@@ -48,32 +52,27 @@ const ChannelDetails = () => {
   }
 
   async function getChannelFeed() {
-    const response = await fetch(`${APIURL}/channel/feed/single/${id}?user_id=${user.id}`)
+    const response = await fetch(`${APIURL}/channel/feed/${id}?user_id=${user.id}&type=single`)
     if (response.status !== 200) return alert('something went wrong!');
     const res = await response.json();
     setFeed(res);
   }
 
   async function followAction(type: string) {
-    const requestOptions = {
-      method: "PUT",
-      body: JSON.stringify({ channel_id: id, user_id: user.id, type }),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/channel/action`, requestOptions)
-    if (response.status !== 200) return alert('something went wrong!');
-    const res = await response.json();
-    return alert(res.message)
+    socket.emit('channel-action', { channel_id: id, user_id: user.id }, type)
   }
 
 
   useEffect(() => {
-    getChannelInfo();
     getChannelFeed();
-  }, [])
+    socket.on('post-event', ({ channel_id } : { channel_id: string }) => {
+      if (channel_id == id) alert('someone posted something');
+    })
+  }, [id])
+
+  useEffect(() => {
+    getChannelInfo()
+  }, [refresh, id])
 
   return (
     <div className="">
@@ -89,12 +88,22 @@ const ChannelDetails = () => {
               <span className="text-xs">{ posts } Videos</span>
             </div>
           </div>
-          <button
+          <IconButton
             onClick={() => followAction(following ? 'unfollow' : 'follow')}
-            className="h-[34px] text-sm rounded-[17px] px-3 flex items-center justify-center bg-white text-black-900"
+            sx={{
+              height: '34px',
+              fontSize: 'small',
+              borderRadius: '17px',
+              padding: '0 14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'gray',
+              color: 'black' 
+            }}
           >
-            <span>{following ? 'Following' : 'Follow'}</span>
-          </button>
+            <span>{following ? 'Unfollow' : 'Follow'}</span>
+          </IconButton>
           <IconButton
             onClick={() => setShow(!show)}
             sx={{

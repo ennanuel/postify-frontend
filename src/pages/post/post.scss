@@ -120,8 +120,9 @@
                             }
 
                             button {
-                                @apply text-xs;
+                                @apply text-xs rounded-[13px];
                                 color: inherit;
+                                height: 25px;
                             }
                         }
                     }

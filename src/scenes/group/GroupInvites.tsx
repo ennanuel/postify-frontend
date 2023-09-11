@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { MoreHoriz } from "@mui/icons-material"
 import { AuthContext } from "../../context/authContext";
 import { APIURL } from "../../assets/data";
+import { groupContext } from "../../pages/groups";
 
 type GroupType = {
   id: string;
@@ -11,41 +12,21 @@ type GroupType = {
 }
 
 const GroupInvites = () => {
-  const { user } = useContext(AuthContext);
+  const { user, socket } = useContext(AuthContext);
+  const { refresh } = useContext(groupContext);
+
   const [groups, setGroups] = useState<GroupType[]>([])
 
-  const joinGroup = async (group_id: string) => {
-    const requestBody = { user_id: user.id, group_id }
-    const fetchOptions = {
-      method: "PUT",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/group/join`, fetchOptions);
-    if (response.status !== 200) return alert('something went wrong');
-    alert('Joined group!')
+  const joinGroup = async ( group_id: string ) => {
+    socket.emit('group-action', { group_id, user_id: user.id }, 'add')
   }
 
-  const rejectInvite = async (group_id: string) => {
-    const requestBody = { user_id: user.id, group_id }
-    const fetchOptions = {
-      method: "DELETE",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/group/invite/remove`, fetchOptions);
-    if (response.status !== 200) return alert('something went wrong');
-    alert('request declined!')
+  const rejectInvite = async ( group_id: string ) => {
+    socket.emit('group-action', { group_id, user_id: user.id }, 'decline')
   }
 
   const fetchGroups = async () => {
-    const response = await fetch(`${APIURL}/group/invites/${user.id}`)
+    const response = await fetch(`${APIURL}/group/${user.id}?type=invites`)
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();
@@ -53,7 +34,9 @@ const GroupInvites = () => {
     setGroups(res);
   }
 
-  useEffect(() => {fetchGroups()}, [])
+  useEffect(() => {
+    fetchGroups()
+  }, [refresh])
 
   return (
     <div className='joined-groups w-full m-[20px] pl-[5%] pr-[8%]'>

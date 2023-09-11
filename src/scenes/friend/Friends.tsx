@@ -1,7 +1,8 @@
 import { useState, useEffect, useContext } from 'react'
 import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext'
-import { KeyboardArrowDown, Search, SortRounded } from '@mui/icons-material';
+import { Search, SortRounded } from '@mui/icons-material';
+import { friendContext } from '../../pages/friends';
 
 type FriendType = {
   id: string;
@@ -11,10 +12,12 @@ type FriendType = {
 }
 
 const Friends = () => {
+  const { refresh } = useContext(friendContext);
+  const { user, socket } = useContext(AuthContext)
+  
   const [friends, setFriends] = useState<FriendType[]>([])
-  const { user } = useContext(AuthContext)
 
-  const getFriends= async () => {
+  async function getFriends() {
     const response = await fetch(`${APIURL}/friend/${user.id}`)
     if(response.status !== 200) {
       alert('something went wrong');
@@ -25,28 +28,13 @@ const Friends = () => {
     }
   }
 
-
-  const unFriend = async (other_user_id : string) => {
-    const requestBody = { user_id: user.id, other_user_id };
-
-    const fetchOptions = {
-      method: "DELETE",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/friend/unfriend`, fetchOptions);
-
-    if(response.status !== 200) {
-      alert('something went wrong')
-    } else {
-      alert('friend removed')
-    }
+  async function unFriend(other_user_id: string) {
+    socket.emit('friend-action', { user_id: user.id, other_user_id }, 'unfriend')
   }
 
-  useEffect(() => { getFriends() }, [])
+  useEffect(() => {
+    getFriends();
+  }, [refresh])
 
   return (
     <div className="menu">

@@ -1,107 +1,46 @@
 import { useState, useEffect, useContext } from 'react'
 import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext'
+import { friendContext } from '../../pages/friends';
 
 type FriendType = {
   id: string;
   name: string;
   profile_pic: string;
-  mutual_friends: [];
+  mutual_pics: string[];
+}
+
+type UsersType = {
+  received: FriendType[];
+  suggestions: FriendType[];
 }
 
 const Friends = () => {
-  const { user } = useContext(AuthContext)
+  const { user, socket } = useContext(AuthContext)
+  const { refresh } = useContext(friendContext)
 
-  const [requests, setRequests] = useState<FriendType[]>([])
-  const [suggestions, setSuggestions] = useState<FriendType[]>([])
+  const [{ received, suggestions }, setUsers] = useState<UsersType>({ received: [], suggestions: [] })
   const [filters, setFilters] = useState<string[]>([]);
 
-  const getFriendRequests = async () => {
-    const response = await fetch(`${APIURL}/friend/received/${user.id}`)
+  const getUsers = async (type : string) => {
+    const response = await fetch(`${APIURL}/friend/requests/${user.id}?type=${type}`)
     if(response.status !== 200) {
       alert('something went wrong');
       return;
     } else {
       const res = await response.json();
-      setRequests(res)
+      setUsers(prev => ({ ...prev, [type]: res }))
     }
   }
 
-  const getFriendSuggestions = async () => {
-    const response = await fetch(`${APIURL}/friend/suggestions/${user.id}`)
-    if(response.status !== 200) {
-      alert('something went wrong');
-      return;
-    } else {
-      const res = await response.json();
-      setSuggestions(res)
-    }
-  }
-
-  const acceptRequest = async (other_user_id : string) => {
-    const requestBody = { user_id: user.id, other_user_id };
-
-    const fetchOptions = {
-      method: "PUT",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/friend/accept`, fetchOptions);
-
-    if(response.status !== 200) {
-      alert('something went wrong')
-    } else {
-      alert('request accepted')
-    }
-  }
-
-  const declineRequest = async (other_user_id : string) => {
-    const requestBody = { user_id: user.id, other_user_id };
-
-    const fetchOptions = {
-      method: "DELETE",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/friend/remove`, fetchOptions);
-
-    if(response.status !== 200) {
-      alert('something went wrong')
-    } else {
-      alert('request declined')
-    }
-  }
-
-  const sendRequest = async (other_user_id : string) => {
-    const requestBody = { user_id: user.id, other_user_id };
-
-    const fetchOptions = {
-      method: "PUT",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/friend/send`, fetchOptions);
-
-    if(response.status !== 200) {
-      alert('something went wrong')
-    } else {
-      alert('request sent')
-    }
+  const requestAction = async (other_user_id : string, type: string) => {
+    socket.emit('friend-action', { user_id: user.id, other_user_id }, type)
   }
 
   useEffect(() => {
-    getFriendRequests();
-    getFriendSuggestions();
-  }, [])
+    getUsers('received');
+    getUsers('suggestions');
+  }, [refresh])
 
   return (
     <div className="friends">
@@ -113,23 +52,25 @@ const Friends = () => {
 
         <div className="container">
         {
-          requests.map( (request, i) => (
-            <div key={i} className="friend">
-              <img src="" alt="" className='profile-pic' />
+          received.map( ({ id, profile_pic, name, mutual_pics }) => (
+            <div key={id} className="friend">
+              <img src={profile_pic} alt="" className='profile-pic' />
               <div className="info">
-                <p className="name">{ request.name }</p>
-                <div className="mutual">
-                  <ul className="friends-list">
-                    <li className="friend-list"></li>
-                    <li className="friend-list"></li>
-                    <li className="friend-list"></li>
-                    <li className="friend-list"></li>
-                  </ul>
-                  <p>3 Mutual Friends</p>
-                </div>
+                <p className="name">{ name }</p>
+                {
+                  mutual_pics.length > 0 &&
+                    <div className="mutual">
+                      <ul className="friends-list">
+                      {
+                        mutual_pics.map(pic => <li className="friend-list"><img src={pic} /></li> )
+                      }
+                      </ul>
+                      <p>{ mutual_pics.length } Mutual Friends</p>
+                    </div>
+                }
               </div>
-              <button className='accept' onClick={() => acceptRequest(request.id)}>Accept</button>
-              <button onClick={() => declineRequest(request.id)}>Decline</button>
+              <button className='accept' onClick={() => requestAction(id, 'accept')}>Accept</button>
+              <button onClick={() => requestAction(id, 'decline')}>Decline</button>
             </div>
           ))
         }
@@ -144,23 +85,25 @@ const Friends = () => {
 
         <div className="container">
           {
-            suggestions.filter( elem => !filters.includes(elem.id) ).map( (suggestion, i) => (
-              <div key={i} className="friend">
-                <img src="" alt="" className='profile-pic' />
+            suggestions.filter( elem => !filters.includes(elem.id) ).map( ({ id, name, profile_pic, mutual_pics }) => (
+              <div key={id} className="friend">
+                <img src={profile_pic} alt="" className='profile-pic' />
                 <div className="info">
-                  <p className="name">{suggestion.name}</p>
-                  <div className="mutual">
-                    <ul className="friends-list">
-                      <li className="friend-list"></li>
-                      <li className="friend-list"></li>
-                      <li className="friend-list"></li>
-                      <li className="friend-list"></li>
-                    </ul>
-                    <p>3 Mutual Friends</p>
-                  </div>
+                  <p className="name">{name}</p>
+                {
+                  mutual_pics.length > 0 &&
+                    <div className="mutual">
+                      <ul className="friends-list">
+                      {
+                        mutual_pics.map(pic => <li className="friend-list"><img src={pic} /></li> )
+                      }
+                      </ul>
+                      <p>{ mutual_pics.length } Mutual Friends</p>
+                    </div>
+                }
                 </div>
-                <button onClick={() => sendRequest(suggestion.id)}>Add Friend</button>
-                <button onClick={() => setFilters( prev => [...prev, suggestion.id])}>Remove</button>
+                <button onClick={() => requestAction(id, 'send')}>Add Friend</button>
+                <button onClick={() => setFilters( prev => [...prev, id])}>Remove</button>
               </div>
             ))
           }

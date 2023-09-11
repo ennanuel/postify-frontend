@@ -12,8 +12,8 @@ type UserType = {
 }
 
 const GroupInvitedMembers = () => {
-  const { user } = useContext(AuthContext)
-  const { owner:  groupOwner } = useContext(GroupContext);
+  const { user, socket } = useContext(AuthContext)
+  const { group: { owner: groupOwner }, refreshDet: refresh } = useContext(GroupContext);
 
   const { id } = useParams()
   const [invitedUsers, setInvitedUsers] = useState<UserType[]>([])
@@ -21,23 +21,11 @@ const GroupInvitedMembers = () => {
   if (!groupOwner) return <Navigate to={`/groups/group/${id}`} />
 
   const removeInvite = async (user_id: string) => {
-    if (!groupOwner) return;
-    const requestBody = { user_id, group_id: id }
-    const fetchOptions = {
-      method: "DELETE",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/invite/remove`, fetchOptions);
-    if (response.status !== 200) return alert('something went wrong');
-    alert('member removed!')
+    socket.emit( 'group-action', { user_id, group_id: id }, 'decline' )
   }
 
   const fetchGroupMembers = async () => {
-    const response = await fetch(`${APIURL}/group/members/invites/${id}`)
+    const response = await fetch(`${APIURL}/group/members/${id}?type=invites`)
     if (response.status !== 200) return alert('something went wrong')
     const res = await response.json();
     setInvitedUsers(res);
@@ -45,7 +33,7 @@ const GroupInvitedMembers = () => {
 
   useEffect(() => {
     fetchGroupMembers()
-  }, [])
+  }, [id, refresh])
   
   return (
     <div className="group-members-page">

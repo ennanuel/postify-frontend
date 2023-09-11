@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react'
 import { Link } from "react-router-dom"
 import { APIURL } from "../../assets/data";
 import { AuthContext } from '../../context/authContext';
+import { ChannelContext } from '../../pages/channel';
 
 type ChannelType = {
   id: string;
@@ -16,10 +17,11 @@ type Channels = {
 
 const ChannelsAll = () => {
   const { user } = useContext(AuthContext)
+  const { refresh } = useContext(ChannelContext)
   const [{ created, following }, setChannels] = useState<Channels>({created: [], following: []});
 
   async function getFollowingChannels() {
-    const response = await fetch(`${APIURL}/channel/following/${user.id}`)
+    const response = await fetch(`${APIURL}/channel/${user.id}?type=following`)
 
     if (response.status !== 200) return alert('something went wrong')
     const res = await response.json();
@@ -28,7 +30,7 @@ const ChannelsAll = () => {
   }
   
   async function getCreatedChannels() {
-    const response = await fetch(`${APIURL}/channel/created/${user.id}`)
+    const response = await fetch(`${APIURL}/channel/${user.id}?type=created`)
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();
@@ -39,7 +41,12 @@ const ChannelsAll = () => {
   useEffect(() => {
     getFollowingChannels()
     getCreatedChannels()
-   }, [])
+  }, [])
+
+  useEffect(() => { 
+    getFollowingChannels();
+  }, [refresh])
+  
   return (
     <div className='p-6'>
       <h2 className="font-bold text-xl">Following</h2>

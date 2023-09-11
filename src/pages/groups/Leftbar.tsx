@@ -3,6 +3,7 @@ import { Settings, Search, Add, VideoLabelRounded, ExploreRounded, PeopleAltRoun
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
+import { groupContext } from '.';
 
 type GroupType = {
   id: string;
@@ -11,11 +12,13 @@ type GroupType = {
 }
 
 const Leftbar = () => {
-  const { user: { id: user_id } } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const { refresh } = useContext(groupContext);
+
   const [joinedGroups, setJoinedGroups] = useState<GroupType[]>([]);
 
   const fetchJoinedGroups = async () => {
-    const response = await fetch(`${APIURL}/group/joined/${user_id}`)
+    const response = await fetch(`${APIURL}/group/${user.id}?type=joined`)
     if (response.status !== 200) return alert('something went wrong');
     const res = await response.json()
     setJoinedGroups(res)
@@ -23,7 +26,7 @@ const Leftbar = () => {
 
   useEffect(() => { 
     fetchJoinedGroups()
-  }, [])
+  }, [refresh])
 
   return (
     <div className="left sticky top-[60px] py-[5px] px-[10px]">

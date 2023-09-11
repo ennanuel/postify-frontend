@@ -4,16 +4,17 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../context/authContext'
 import { useParams } from 'react-router-dom'
 import { APIURL } from '../../assets/data'
+import { GroupContext } from '../../pages/group'
 
 type PostType = {
   id: string;
-  name: string;
+  name: string
   user_id: number;
   profile_pic: string;
   post_desc: string;
-  post_likes?: number;
-  post_comments?: number;
-  shares?: number;
+  post_likes: number;
+  post_comments: number;
+  shares: number;
   liked_post: boolean;
   last_updated: string;
   date_posted: string;
@@ -30,10 +31,13 @@ type GroupType = {
 
 const Group = () => {
   const { id } = useParams()
+  
+  const { user, socket } = useContext(AuthContext)
+  const { refreshPost: refresh } = useContext(GroupContext)
+
   const [{ group_desc, creator, members, tags, photos }, setGroupInfo] = useState<GroupType>({} as GroupType)
   const [posts, setPosts] = useState<PostType[]>([])
   const [{ post_desc }, setValues] = useState({ post_desc: '' })
-  const { user } = useContext(AuthContext)
 
   const createPost : React.FormEventHandler<HTMLFormElement> = async (e) => { 
     e.preventDefault();
@@ -59,11 +63,12 @@ const Group = () => {
     }
 
     const res = await response.json();
+    socket.emit('post-action', ({ user_id: user.id, group_id: id }))
     alert(res.message);
   }
 
   const fetchGroupInfo = async () => {
-    const response = await fetch(`${APIURL}/group/info/${id}?type=full`)
+    const response = await fetch(`${APIURL}/group/info/${id}?user_id=${user.id}&type=full`)
     if (response.status !== 200) return alert('something went wrong')
     const res = await response.json();
     setGroupInfo(res);
@@ -74,7 +79,6 @@ const Group = () => {
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();
-    console.log(res);
 
     setPosts(res);
   }
@@ -82,7 +86,9 @@ const Group = () => {
   useEffect(() => {
     fetchGroupInfo();
     fetchGroupPosts();
-  }, [])
+  }, [id])
+
+  useEffect(() => alert('someone posted something'), [refresh])
 
   return (
     <div className='group-det'>

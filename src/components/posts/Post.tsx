@@ -1,26 +1,50 @@
-import { useMemo } from 'react';
+import { useMemo, useContext } from 'react';
 import { FavoriteBorderOutlined, Favorite, MoreHoriz, TextsmsOutlined, Share } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
+import { AuthContext } from '../../context/authContext';
+
 type PostType = {
   id: string;
-  name: string;
+  name: string
   user_id: number;
   profile_pic: string;
   post_desc: string;
-  post_likes?: number;
-  post_comments?: number;
-  shares?: number;
+  post_likes: number;
+  post_comments: number;
+  shares: number;
   liked_post: boolean;
   last_updated: string;
   date_posted: string;
+  group_name?: string;
+  group_id?: string;
 }
 
-const Post = ({ id, name, user_id, profile_pic, post_desc, post_likes, post_comments, shares, liked_post, last_updated, date_posted } : PostType) => {
+const Post = ({
+  id,
+  name,
+  user_id,
+  profile_pic,
+  post_desc,
+  post_likes,
+  post_comments,
+  shares,
+  liked_post,
+  last_updated,
+  date_posted,
+  group_id,
+  group_name
+}: PostType) => {
+  const { user, socket } = useContext(AuthContext)
+
   const date = useMemo(() => {
     const newDate = new Date(date_posted)
     return `0${newDate.getDay()}-0${newDate.getMonth()}-${newDate.getFullYear()}`;
   }, [])
+
+  const likePost = () => {
+    socket.emit('like-post', {user_id: user.id, post_id: id}, liked_post ? 'remove' : 'add')
+  }
 
   return (
     <div className='single-post rounded-[15px]'>
@@ -32,6 +56,12 @@ const Post = ({ id, name, user_id, profile_pic, post_desc, post_likes, post_comm
               <Link to={`/profile/${user_id}`} className="text-inherit text-sm">
                 <span className="font-[500]">{name}</span>
               </Link>
+              {
+                group_id &&
+                <Link to={`/group/info/${group_id}`}>
+                  {group_name}
+                </Link>
+              }
               <span className="text-xs">{ date }</span>
             </div>
           </div>
@@ -42,7 +72,7 @@ const Post = ({ id, name, user_id, profile_pic, post_desc, post_likes, post_comm
           <p>{ post_desc }</p>
         </Link>
         <div className="actions py-[10px] mt-[5px] flex items-center gap-[10px]">
-          <button className={`px-[15px] flex items-center justify-center gap-[5px] h-[35px] rounded-[17.5px] ${liked_post && 'liked'}`}> 
+          <button onClick={likePost} className={`px-[15px] flex items-center justify-center gap-[5px] h-[35px] rounded-[18px] ${liked_post && 'liked'}`}> 
             {liked_post ? <Favorite /> : <FavoriteBorderOutlined />}
             <span>{ post_likes }</span>
           </button>

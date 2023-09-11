@@ -1,11 +1,11 @@
 import { useContext, useState, useEffect } from 'react'
 import { AuthContext } from '../../context/authContext'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { APIURL } from '../../assets/data'
 import { ProfileContext } from '../../pages/profile'
 
 type UserType = {
-  id: string;
+  user_id: string;
   name: string;
   profile_pic: string;
   mutual_pics: string[];
@@ -15,18 +15,24 @@ type UserType = {
 
 const ProfileFriends = () => {
   const { user_friends, mutual_friends } = useContext(ProfileContext)
-  const { user: { id: user_id } } = useContext(AuthContext)
+  const { user, socket } = useContext(AuthContext)
   const { id } = useParams();
   const [friends, setFriends] = useState<UserType[]>([])
   
-  const fetchUserFriends = async () => {
-    const response = await fetch(`${APIURL}/user/friends/${id}?other_user=${user_id}`)
+  async function fetchUserFriends() {
+    const response = await fetch(`${APIURL}/user/friends/${id}?other_user=${user.id}`)
     if (response.status !== 200) return alert('something went wrong');
     const res = await response.json();
     setFriends(res);
   }
 
-  useEffect(() => { fetchUserFriends() }, [])
+  async function sendRequest( user_id : string ) {
+    socket.emit('friend-action', { user_id: user.id, other_user_id: user_id }, 'send')
+  }
+
+  useEffect(() => {
+    fetchUserFriends()
+  }, [])
   
   return (
     <div className='profile-friends'>
@@ -41,8 +47,8 @@ const ProfileFriends = () => {
 
       <div className="container">
         {
-          friends.map( ({ id, name, profile_pic, mutual_pics, is_user, is_mutual }) => (
-            <div key={id} className="friend">
+          friends.map( ({ user_id, name, profile_pic, mutual_pics, is_user, is_mutual }) => (
+            <div key={user_id} className="friend">
               <img src={profile_pic}  alt="" className='profile-pic' />
               <div className="info">
                 <p className="name">{ is_user ? 'You' : name }</p>
@@ -55,8 +61,8 @@ const ProfileFriends = () => {
                     {(!is_user && mutual_pics.length > 0) && <p>{ mutual_pics?.length } Mutual Friends</p>}
                   </div>
                 </div>
-              <button>{ is_mutual ? 'Message' : 'Add Friend' }</button>
-              <button>View Profile</button>
+              <button onClick={() => !is_mutual && sendRequest(user_id)}>{ is_mutual ? 'Message' : 'Add Friend' }</button>
+              <Link to={`/profile/${user_id}`}>View Profile</Link>
             </div>
           ))
         }

@@ -1,4 +1,4 @@
-import { useContext, useState, useRef } from 'react';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom"
 import { AuthContext } from "../../context/authContext"
 import './login.scss'
@@ -24,7 +24,7 @@ const Login = () => {
 
     const response = await fetch(`${APIURL}/auth/login`, fetchOptions);
 
-    if(response.status !== 200) return;
+    if (response.status !== 200) return;
 
     const res = await response.json();
 
