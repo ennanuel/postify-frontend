@@ -1,40 +1,23 @@
 import { useContext, useState } from 'react';
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { AuthContext } from "../../context/authContext"
 import './login.scss'
 import { APIURL } from '../../assets/data';
+import { fetchOptions } from '../../assets/data/data';
 
 
 const Login = () => {
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const [{ username, password }, setCredentials] = useState({ username: '', password: '' });
 
   const loginUser = async () => {
-    const requestBody = { username, password };
-
-    const fetchOptions = {
-      method: "POST",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/auth/login`, fetchOptions);
-
-    if (response.status !== 200) return;
-
-    const res = await response.json();
-
-    if(Boolean(res)) {
-      alert('User found')
-      login({ id: res.id, name: `${res.first_name} ${res.last_name}`, profilePic: res.profile_pic })
-      navigate('/')
-    } else {
-      alert('No user found')
-    }
+    const options = { ...fetchOptions, method: 'POST', body: JSON.stringify({ username, password })}
+    const response = await fetch(`${APIURL}/auth/login`, options);
+    if (response.status !== 200) return alert(`failed to login`);
+    const { message } = await response.json();
+    alert(message)
+    login()
   }
 
   const handleChange : React.ChangeEventHandler<HTMLInputElement> = (e) => {

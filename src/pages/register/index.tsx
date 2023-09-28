@@ -24,7 +24,6 @@ const Register = () => {
     }
 
     const response = await fetch(`${APIURL}/auth/register`, fetchOptions);
-    console.log(response)
     const res = await response.json();
 
     alert(res.message);

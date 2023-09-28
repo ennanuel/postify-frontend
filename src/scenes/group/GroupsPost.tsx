@@ -3,6 +3,7 @@ import { Posts } from '../../components'
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { groupContext } from '../../pages/groups';
+import { fetchOptions } from '../../assets/data/data';
 
 type PostType = {
   id: string;
@@ -36,7 +37,7 @@ const GroupsPost = () => {
   }
 
   const fetchGroups = async () => {
-    const response = await fetch(`${APIURL}/group/${user.id}`)
+    const response = await fetch(`${APIURL}/group/${user.id}`, fetchOptions)
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();
@@ -45,7 +46,7 @@ const GroupsPost = () => {
   }
 
   const fetchGroupPosts = async () => {
-    const response = await fetch(`${APIURL}/group/posts/${user.id}?type=all`)
+    const response = await fetch(`${APIURL}/group/posts/${user.id}?type=all`, fetchOptions)
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();
@@ -63,6 +64,7 @@ const GroupsPost = () => {
   }, [refresh])
 
   useEffect(() => {
+    socket.removeAllListeners('post-event')
     socket.on('post-event', ({ group_id } : { group_id: string }) => {
       if (group.includes(group_id)) alert('new post from group');
     })

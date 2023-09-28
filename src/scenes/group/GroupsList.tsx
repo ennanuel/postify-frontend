@@ -4,11 +4,12 @@ import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { Link } from 'react-router-dom';
 import { groupContext } from '../../pages/groups';
+import { fetchOptions } from '../../assets/data/data';
 
 type GroupType = {
   id: string;
   name: string;
-  cover: string;
+  picture: string;
   members: number;
 }
 
@@ -20,7 +21,7 @@ const GroupsList = () => {
   const [joinedGroups, setJoinedGroups] = useState<GroupType[]>([])
   
   const fetchJoinedGroups = async () => {
-    const response = await fetch(`${APIURL}/group/${user.id}?type=joined`)
+    const response = await fetch(`${APIURL}/group/${user.id}?type=joined`, fetchOptions)
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();
@@ -29,7 +30,7 @@ const GroupsList = () => {
   }
   
   const fetchCreatedGroups = async () => {
-    const response = await fetch(`${APIURL}/group/${user.id}?type=created`)
+    const response = await fetch(`${APIURL}/group/${user.id}?type=created`, fetchOptions)
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();
@@ -50,10 +51,10 @@ const GroupsList = () => {
       <h3 className="font-bold text-lg">Created Groups ({createdGroups.length})</h3>
       <ul className="mt-[20px] grid grid-cols-2 gap-[10px]">
         {
-          createdGroups.map( ({id, name, cover}) => (
+          createdGroups.map( ({id, name, picture}) => (
             <li key={id} className="joined-group rounded-[10px] p-[15px]">
               <div className="info flex items-end gap-[10px]">
-                <img className="h-[70px] aspect-square rounded-[8px] " src={cover} alt="" />
+                <img className="h-[70px] aspect-square rounded-[8px] " src={`${APIURL}/image/profile_pics/${picture}`} alt="" />
                 <div className="details flex flex-col">
                   <h3 className="">{name}</h3>
                   <p className="text-xs">Last Visited 3 days ago</p>
@@ -70,10 +71,10 @@ const GroupsList = () => {
       <h3 className="font-bold text-lg mt-10 ">Joined Groups ({joinedGroups.length})</h3>
       <ul className="mt-[20px] grid grid-cols-2 gap-[10px]">
         {
-          joinedGroups.map( ({id, name, cover}) => (
+          joinedGroups.map( ({id, name, picture}) => (
             <li key={id} className="joined-group rounded-[10px] p-[15px]">
               <div className="info flex items-end gap-[10px]">
-                <img className="h-[70px] aspect-square rounded-[8px] " src={cover} alt="" />
+                <img className="h-[70px] aspect-square rounded-[8px] " src={`${APIURL}/image/profile_pics/${picture}`} alt="" />
                 <div className="details flex flex-col">
                   <h3 className="">{name}</h3>
                   <p className="text-xs">Last Visited 3 days ago</p>

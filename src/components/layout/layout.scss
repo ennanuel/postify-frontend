@@ -96,6 +96,10 @@
                 }
             }
         }
+
+        .menu {
+            background-color: $bg1;
+        }
     }
 }
   
@@ -135,10 +139,6 @@
     
             .user {
     
-                img {
-                    border: 1px solid $border;
-                }
-    
                 span {
                     color: $color1;
                 }
@@ -148,10 +148,6 @@
                 color: $color;
     
                 .item {
-            
-                    img {
-                        border: 1px solid $border;
-                    }
             
                     span {
                         font-size: 14px;

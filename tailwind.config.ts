@@ -17,6 +17,15 @@ export default {
             800: "#000000",
             900: "#000000"
         }
+      },
+      animation: {
+        stretch: 'stretch 5s linear'
+      },
+      keyframes: {
+        stretch: {
+          from: { transform: 'scaleX(0)' },
+          to: { transform: 'scaleX(1)' }
+        }
       }
     }
   },

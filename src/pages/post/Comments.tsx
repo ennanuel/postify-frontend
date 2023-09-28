@@ -27,7 +27,7 @@ type CommentPropsType = {
     user: {
         id: string;
         name: string;
-        profilePic: string;
+        profile_pic: string;
     }
 }
 
@@ -112,7 +112,7 @@ const Comments = ({ comment, setComment, commentDetails, comments, likeComment, 
                 </ul>
                 
             <form className="create-comment sticky bottom-0 flex gap-2 p-2 pb-0 border-t" onSubmit={handleSubmit}>
-                <img className='w-[40px] rounded-full aspect-square' src={user.profilePic} alt={user.name} />
+                <img className='w-[40px] rounded-full aspect-square' src={user.profile_pic} alt={user.name} />
                 <div className="textarea flex items-center gap-2 flex-1 h-[40px] rounded-[40px] px-1">
                     <input
                         value={content}

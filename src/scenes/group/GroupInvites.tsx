@@ -3,6 +3,7 @@ import { MoreHoriz } from "@mui/icons-material"
 import { AuthContext } from "../../context/authContext";
 import { APIURL } from "../../assets/data";
 import { groupContext } from "../../pages/groups";
+import { fetchOptions } from "../../assets/data/data";
 
 type GroupType = {
   id: string;
@@ -26,7 +27,7 @@ const GroupInvites = () => {
   }
 
   const fetchGroups = async () => {
-    const response = await fetch(`${APIURL}/group/${user.id}?type=invites`)
+    const response = await fetch(`${APIURL}/group/${user.id}?type=invites`, fetchOptions)
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();

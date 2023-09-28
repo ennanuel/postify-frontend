@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext'
 import { GroupContext } from '../../pages/group'
+import { fetchOptions } from '../../assets/data/data'
 
 type UserType = {
   id: string;
@@ -24,7 +25,7 @@ const GroupMembers = () => {
   }
 
   const fetchGroupMembers = async () => {
-    const response = await fetch(`${APIURL}/group/members/${id}`)
+    const response = await fetch(`${APIURL}/group/members/${id}`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong')
     const res = await response.json();
     setGroupMembers(res);

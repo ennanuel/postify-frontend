@@ -11,6 +11,8 @@ const Friends = () => {
     const { user, socket, getIds } = useContext(AuthContext)
 
     useEffect(() => { 
+        socket.removeAllListeners('friend-event')
+        
         socket.on('friend-event', ({ users }: { users: string[] }) => {
             if (!users.includes(user.id)) return
             setRefresh(!refresh)

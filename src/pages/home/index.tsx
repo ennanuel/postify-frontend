@@ -5,12 +5,13 @@ import Leftbar from '../../components/layout/Leftbar';
 import './home.scss';
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
+import { fetchOptions } from '../../assets/data/data';
 
 const Home = () => {
   const { user, friend, group, socket } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
   const fetchPosts = async () => {
-    const response = await fetch(`${APIURL}/post/feed/${user.id}`)
+    const response = await fetch(`${APIURL}/post/feed/${user.id}`, fetchOptions)
     if(response.status !== 200) {
       alert('something went wrong')
     }
@@ -21,14 +22,18 @@ const Home = () => {
   }
 
   useEffect(() => {
-    fetchPosts()
+    fetchPosts();
+  }, [])
+
+  useEffect(() => { 
+    socket.removeAllListeners('post-event');
 
     socket.on('post-event', ({ user_id, group_id }: { user_id: string, group_id?: string }) => {
       if (user_id == user.id || (friend.includes(user_id) && !group_id) || group.includes(group_id || '')) {
         alert('someone posted something');
       }
     })
-  }, [friend, group])
+  }, [socket, friend, group])
 
   return (
     <div className="home">

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { FavoriteOutlined, KeyboardArrowDown, MessageOutlined, Videocam } from '@mui/icons-material'
 import { ProfileContext } from '../../pages/profile';
 import { APIURL } from '../../assets/data';
+import { fetchOptions } from '../../assets/data/data';
 
 type PostType = {
   id: string;
@@ -20,7 +21,7 @@ const ProfileVideos = () => {
   const [videos, setVideos] = useState<PostType[]>([]);
 
   const fetchVideos = async () => {
-    const response = await fetch(`${APIURL}/user/posts/${id}?type=photo`)
+    const response = await fetch(`${APIURL}/user/posts/${id}?type=photo`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong')
     const res = await response.json();
     setVideos(res)

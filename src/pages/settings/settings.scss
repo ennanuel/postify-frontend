@@ -1,0 +1,14 @@
+@import '../../theme.scss';
+
+.settings {
+    @include themify($themes) {
+        $bg: themed("bg");
+        $bg1: themed("bgSoft");
+        $color: themed("textColor");
+        $color1: themed("textColorSoft");
+        $border: themed("border");
+
+        background-color: $bg;
+        color: $color;
+    }
+}

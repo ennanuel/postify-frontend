@@ -1,8 +1,9 @@
-import { useState, useContext, useRef } from 'react';
+import { useState, useContext } from 'react';
 import { Add } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data'
+import { fetchOptions } from '../../assets/data/data';
 import { useParams } from 'react-router-dom';
 
 type Props = {
@@ -13,34 +14,43 @@ type Props = {
 const CreatePost = ({ show, setShow }: Props) => {
     const { user, socket } = useContext(AuthContext);
     const { id } = useParams()
-    const [{ post_desc, files }, setValues] = useState({ post_desc: '', files: [] })
+    const [{ post_desc, files }, setValues] = useState<{ post_desc: string; files: File }>({ post_desc: '', files: {} as File })
 
     const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-        setValues(prev => ({...prev, [e.target.name]: e.target.value}))
+        setValues(prev => ({...prev, post_desc: e.target.value}))
+    }
+
+    const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) return;
+        const file = e.target.files[0]
+        setValues(prev => ({ ...prev, files: file }))
     }
     
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault()
-        const requestBody = { user_id: user.id, channel_id: id, post_desc, files };
-
+        const requestBody = {
+            user_id: user.id,
+            channel_id: id || '',
+            post_desc,
+            post_bg: 'none',
+            post_type: 'video',
+            type: 'channel',
+            files
+        };
+        const formData = new FormData();
+        const headers = new Headers();
         for(let [key, value] of Object.entries(requestBody)) {
-            if(!value && key !== 'files') return alert(`'${key}' field cannot be empty`)
+            if (!value && key !== 'files') return alert(`'${key}' field cannot be empty`)
+            formData.append(key, value)
         }
+        headers.append('Access-Control-Allow-Origin', APIURL)
+        const options = { ...fetchOptions, method: "POST", body: formData, headers }
 
-        const fetchOptions = {
-            method: "POST",
-            body: JSON.stringify(requestBody),
-            headers: {
-                "Content-Type": "application/json; charset=UTF-8"
-            }
-        }
-
-        const response = await fetch(`${APIURL}/channel/post`, fetchOptions);
-        if(response.status !== 200) return alert('something went wrong')
+        const response = await fetch(`${APIURL}/post/create`, options);
         const res = await response.json()
         alert(res.message)
         
-        socket.emit('post-action', { channel_id: id })
+        if(response.status === 200) socket.emit('post-action', { channel_id: id })
     }
 
     return (
@@ -66,12 +76,15 @@ const CreatePost = ({ show, setShow }: Props) => {
                 </IconButton>
                 <h2 className="text-lg font-bold">Post Video</h2>
                 <textarea value={post_desc} onChange={handleChange} name="post_desc" placeholder="Description" className="h-[80px] p-2 rounded-md bg-white/10 w-full text-sm" />
-                <label htmlFor="video" className="w-fit p-1 pl-3 text-sm h-[36px] rounded-[18px] flex items-center jusity-center gap-2 bg-white/10">
-                <input type="file" id="video" className="hidden" />
-                    <span>Add Video</span>
-                    <span className="flex items-center justify-center p-1 w-fit aspect-square rounded-full bg-black-900">
-                        <Add />
-                    </span>
+                <label htmlFor="files" className="w-fit max-w-[200px] p-1 pl-3 text-sm h-[36px] rounded-[18px] flex items-center jusity-center bg-white/10 cursor-pointer">
+                    <input type="file" id="files" onChange={handleFileChange} name="files" className="hidden" accept="video/mp4" />
+                    <span className="w-full truncate mr-2">{files?.name || 'Add Video'}</span>
+                    {
+                        !files?.name &&
+                        <span className="flex items-center justify-center p-1 w-fit aspect-square rounded-full bg-black-900">
+                            <Add />
+                        </span>
+                    }
                 </label>
                 <IconButton
                     type="submit"

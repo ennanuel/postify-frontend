@@ -8,6 +8,9 @@ type PostType = {
   name: string
   user_id: number;
   profile_pic: string;
+  post_type: string;
+  post_bg: 'none' | 'blue' | 'red' | 'white' | 'black';
+  files: string[];
   post_desc: string;
   post_likes: number;
   post_comments: number;

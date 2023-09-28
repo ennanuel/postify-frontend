@@ -4,12 +4,14 @@ import DetailsHeader from './DetailHeader';
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import './group.scss';
+import { fetchOptions } from '../../assets/data/data';
 
 type GroupType = {
     id: string;
     name: string;
     cover: string;
     member_pics: string[];
+    is_member: boolean;
     owner: boolean;
 }
 
@@ -30,7 +32,7 @@ const Group = () => {
     const [refreshDet, setRefreshDet] = useState<boolean>(false)
 
     const fetchGroupInfo = async () => {
-        const response = await fetch(`${APIURL}/group/info/${id}?user_id=${user.id}`)
+        const response = await fetch(`${APIURL}/group/info/${id}?user_id=${user.id}`, fetchOptions)
         if (response.status !== 200) return alert('something went wrong')
         const res = await response.json();
         setGroupInfo(res);
@@ -41,6 +43,9 @@ const Group = () => {
     }, [id])
 
     useEffect(() => {
+        socket.removeAllListeners('post-event');
+        socket.removeAllListeners('group-event');
+
         socket.on('group-event', ({ group_id, user_id }) => {
             if (group_id === id) {
                 fetchGroupInfo();
@@ -56,7 +61,7 @@ const Group = () => {
                 setRefreshPost(!refreshPost)
             }
         })
-    }, [socket, refreshPost, refreshDet])
+    }, [socket, refreshPost, refreshDet, id])
 
     return (
         <div className="group w-full min-h-[100vh]">

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { APIURL } from "../../assets/data";
 import { AuthContext } from '../../context/authContext';
 import { ChannelContext } from '../../pages/channel';
+import { fetchOptions } from '../../assets/data/data';
 
 type ChannelType = {
   id: string;
@@ -21,7 +22,7 @@ const ChannelsAll = () => {
   const [{ created, following }, setChannels] = useState<Channels>({created: [], following: []});
 
   async function getFollowingChannels() {
-    const response = await fetch(`${APIURL}/channel/${user.id}?type=following`)
+    const response = await fetch(`${APIURL}/channel/${user.id}?type=following`, fetchOptions)
 
     if (response.status !== 200) return alert('something went wrong')
     const res = await response.json();
@@ -30,7 +31,7 @@ const ChannelsAll = () => {
   }
   
   async function getCreatedChannels() {
-    const response = await fetch(`${APIURL}/channel/${user.id}?type=created`)
+    const response = await fetch(`${APIURL}/channel/${user.id}?type=created`, fetchOptions)
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();
@@ -50,26 +51,26 @@ const ChannelsAll = () => {
   return (
     <div className='p-6'>
       <h2 className="font-bold text-xl">Following</h2>
-      <ul className="mt-4 mb-6 gap-4 flex items-center">
+      <ul className="mt-4 mb-6 gap-4 grid grid-cols-6">
         {
           following.map(({id, picture, name}) => (
             <li key={id}>
               <Link to={`/channels/info/${id}`} className="w-full flex flex-col gap-2 items-center p-2">
-                <img src={picture} alt="" className="h-[80px] aspect-square rounded-full bg-white/5" />
-                <p className="text-sm font-bold">{ name }</p>
+                <img src={`${APIURL}/image/profile_pics/${picture}`} alt="" className="w-full spect-square rounded-full bg-white/5" />
+                <p className="w-full text-sm font-bold truncate">{ name }</p>
               </Link>
             </li>
           ))
         }
       </ul>
       <h2 className="font-bold text-xl mt-10">Created Channels</h2>
-      <ul className="mt-4 mb-6 gap-4 flex items-center">
+      <ul className="mt-4 mb-6 gap-4 grid grid-cols-6">
         {
           created.map(({ id, picture, name }) => (
             <li key={id}>
               <Link to={`/channels/info/${id}`} className="w-full flex flex-col gap-2 items-center p-2">
-                <img src={picture} alt="" className="h-[80px] aspect-square rounded-full bg-white/5" />
-                <p className="text-sm font-bold">{ name }</p>
+                <img src={`${APIURL}/image/profile_pics/${picture}`} alt="" className="w-full aspect-square rounded-full bg-white/5" />
+                <p className="w-full text-sm font-bold truncate">{ name }</p>
               </Link>
             </li>
           ))

@@ -10,6 +10,7 @@ import Shorts from "./shorts";
 import Story from "./story";
 import Message from "./message";
 import Channels from './channel'
+import Settings from './settings';
 
 export { 
     Home,
@@ -24,4 +25,5 @@ export {
     Story,
     Message,
     Channels,
+    Settings
 }

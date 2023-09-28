@@ -3,6 +3,7 @@ import { MoreHoriz } from "@mui/icons-material"
 import { AuthContext } from "../../context/authContext";
 import { APIURL } from "../../assets/data";
 import { groupContext } from "../../pages/groups";
+import { fetchOptions } from "../../assets/data/data";
 
 type GroupType = {
   id: string;
@@ -22,7 +23,7 @@ const GroupsDiscover = () => {
   }
 
   async function fetchGroups() {
-    const response = await fetch(`${APIURL}/group/${user.id}`)
+    const response = await fetch(`${APIURL}/group/${user.id}`, fetchOptions)
 
     if(response.status !== 200) return alert('something went wrong')
     const res = await response.json();

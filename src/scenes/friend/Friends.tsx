@@ -3,6 +3,7 @@ import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext'
 import { Search, SortRounded } from '@mui/icons-material';
 import { friendContext } from '../../pages/friends';
+import { fetchOptions } from '../../assets/data/data';
 
 type FriendType = {
   id: string;
@@ -18,7 +19,7 @@ const Friends = () => {
   const [friends, setFriends] = useState<FriendType[]>([])
 
   async function getFriends() {
-    const response = await fetch(`${APIURL}/friend/${user.id}`)
+    const response = await fetch(`${APIURL}/friend/${user.id}`, fetchOptions)
     if(response.status !== 200) {
       alert('something went wrong');
       return;

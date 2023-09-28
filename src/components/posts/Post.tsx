@@ -1,14 +1,19 @@
 import { useMemo, useContext } from 'react';
 import { FavoriteBorderOutlined, Favorite, MoreHoriz, TextsmsOutlined, Share } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { AuthContext } from '../../context/authContext';
+import { APIURL } from '../../assets/data';
+import { cloudImgURL, post_bgs } from '../../assets/data/data';
 
 type PostType = {
   id: string;
   name: string
   user_id: number;
   profile_pic: string;
+  post_type: string;
+  files: string[];
+  post_bg: 'none' | 'blue' | 'red' | 'white' | 'black';
   post_desc: string;
   post_likes: number;
   post_comments: number;
@@ -25,6 +30,9 @@ const Post = ({
   name,
   user_id,
   profile_pic,
+  post_type,
+  files,
+  post_bg,
   post_desc,
   post_likes,
   post_comments,
@@ -36,11 +44,26 @@ const Post = ({
   group_name
 }: PostType) => {
   const { user, socket } = useContext(AuthContext)
+  const navigate = useNavigate();
+  const { id: groupId } = useParams();
 
   const date = useMemo(() => {
-    const newDate = new Date(date_posted)
-    return `0${newDate.getDay()}-0${newDate.getMonth()}-${newDate.getFullYear()}`;
+    let time: string;
+    const currDate = new Date();
+    const newDate = new Date(date_posted);
+    const timePassed = currDate.getTime() - newDate.getTime();
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    time = `${months[newDate.getMonth()]} ${newDate.getDay()}`;
+
+    if (timePassed < 1000 * 60 * 60) time = Math.floor(timePassed / (1000 * 60)) + ' mins ago';
+    if (timePassed < 1000 * 60 * 60 * 24 && timePassed > 1000 * 60 * 60) time = Math.floor(timePassed / (1000 * 60 * 60)) + 'hrs ago';
+    if (timePassed < 1000 * 60 * 60 * 48 && timePassed > 1000 * 60 * 60 * 24) time = 'Yesterday';
+    if (timePassed >= 1000 * 60 * 60 * 48 && newDate.getFullYear() > currDate.getFullYear()) time = `${months[newDate.getMonth()]} ${newDate.getDay()}, ${newDate.getFullYear()}`;
+
+    return time;
   }, [])
+  const { from, via, to } = useMemo(() => post_bgs[post_bg] || {}, [])
 
   const likePost = () => {
     socket.emit('like-post', {user_id: user.id, post_id: id}, liked_post ? 'remove' : 'add')
@@ -57,7 +80,7 @@ const Post = ({
                 <span className="font-[500]">{name}</span>
               </Link>
               {
-                group_id &&
+                (group_id && groupId !== group_id) &&
                 <Link to={`/group/info/${group_id}`}>
                   {group_name}
                 </Link>
@@ -65,12 +88,47 @@ const Post = ({
               <span className="text-xs">{ date }</span>
             </div>
           </div>
-          <MoreHoriz />
+          <div className="relative">
+            <button className="flex items-center justify-center" onClick={() => navigate(`/edit_post/${id}`)}>
+              <MoreHoriz />
+            </button>
+          </div>
         </div>
 
-        <Link to={`/post/${id}`} className="flex flex-col content rounded-[7px] mt-[5px] p-[15px]">
-          <p>{ post_desc }</p>
-        </Link>
+        {
+          post_type === 'text' ?
+            <Link to={`/post/${id}`}>
+              <p className={`rounded-[7px] mt-[5px] p-[15px] bg-gradient-to-br ${from} ${via} ${to} ${post_bg !== 'none' && 'aspect-square flex justify-center items-center text-center text-3xl font-bold p-4'} ${/white/i.test(post_bg) && 'text-black-600'}`}>{ post_desc }</p>
+            </Link> :
+            <div className="flex flex-col gap-2 p-3">
+              <p>{post_desc}</p>
+              <Link to={`/post/${id}`} className='w-full h-full flex-1 block'>
+                <ul className={`grid gap-4 grid-cols-2 h-full`}>
+                  {
+                    files?.slice(0, 4)?.map((file, i, arr) => (
+                      <li
+                        className={`relative aspect-square overflow-clip rounded-lg ${arr.length === 1 && i === 0 ? 'col-span-2' : 'col-span-1'}`}>
+                        {
+                          (files.length > 4 && i == 3) &&
+                            <div className="absolute z-1 top-0 left-0 w-full h-full flex items-center justify-center bg-black-900/50 text-[3em] font-bold">
+                            +<span>{ files.length - 4 }</span>
+                            </div>
+                        }
+                        {
+                          post_type === 'photo' ?
+                            <img className="w-full h-full"
+                              src={`${APIURL}/image/post_images/${file}`}
+                              alt={post_desc}
+                            /> :
+                          <video className="w-full aspect-square object-cover" src={`${APIURL}/video/post_videos/${file}`} autoPlay={true}></video>
+                        }
+                      </li>
+                    ))
+                  }
+                </ul>
+              </Link>
+            </div>
+        }
         <div className="actions py-[10px] mt-[5px] flex items-center gap-[10px]">
           <button onClick={likePost} className={`px-[15px] flex items-center justify-center gap-[5px] h-[35px] rounded-[18px] ${liked_post && 'liked'}`}> 
             {liked_post ? <Favorite /> : <FavoriteBorderOutlined />}

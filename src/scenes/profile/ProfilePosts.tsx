@@ -5,15 +5,16 @@ import { Posts } from "../../components";
 import { ProfileContext } from '../../pages/profile';
 import { APIURL } from '../../assets/data';
 import { AuthContext } from '../../context/authContext';
+import { fetchOptions } from '../../assets/data/data';
 
 type UserType = {
   bio: string;
-  employment: string;
-  school: string[];
+  education: { school: string; degree: string; start: string; end: string }[];
   address: string;
   hobbies: string[];
-  marital_status: string[];
-  user_origin: string;
+  relationship: boolean;
+  country: string;
+  work: { company: string; role: string; };
   friend_ids: string[];
   friend_pics: string[];
   friend_names: string[];
@@ -25,12 +26,12 @@ type UserType = {
 const ProfilePosts = () => {
   const [{
     bio,
-    employment,
-    school,
+    education,
     address,
     hobbies,
-    marital_status,
-    user_origin,
+    relationship,
+    country,
+    work,
     friend_ids,
     friend_pics,
     friend_mutuals,
@@ -47,14 +48,14 @@ const ProfilePosts = () => {
   const [posts, setPosts] = useState([]);
 
   const getUserInfo = async () => { 
-    const response = await fetch(`${APIURL}/user/full/${id}?other_user=${user_id}`)
+    const response = await fetch(`${APIURL}/user/full/${id}?other_user=${user_id}`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong');
     const res = await response.json();
     setUser(res)
   }
 
   const getUserPosts = async () => {
-    const response = await fetch(`${APIURL}/user/posts/${id}?other_user=${user_id}`)
+    const response = await fetch(`${APIURL}/user/posts/${id}?other_user=${user_id}`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong');
     const res = await response.json();
     setPosts(res);
@@ -70,15 +71,18 @@ const ProfilePosts = () => {
       <div className="left">
         <div className="menu">
           <h3 className="title">Intro</h3>
-          <p className="intro-text">{bio}</p>
+          <p className="intro-text text-left">{bio}</p>
           <ul className="profile-details">
             <li>
               <WorkRounded />
-              <span>{employment ? 'Employed' : 'Unemployed'}</span>
+              <span>{`${work?.role} at ${work?.company}`}</span>
             </li>
-            <li>
-              <SchoolRounded />
-              <span>Went to <span className="bold">{school?.join(' | ')}</span></span>
+            <li className="flex flex-col gap-1">
+              {
+                education?.map(({ school, degree, start, end }, i) => (
+                  <p key={i}><span className='flex items-center justify-center mr-1 float-left'><SchoolRounded /></span> Studied <span className="bold">{degree}</span> at <span className="bold">{school}</span>, from <span className="bold">{start}</span> to <span className="bold">{end}</span>.</p>
+                ))
+              }
             </li>
             <li>
               <HouseRounded />
@@ -86,13 +90,14 @@ const ProfilePosts = () => {
             </li>
             <li>
               <PlaceRounded />
-              <span>From <span className="bold">{ user_origin }</span></span>
+              <span>From <span className="bold">{ country }</span></span>
             </li>
             <li>
               <Favorite />
-              <span>{ marital_status ? 'In a relationship' : 'Single' }</span>
+              <span>{ relationship ? 'In a relationship' : 'Single' }</span>
             </li>
-            <ul className="hobbies">
+            <p className='font-bold text-lg'>Hobbies</p>
+            <ul className="hobbies flex flex-wrap">
               {
                 hobbies?.map((hobbie, i) => <li key={i}>{hobbie}</li>)
               }

@@ -3,6 +3,7 @@ import { Navigate, useParams } from 'react-router-dom'
 import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext'
 import { GroupContext } from '../../pages/group'
+import { fetchOptions } from '../../assets/data/data'
 
 type UserType = {
   id: string;
@@ -25,7 +26,7 @@ const GroupInvitedMembers = () => {
   }
 
   const fetchGroupMembers = async () => {
-    const response = await fetch(`${APIURL}/group/members/${id}?type=invites`)
+    const response = await fetch(`${APIURL}/group/members/${id}?type=invites`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong')
     const res = await response.json();
     setInvitedUsers(res);

@@ -8,41 +8,13 @@
         $color1: themed('textColorSoft');
         $border: themed('border');
 
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: 100vw;
-        z-index: 99999;
-        overflow-x: hidden;
-        background-color: #101010;
+        background-color: $bg;
         color: $color;
-        padding: 10px;
 
         .top {
-            position: absolute;
-            width: 100%;
-            top: 0;
-            left: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 20px;
 
-            button {
-                height: 40px;
-                aspect-ratio: 1;
-                border-radius: 50%;
+            a {
                 background-color: $border;
-                transform: rotate(45deg);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                .logo {
-                    font-size: 20px;
-                }
 
                 svg {
                     font-size: 1.8rem;
@@ -51,100 +23,45 @@
         }
 
         .bottom {
-            display: flex;
-            align-items: center;
-            justify-content: space-evenly;
-            gap: 20px;
-            height: 100%;
 
             .story {
-                height: 250px;
-                width: 150px;
-                border-radius: 10px;
                 background-color: $bg;
-                padding: 10px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-                justify-content: center;
                 
                 .user-profile {
-                    padding: 3px;
                     border: 3px solid $color;
-                    border-radius: 50%;
-                    width: 80px;
-                    height: 80px;
 
                     img {
-                        width: 100%;
-                        height: 100%;
-                        border-radius: 50%;
                         background-color: $border;
                     }
                 }
             }
 
             .main-story {
-                width: 360px;
-                height: 100%;
-                background-color: $bg;
-                border-radius: 10px;
-                padding: 20px;
-                position: relative;
+                background-color: $bg1;
 
                 .durations {
-                    height: 4px;
-                    display: flex;
-                    gap: 8px;
 
                     .duration {
-                        flex: 1;
-                        border-radius: 2px;
-                        height: 100%;
                         background-color: $border;
-                        overflow: hidden;
 
                         .length {
-                            width: 80%;
-                            height: 100%;
                             background-color: $color;
                         }
                     }
                 }
 
                 .details-action {
-                    display: flex;
-                    gap: 5px;
-                    align-items: center;
-                    margin-top: 10px;
 
                     img {
-                        width: 35px;
-                        height: 35px;
-                        border-radius: 50%;
-                        object-fit: cover;
                         background-color: $bg;
                     }
 
-                    p {
-                        flex: 1;
-                        margin-left: 5px;
-                    }
-
                     .time {
-                        font-size: .8rem;
-                        margin-left: 5px;
                         color: $color1;
                     }
 
                     button {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        width: 30px;
-                        height: 30px;
-                        border-radius: 50%;
+                        @apply flex items-center justify-center w-[30px] h-[30px] rounded-full;
 
                         &:hover {
                             background-color: $border;
@@ -153,31 +70,13 @@
                 }
 
                 .reply {
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    padding: 20px;
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                    width: 100%;
 
                     input {
-                        flex: 1;
-                        padding: 0 15px;
-                        height: 40px;
-                        border-radius: 20px;
-                        outline: none;
                         border: 2px solid $border;
                     }
 
                     button {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        height: 40px;
-                        width: 40px;
-                        border-radius: 50%;
+                        @apply flex items-center justify-center h-[40px] w-[40px] rounded-full;
                     
                         &:hover {
                             background-color: $border;

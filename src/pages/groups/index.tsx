@@ -11,6 +11,7 @@ const Groups = () => {
   const [refresh, setRefresh] = useState<boolean>(false);
 
   useEffect(() => { 
+    socket.removeAllListeners('group-event');
     socket.on('group-event', ({ user_id }) => {
       if(user_id === user.id) setRefresh( !refresh )
     })

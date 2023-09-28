@@ -1,31 +1,30 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, useMemo } from 'react'
 import { 
-    Add, 
-    Favorite, 
+    Add,
     FavoriteOutlined,
     KeyboardArrowLeft, 
     KeyboardArrowRight,
-    Message, 
     MessageOutlined, 
     MoreHoriz, 
     ShareOutlined, 
     ZoomInOutlined, 
     ZoomOutOutlined,
-    SendRounded,
     FavoriteBorderOutlined,
 } from '@mui/icons-material'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { APIURL } from '../../assets/data'
 import './post.scss'
 import { AuthContext } from '../../context/authContext'
 import { IconButton } from '@mui/material'
 import Comments from './Comments'
+import { fetchOptions, post_bgs } from '../../assets/data/data'
 
 type PostType = {
     id: string;
     post_desc: string;
+    files: string[];
     post_type: string;
-    post_bg: string;
+    post_bg: 'none' | 'red' | 'blue' | 'white' | 'black';
     date_posted: string;
     user_id: string;
     name: string;
@@ -60,6 +59,9 @@ const Post = () => {
     const [commentDetails, setCommentDetails] = useState({} as CommentType)
     const [comments, setComments] = useState<CommentType[]>([])
     const [comment, setComment] = useState<string|null>(null)
+    const [index, setIndex] = useState(0);
+
+    const { from, via, to } = useMemo(() => post_bgs[post.post_bg] || {}, [post])
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault()
@@ -76,21 +78,21 @@ const Post = () => {
     }
 
     async function getPost() {
-        const response = await fetch(`${APIURL}/post/${id}?user_id=${user.id}`)
+        const response = await fetch(`${APIURL}/post/${id}?user_id=${user.id}`, fetchOptions)
         if (response.status !== 200) return alert('something went wrong!');
         const res = await response.json();
         setPost(res);
     }
 
     async function getComments() {
-        const response = await fetch(`${APIURL}/comment/${id}?user_id=${user.id}${comment ? `&type=replies&comment_id=${comment}` : ''}`)
+        const response = await fetch(`${APIURL}/comment/${id}?user_id=${user.id}${comment ? `&type=replies&comment_id=${comment}` : ''}`, fetchOptions)
         if (response.status !== 200) return alert('something went wrong!');
         const res = await response.json();
         setComments(res);
     }
 
     async function getComment() {
-        const response = await fetch(`${APIURL}/comment/single/${comment}?user_id=${user.id}`)
+        const response = await fetch(`${APIURL}/comment/single/${comment}?user_id=${user.id}`, fetchOptions)
         if (response.status !== 200) return alert('something went wrong!');
         const res = await response.json();
         setCommentDetails(res);
@@ -116,6 +118,9 @@ const Post = () => {
     }, [comment, post])
 
     useEffect(() => {
+        socket.removeAllListeners('someone-liked');
+        socket.removeAllListeners('someone-commented');
+        socket.removeAllListeners('liked-comment');
         socket.on('someone-liked', ({ id, user_id, likes, type }: { id: string, user_id: string, likes: number, type: string }) => {
             setPost(
                 (prev) => prev.id === id ? ({
@@ -167,26 +172,58 @@ const Post = () => {
     return (
         <div className="post flex">
             <div className="left h-[100vh] flex-[3] relative top-[-60px] left-0">
+                {
+                    post.post_type === 'text' ?
+                        <div className='relative z-[0] bg-gradient-to-br font-bold text-white text-3xl w-full h-full flex items-center justify-center'>
+                            <div className={`absolute z-[0] top-0 left-0 w-full h-full bg-gradient-to-br ${from} ${via} ${to} opacity-60`}></div>
+                            <p className='relative flex items-center justify-center backdrop-blur-lg font-bold w-full max-w-[500px] min-h-[400px] rounded-lg p-[5%] overflow-hidden'>
+                                <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-tl ${from} ${via} ${to}`}></div>
+                                <span className='relative z-1 text-center'>{ post.post_desc }</span>
+                            </p>
+                        </div> :
+                        <div className="post-content relative z-[0] flex justify-center items-center">
+                            <div
+                                style={{ background: `url(${APIURL}/image/post_images /${post.files && post.files[index]})` }}
+                                className="content w-full h-[100vh]"
+                            >
+                                {
+                                    post.post_type === 'video' &&
+                                        <video className="absolute top-0 left-0 w-full h-full object-cover" src={`${APIURL}/video/post_videos/${post.files && post.files[index]}#t`}></video>
+                                }
+                                <div className="p-2 h-full w-full flex items-center overflow-scroll justify-center backdrop-blur-lg bg-black-900/50">
+                                    {
+                                        post.post_type === 'photo' ?
+                                            <img
+                                                src={`${APIURL}/image/post_images/${post.files && post.files[index]}`}
+                                                className="scale-[1] object-contain h-full max-w-[80%] block rounded-lg shadow-lg shadow-black-900/30" alt="post image"
+                                            /> :
+                                            <>
+                                                <video src={`${APIURL}/video/post_videos/${post.files && post.files[index]}`} className="relative z-1 h-full max-w-[80%] rounded-lg shadow-lg shadow-black-900/30 object-fit" controls={true} />
+                                            </>
+                                    }
+                                </div>
+                            </div>
+                        <button
+                            onClick={() => setIndex( prev => prev - 1 < 0 ? 0 : prev - 1)}
+                            className={`${index === 0 && 'opacity-60'} absolute top-[50%] translate-y-[-50%] py-[20px] px-[4px] rounded-[5px] left-[10px]`}
+                        >
+                            <KeyboardArrowLeft />
+                        </button>
+                        <button
+                            onClick={(() => setIndex( prev => prev + 1 > post?.files?.length - 1 ? post?.files?.length - 1 : prev + 1 ))}
+                            className={`${index === post?.files?.length - 1 && 'opacity-50'} absolute top-[50%] translate-y-[-50%] py-[20px] px-[4px] rounded-[5px] right-[10px]`}
+                        >
+                            <KeyboardArrowRight />
+                        </button>
+                    </div>
+                }
                 <button
                     onClick={() => navigate(-1)}
-                    className="close w-[40px] aspect-square rounded-full rotate-45 absolute top-[15px] left-[15px] text-xl flex items-center justify-center"
+                    className="close z-1 w-[40px] aspect-square rounded-full rotate-45 absolute top-[15px] left-[15px] text-xl flex items-center justify-center"
                 ><Add fontSize="large" /></button>
-                <div className="zoom flex items-center absolute top-[15px] right-[15px]">
+                <div className="zoom z-1 flex items-center absolute top-[15px] right-[15px]">
                     <IconButton className="flex items-center justify-center w-[40px] aspect-square rounded-full text-lg"><ZoomInOutlined fontSize="inherit" /></IconButton>
                     <IconButton className="flex items-center justify-center w-[40px] aspect-square rounded-full text-lg"><ZoomOutOutlined fontSize="inherit" /></IconButton>
-                </div>
-                <div className="post-content flex justify-center items-center">
-                    <button
-                        className="absolute top-[50%] translate-y-[-50%] py-[20px] px-[4px] rounded-[5px] left-[10px]"
-                    >
-                        <KeyboardArrowLeft />
-                    </button>
-                    <button
-                        className="absolute top-[50%] translate-y-[-50%] py-[20px] px-[4px] rounded-[5px] right-[10px]"
-                    >
-                        <KeyboardArrowRight />
-                    </button>
-                    <div className="content min-w-[50%] h-[100vh]"></div>
                 </div>
             </div>
             <div className="right overflow-y-scroll overflow-x-clip flex-1 flex flex-col h-full relative p-2">
@@ -203,7 +240,8 @@ const Post = () => {
                             <MoreHoriz />
                         </IconButton>
                     </div>
-                    <p className="post-desc p-2 rounded-md">{post.post_desc}</p>
+                    { post.post_type !== 'text' && <p className="post-desc p-2 rounded-md">{post.post_desc}</p> }
+                    
                     <div className="actions flex items-center gap-3">
                         <IconButton
                             onClick={() => likePost()}

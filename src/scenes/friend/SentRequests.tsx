@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react'
 import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext'
 import { friendContext } from '../../pages/friends';
+import { fetchOptions } from '../../assets/data/data';
 
 type FriendType = {
   id: string;
@@ -17,7 +18,7 @@ const SentRequests = () => {
   const [requests, setRequests] = useState<FriendType[]>([])
 
   const getSentRequests = async () => {
-    const response = await fetch(`${APIURL}/friend/requests/${user.id}?type=sent`)
+    const response = await fetch(`${APIURL}/friend/requests/${user.id}?type=sent`, fetchOptions)
     if(response.status !== 200) {
       alert('something went wrong');
       return;

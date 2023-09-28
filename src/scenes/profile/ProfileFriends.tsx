@@ -3,6 +3,7 @@ import { AuthContext } from '../../context/authContext'
 import { Link, useParams } from 'react-router-dom'
 import { APIURL } from '../../assets/data'
 import { ProfileContext } from '../../pages/profile'
+import { fetchOptions } from '../../assets/data/data'
 
 type UserType = {
   user_id: string;
@@ -20,7 +21,7 @@ const ProfileFriends = () => {
   const [friends, setFriends] = useState<UserType[]>([])
   
   async function fetchUserFriends() {
-    const response = await fetch(`${APIURL}/user/friends/${id}?other_user=${user.id}`)
+    const response = await fetch(`${APIURL}/user/friends/${id}?other_user=${user.id}`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong');
     const res = await response.json();
     setFriends(res);

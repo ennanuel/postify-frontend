@@ -3,6 +3,7 @@ import { FavoriteOutlined, KeyboardArrowDown, MessageOutlined, PhotoAlbum } from
 import { APIURL } from '../../assets/data';
 import { useParams } from 'react-router-dom';
 import { GroupContext } from '../../pages/group';
+import { fetchOptions } from '../../assets/data/data';
 
 type PostType = {
   id: string;
@@ -20,7 +21,7 @@ const GroupPhotos = () => {
   const [photos, setPhotos] = useState<PostType[]>([])
 
   const fetchVideos = async () => {
-    const response = await fetch(`${APIURL}/group/posts/${id}?type=photo`)
+    const response = await fetch(`${APIURL}/group/posts/${id}?type=photo`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong')
     const res = await response.json();
     setPhotos(res)

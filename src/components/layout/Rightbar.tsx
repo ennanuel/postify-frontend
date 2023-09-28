@@ -3,6 +3,7 @@ import { APIURL } from "../../assets/data"
 import { SearchOutlined, MoreHorizOutlined } from '@mui/icons-material';
 import { AuthContext } from '../../context/authContext';
 import { Link } from 'react-router-dom';
+import { fetchOptions } from '../../assets/data/data';
 
 type UserType = {
   id: string;
@@ -16,7 +17,7 @@ const Rightbar = () => {
 
   useEffect(() => {
     const fetchFriends = async () => {
-      const response = await fetch(`${APIURL}/friend/${user.id}`)
+      const response = await fetch(`${APIURL}/friend/${user.id}`, fetchOptions)
 
       if(response.status != 200) return alert('something went wrong')
 

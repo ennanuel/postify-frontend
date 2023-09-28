@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { leftNav } from "../../assets/data";
 import NavItem from "./LeftNavItem";
 import { AuthContext } from "../../context/authContext";
-import { profilePic } from "../../assets/images";
+import { profile_pic } from "../../assets/images";
 import { Logout } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 
@@ -13,7 +13,7 @@ const Leftbar = () => {
     <div className="leftbar flex-[2] flex flex-col sticky top-[60px] overflow-y-scroll">
       <div className="container flex-1 p-[10px]">
         <Link to={`/profile/${user.id}`} className="p-[10px] user flex items-center gap-[10px]">
-          <img src={ user.profilePic || profilePic } alt={ user.name } className="w-[30px] aspect-square rounded-full" />
+          <img src={ user.profile_pic || profile_pic } alt={ user.name } className="w-[30px] aspect-square rounded-full" />
           <span className="text-[16px]">{ user.name }</span>
         </Link>
         {

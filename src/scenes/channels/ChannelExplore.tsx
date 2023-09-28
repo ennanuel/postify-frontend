@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { Favorite, MessageOutlined } from '@mui/icons-material'
+import { Favorite, FavoriteBorder, MessageOutlined } from '@mui/icons-material'
 import { AuthContext } from '../../context/authContext'
 import { APIURL } from '../../assets/data'
+import { fetchOptions } from '../../assets/data/data'
 
 type ChannelType = {
   id: string;
@@ -15,7 +16,7 @@ type PostType = {
   post_desc: string;
   channel_name: string;
   channel_id: string;
-  thumbnail: string;
+  file: string;
   picture: string;
   post_likes: number;
   post_comments: number;
@@ -25,19 +26,19 @@ type PostType = {
 }
 
 const ChannelExplore = () => {
-  const { user, socket } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [channels, setChannels] = useState<ChannelType[]>([])
   const [feed, setFeed] = useState<PostType[]>([])
 
   async function getExploreChannels() {
-    const response = await fetch(`${APIURL}/channel/${user.id}?type=explore`)
+    const response = await fetch(`${APIURL}/channel/${user.id}?type=explore`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong!')
     const res = await response.json();
     setChannels(res);
   }
 
   async function getChannelsFeed() {
-    const response = await fetch(`${APIURL}/channel/feed/${user.id}?user_id=${user.id}&type=explore`)
+    const response = await fetch(`${APIURL}/channel/feed/${user.id}?user_id=${user.id}&type=explore`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong!');
     const res = await response.json();
     setFeed(res);
@@ -49,62 +50,65 @@ const ChannelExplore = () => {
   }, [])
 
   useEffect(() => { 
-    socket.on('post-event', ({ channel_id }) => {
-      if (channels.map(elem => elem.id).includes(channel_id)) alert('new channel post available');
-    })
+    // socket.on('', ({ channel_id }) => {
+    //   if (channels.map(elem => elem.id).includes(channel_id)) alert('new channel post available');
+    // })
   }, [channels])
 
   return (
-    <div className='p-6'>
-      <h2 className="font-bold text-xl">Top Channels</h2>
-      <ul className="mt-4 mb-6 gap-4 flex items-center">
-        {
-          channels.map(({ id, name, picture }) => (
-            <li key={id}>
-              <Link to={`/channels/info/${id}`} className="flex flex-col gap-2 items-center p-2">
-                <img src={picture} alt="" className="h-[80px] aspect-square rounded-full bg-white/5" />
-                <p className="text-sm font-bold">{ name }</p>
-              </Link>
-            </li>
-          ))
-          }
-      </ul>
-
-      <h2 className="font-bold text-xl">Videos</h2>
-      <div className="flex items-center gap-3 mt-2">
-        <button className="px-2 h-[30px] rounded-[5px] text-sm font-semibold bg-gray-300 border border-gray-300 text-black-800">
-          Popular
-        </button>
-        <button className="px-2 h-[30px] rounded-[5px] text-sm font-normal border border-gray-400 text-gray-400">
-          Recent
-        </button>
+    <div className='grid grid-cols-[1fr,300px]'>
+      <div className="p-4">
+        <h2 className="font-bold text-xl">Videos</h2>
+        <div className="flex items-center gap-3 mt-2">
+          <button className="px-2 h-[30px] rounded-[5px] text-sm font-semibold bg-gray-300 border border-gray-300 text-black-800">
+            Popular
+          </button>
+          <button className="px-2 h-[30px] rounded-[5px] text-sm font-normal border border-gray-400 text-gray-400">
+            Recent
+          </button>
+        </div>
+          <ul className="flex-[4] grid grid-cols-4 gap-4 mt-6">
+            {
+              feed.map(({ id, channel_name, file, picture, post_desc, post_likes, post_comments, liked }) => (
+                <li key={id} className="relative bg-white/10 rounded-lg h-[240px] overflow-clip">
+                  <video src={`${APIURL}/video/post_videos/${file}`} className="h-full w-full object-cover" />
+                  <div className="absolute bottom-0 left-0 p-2 w-full h-full flex flex-col justify-end gap-1 bg-gradient-to-b from-transparent to-black-900">
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="flex items-center justify-center gap-1">
+                        {post_likes}
+                        {liked ? <Favorite fontSize="inherit" /> : <FavoriteBorder fontSize="inherit" />}
+                      </span>
+                      <span className="flex items-center justify-center gap-1">
+                        {post_comments}
+                        <MessageOutlined fontSize='inherit' />
+                      </span>
+                    </div>
+                    <p className='text-xs w-full truncate'>{ post_desc }</p>
+                    <div className="flex items-center gap-2 w-full">
+                      <img src={`${APIURL}/image/profile_pics/${picture}`} className="w-[20px] aspect-square rounded-full bg-black/50" />
+                      <p className="text-xs w-full truncate">{ channel_name }</p>
+                    </div>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
       </div>
-      <ul className="mt-4 grid grid-cols-3 gap-4">
-        {
-          feed.map((post) => (
-            <li key={post.id} className="relative bg-white/10 rounded-lg">
-              <img src={post.thumbnail} alt="" className="h-[200px]" />
-              <div className="absolute bottom-0 left-0 p-2 w-full flex flex-col gap-1">
-                <p className='text-xs w-full truncate'>{ post.post_desc }</p>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="flex items-center justify-center gap-1">
-                    5
-                    <Favorite fontSize="inherit" />
-                  </span>
-                  <span className="flex items-center justify-center gap-1">
-                    5
-                    <MessageOutlined fontSize='inherit' />
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <img src={ post.picture } alt="" className="h-[20px] aspect-square rounded-full bg-black/50" />
-                  <p className="text-xs">{ post.channel_name }</p>
-                </div>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
+      <div className="p-2 px-4 rounded-md mt-4 mr-4 bg-white/5">
+        <h2 className="font-bold text-lg">Top Channels</h2>
+        <ul className="mt-4 mb-6 gap-4 flex items-center">
+          {
+            channels.map(({ id, name, picture }) => (
+              <li key={id}>
+                <Link to={`/channels/info/${id}`} className="flex flex-col gap-2 items-center p-2">
+                  <img src={picture} alt="" className="h-[80px] aspect-square rounded-full bg-white/5" />
+                  <p className="text-sm font-bold">{ name }</p>
+                </Link>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </div>
   )
 }

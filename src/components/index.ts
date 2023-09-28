@@ -7,5 +7,5 @@ export {
     Layout, 
     Stories, 
     Posts, 
-    Share, 
+    Share,
 };

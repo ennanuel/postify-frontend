@@ -8,16 +8,18 @@ import GroupsDiscover from "./GroupsDiscover";
 import GroupsPost from "./GroupsPost";
 import GroupVideos from "./GroupVideos";
 import GroupInvites from "./GroupInvites";
+import EditGroup from "./EditGroup";
 
 export {
     GroupsList,
     Group,
     CreateGroup,
+    EditGroup,
     GroupMembers,
     GroupPhotos,
     GroupsDiscover,
     GroupsPost,
     GroupVideos,
     GroupInvites,
-    GroupInvitedMembers,
+    GroupInvitedMembers
 }

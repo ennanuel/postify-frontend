@@ -4,6 +4,7 @@ import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { groupContext } from '.';
+import { fetchOptions } from '../../assets/data/data';
 
 type GroupType = {
   id: string;
@@ -18,7 +19,7 @@ const Leftbar = () => {
   const [joinedGroups, setJoinedGroups] = useState<GroupType[]>([]);
 
   const fetchJoinedGroups = async () => {
-    const response = await fetch(`${APIURL}/group/${user.id}?type=joined`)
+    const response = await fetch(`${APIURL}/group/${user.id}?type=joined`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong');
     const res = await response.json()
     setJoinedGroups(res)

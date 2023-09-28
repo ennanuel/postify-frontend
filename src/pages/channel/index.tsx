@@ -21,7 +21,7 @@ const Channels = () => {
 
     return (
         <ChannelContext.Provider value={{ refresh }}>
-            <div className="channels flex min-h-[100vh]">
+            <div className="channels grid grid-cols-[300px,1fr] min-h-[100vh]">
                 <Leftbar />
                 <div className="flex-[6]">
                     <Outlet />

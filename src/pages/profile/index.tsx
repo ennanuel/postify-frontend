@@ -4,6 +4,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import { APIURL } from '../../assets/data';
 import { AuthContext } from '../../context/authContext';
 import './profile.scss';
+import { fetchOptions } from '../../assets/data/data';
 
 type ProfileType = {
   id: string;
@@ -15,6 +16,7 @@ type ProfileType = {
   mutual_pics: string[];
   mutual_friends: number;
   is_user: boolean;
+  is_friend: boolean;
 }
 
 export const ProfileContext = createContext<ProfileType>({} as ProfileType)
@@ -25,7 +27,7 @@ const Profile = () => {
   const [profile, setProfile] = useState({} as ProfileType);
   
   async function getUserProfile() {
-    const response = await fetch(`${APIURL}/user/${id}?other_user=${user.id}`)
+    const response = await fetch(`${APIURL}/user/${id}?other_user=${user.id}`, fetchOptions)
     if (response.status !== 200) return alert('something went wrong');
     const res = await response.json();
     setProfile(res);
@@ -36,6 +38,9 @@ const Profile = () => {
   }, [id])
 
   useEffect(() => { 
+    socket.removeAllListeners('friend-event');
+    socket.removeAllListeners('post-event');
+    
     socket.on('friend-event', ({ users } : { users: string[] }) => {
       if (users.includes(user.id)) {
         getIds('friend')

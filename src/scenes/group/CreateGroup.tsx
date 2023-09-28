@@ -2,12 +2,15 @@ import { Add, EditOutlined } from '@mui/icons-material'
 import { useState, useEffect, useContext } from 'react'
 import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext';
+import { fetchOptions } from '../../assets/data/data';
 
 type FormValTypes = {
   name: string;
-  desc: string;
+  group_desc: string;
   tags: string[];
   invites: string[];
+  profile_pic: File|undefined;
+  cover: File|undefined;
 }
 
 type UserType = {
@@ -20,12 +23,13 @@ const CreateGroup = () => {
   const { user } = useContext(AuthContext)
 
   const [tag, setTag] = useState('')
-  const [{ name, desc, tags, invites }, setValues] = useState<FormValTypes>({ name: '', desc: '', tags: [], invites: [] })
+  const [{ group_profile, group_cover }, setImages] = useState({ group_profile: '', group_cover: '' })
+  const [{ name, group_desc, tags, invites, profile_pic, cover }, setValues] = useState<FormValTypes>({ name: '', group_desc: '', tags: [], invites: [], profile_pic: undefined, cover: undefined })
   const [friends, setFriends] = useState<UserType[]>([])
   
   useEffect(() => {
     const fetchFriends = async () => {
-      const response = await fetch(`${APIURL}/friend/${user.id}`)
+      const response = await fetch(`${APIURL}/friend/${user.id}`, fetchOptions)
   
       if(response.status != 200) return alert('something went wrong')
   
@@ -38,6 +42,17 @@ const CreateGroup = () => {
 
   const handleChange : React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setValues( prev => ({...prev, [e.target.name]: e.target.value }))
+  }
+
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (!e.target.files) return;
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setImages( prev => ({ ...prev, [e.target.id]: reader.result}) )
+    }
+    setValues( prev => ({ ...prev, [e.target.name]: file }) )
   }
 
   const handleInvites = (user_id: string, exists : boolean) => {
@@ -61,22 +76,24 @@ const CreateGroup = () => {
 
   const handleSubmit : React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault()
-    const requestBody = { user_id: user.id, group_name: name, group_desc: desc, tags, invites };
+    const requestBody = { user_id: user.id, name, group_desc, profile_pic, cover };
+    const formData = new FormData();
+    const headers = new Headers();
 
     for(let [key, value] of Object.entries(requestBody)) {
-      if(value.length < 1 && key !== 'invites' && key !== 'tags') return alert(`'${key.toUpperCase()}' field cannot be empty`)
-    }
-
-    const fetchOptions = {
-      method: "POST",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
+      if (!value || value?.length < 1 && key !== 'website') {
+        return alert(`'${key.toUpperCase()}' field cannot be empty`)
+      } else {
+        formData.append(key, value);
       }
     }
+    tags.forEach( tag => formData.append('tags[]', tag) )
+    invites.forEach( user => formData.append('invites[]', user) )
+    headers.append('Access-Control-Allow-Origin', APIURL)
+        
+    const options = { ...fetchOptions, method: "POST", body: formData, headers }
 
-    const response = await fetch(`${APIURL}/group/create`, fetchOptions);
-    if(response.status !== 200) return alert('something went wrong')
+    const response = await fetch(`${APIURL}/group/create`, options);
     const res = await response.json()
     return alert(res.message)
   }
@@ -84,16 +101,18 @@ const CreateGroup = () => {
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="relative w-full h-[50vh]">
-        <div className="absolute bottom-5 left-5">
-          <img className="h-[120px] aspect-square rounded-full bg-white/5" src="" alt="" />
-          <button type="button" className="absolute top-1 right-1 flex items-center justify-center h-[30px] aspect-square rounded-full bg-[#3f7fff] shadow-lg">
+        <label htmlFor="group_profile" className="block absolute bottom-5 left-5 cursor-pointer">
+          <img className="h-[120px] aspect-square rounded-full bg-white/5 shadow-lg shadow-black-900/50" src={group_profile} alt="" />
+          <span className="absolute top-1 right-1 flex items-center justify-center h-[30px] aspect-square rounded-full bg-[#3f7fff] shadow-lg shadow-black-900/50">
             <EditOutlined sx={{ fontSize: '1.2rem' }} />
-          </button>
-        </div>
-        <img className="h-[50vh] w-full rounded-lg" src="" alt="" />
-        <button type="button" className="absolute bottom-5 right-5 flex items-center justify-center h-[50px] aspect-square rounded-full bg-[#3f7fff] shadow-lg">
-          <EditOutlined />
-        </button>
+          </span>
+        </label>
+        <label htmlFor="group_cover" className="block h-[50vh] w-full rounded-lg">
+          <img className="h-full w-full rounded-lg" src={group_cover} alt="" />
+          <span className="absolute bottom-5 right-5 flex items-center justify-center h-[50px] aspect-square rounded-full bg-[#3f7fff] shadow shadow-black-900/60">
+            <EditOutlined />
+          </span>
+        </label>
       </div>
       <div className="flex flex-col gap-4 p-5">
         <div className="flex items-center justify-between gap-4">
@@ -115,12 +134,14 @@ const CreateGroup = () => {
             />
             <input 
               className="w-full p-2 border rounded-lg" 
-              value={desc}
+              value={group_desc}
               onChange={handleChange}
-              name="desc"
+              name="group_desc"
               type="text" 
               placeholder="About Group" 
             />
+            <input type="file" name="profile_pic" id="group_profile" onChange={handleFileChange} className="hidden" accept="image/jpg,image/jpeg,image/png" />
+            <input type="file" name="cover" id="group_cover" onChange={handleFileChange} className="hidden" accept="image/jpg,image/jpeg,image/png" />
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-4">
                 <input 
@@ -135,7 +156,7 @@ const CreateGroup = () => {
               <div className="flex items-center gap-2">
                 {
                   tags.map( (item, i) => (
-                    <button type="button" key={i} onClick={() => removeTag(item)} className="h-[30px] rounded-[15px] text-sm flex justify-center items-center gap-1 bg-white text-black-900 pl-2 pr-1">
+                    <button type="button" key={i} onClick={() => removeTag(item)} className="h-[30px] rounded-[15px] text-sm flex justify-center items-center bg-white text-black-900 pl-3 pr-1">
                       <span>{item}</span>
                       <span className="rotate-45 flex items-center justify-center"><Add /></span>
                     </button>

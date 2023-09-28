@@ -4,6 +4,7 @@ import { Search, TvRounded, Explore, VideoLibrary, Add, Settings, KeyboardArrowR
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { ChannelContext } from '.';
+import { fetchOptions } from '../../assets/data/data';
 
 type ChannelType = {
     id: string;
@@ -17,7 +18,7 @@ const Leftbar = () => {
     const [following, setFollowing] = useState<ChannelType[]>([])
 
     async function getFollowingChannels() { 
-        const response = await fetch(`${APIURL}/channel/${user.id}?type=following`)
+        const response = await fetch(`${APIURL}/channel/${user.id}?type=following`, fetchOptions)
         if (response.status !== 200) return alert('something went wrong!');
         const res = await response.json();
         setFollowing(res);

@@ -2,6 +2,7 @@ import { MoreHoriz } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { APIURL } from '../../assets/data';
+import { fetchOptions } from '../../assets/data/data';
 
 type FriendType = {
   id: string;
@@ -21,7 +22,7 @@ const CustomListSingle = () => {
   const { id } = useParams()
 
   const getCustomGroupInfo = async () => {
-      const response = await fetch(`${APIURL}/friend/group/${id}`)
+      const response = await fetch(`${APIURL}/friend/group/${id}`, fetchOptions)
 
       if(response.status !== 200) return alert('something went wrong')
 
@@ -30,7 +31,7 @@ const CustomListSingle = () => {
   }
 
   const getCustomGoupFriends = async () => {
-      const response = await fetch(`${APIURL}/friend/group/friends/${id}`)
+      const response = await fetch(`${APIURL}/friend/group/friends/${id}`, fetchOptions)
 
       if(response.status !== 200) return alert('something went wrong')
 

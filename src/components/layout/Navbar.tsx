@@ -1,22 +1,14 @@
-import { useContext } from 'react';
 import { 
   Home,
-  DarkModeOutlined, 
-  WbSunnyOutlined, 
-  Notifications,
-  Message,
-  GridViewRounded,
   SearchOutlined,
   VideoLibraryOutlined,
   GroupsOutlined,
   PeopleOutlineRounded,
 } from '@mui/icons-material'
 import { Link, NavLink } from 'react-router-dom';
-import { AuthContext } from '../../context/authContext';
+import Menus from './menus';
 
 const Navbar = () => {
-  const { user } = useContext(AuthContext)
-
   return (
     <div className="navbar grid grid-cols-3 items-center p-[10px] h-[60px] sticky top-0">
       <div className="left w-full flex items-center gap-[15px]">
@@ -40,7 +32,7 @@ const Navbar = () => {
           </NavLink>
         </li>
         <li className="flex-1 relative flex items-center justify-center">
-          <NavLink to="/shorts" className={({ isActive }) => `flex items-center justify-center nav-link ${isActive && 'active-nav-link'}`}>
+          <NavLink to="/channels/feed" className={({ isActive }) => `flex items-center justify-center nav-link ${isActive && 'active-nav-link'}`}>
             <VideoLibraryOutlined />
           </NavLink>
         </li>
@@ -50,22 +42,7 @@ const Navbar = () => {
           </NavLink>
         </li>
       </ul>
-      <ul className="right flex-[2] flex items-center justify-end gap-[10px]">
-        <li className="w-[40px] flex items-center justify-center aspect-square rounded-full">
-          <button className="flex items-center justify-center">
-            <GridViewRounded />
-          </button>
-        </li>
-        <li className="w-[40px] flex items-center justify-center aspect-square rounded-full">
-          <Message />
-        </li>
-        <li className="w-[40px] flex items-center justify-center aspect-square rounded-full">
-          <Notifications />
-        </li>
-        <li className="w-[40px] flex items-center justify-center aspect-square rounded-full">
-          <img src={user.profilePic} alt={ user.name } className="h-full w-full rounded-full" />
-        </li>
-      </ul>
+      <Menus />
     </div>
   )
 }

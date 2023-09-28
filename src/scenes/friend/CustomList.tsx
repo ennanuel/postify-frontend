@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { Link } from 'react-router-dom';
+import { fetchOptions } from '../../assets/data/data';
 
 type CustomGroupType = {
     id: string;
@@ -17,7 +18,7 @@ const CustomList = () => {
     const [customGroups, setCustomGroups] = useState<CustomGroupType[]>([]);
 
     const getCustomGoups = async () => {
-        const response = await fetch(`${APIURL}/friend/groups/${user.id}`)
+        const response = await fetch(`${APIURL}/friend/groups/${user.id}`, fetchOptions)
 
         if(response.status !== 200) return alert('something went wrong')
 
