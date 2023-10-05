@@ -22,9 +22,9 @@ const Friends = () => {
 
     return (
         <friendContext.Provider value={{ refresh }}>
-            <div className='friends-page'>
+            <div className='friends-page grid grid-cols-1 lg:grid-cols-[300px,1fr]'>
                 <Leftbar />
-                <div className="right flex-[3] p-[20px] pt-[10px]">
+                <div className="right flex-[3] p-[20px] pt-[10px] min-h-[100vh]">
                     <Outlet />
                 </div>
             </div>

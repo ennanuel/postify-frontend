@@ -13,6 +13,7 @@ type UserType = {
 type ContextArgTypes = { 
     user: UserType;
     login: () => void;
+    logout: () => void;
     friend: string[];
     group: string[];
     getIds: (type: string) => void;
@@ -24,6 +25,7 @@ const socket = io('http://localhost:4000')
 export const AuthContext = createContext<ContextArgTypes>({
     user: { name: "", profile_pic: "", id: ""  }, 
     login: () => null,
+    logout: () => null,
     friend: [],
     group: [],
     getIds: async () => null,
@@ -32,13 +34,13 @@ export const AuthContext = createContext<ContextArgTypes>({
 
 export function AuthContextProvider({ children }: { children: JSX.Element }) {
     const [user, setUser] = useState<UserType>({} as UserType);
+    const navigate = useNavigate()
     const [{ friend, group }, setIds] = useState<{ friend: string[];  group: string[] }>({ friend: [], group: [] })
 
     async function login() {
         const response = await fetch(`${APIURL}/auth`, fetchOptions)
-        if (response.status !== 200) return alert('something went wrong');
-        const { profile_pic, name, id } = await response.json()
-
+        const { profile_pic, name, id, message } = await response.json()
+        if (response.status !== 200) return alert(message);
         if (!id) return;
         setUser({ id, name, profile_pic: `${APIURL}/image/profile_pics/${profile_pic}` })
     }
@@ -49,6 +51,11 @@ export function AuthContextProvider({ children }: { children: JSX.Element }) {
         if (response.status !== 200) alert('something went wrong');
         const res : { results: string[] } = await response.json();
         setIds( prev => ({ ...prev, [type]: res?.results || [] }) );
+    }
+
+    function logout() {
+        setUser({} as UserType);
+        navigate('/')
     }
 
     useEffect(() => {
@@ -63,7 +70,7 @@ export function AuthContextProvider({ children }: { children: JSX.Element }) {
     }, [])
     
     return (
-        <AuthContext.Provider value={{ user, login, socket, friend, group, getIds }}>
+        <AuthContext.Provider value={{ user, login, logout, socket, friend, group, getIds }}>
             {children}
         </AuthContext.Provider>
     )

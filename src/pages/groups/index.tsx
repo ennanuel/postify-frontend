@@ -19,9 +19,9 @@ const Groups = () => {
 
   return (
     <groupContext.Provider value={{ refresh }}>
-      <div className='groups flex items-start justify-between'>
+      <div className='groups min-h-[calc(100vh-60px)] grid grid-cols-1 grid-rows-[auto,1fr] lg:grid-rows-1 lg:grid-cols-[300px,1fr]'>
         <Leftbar />
-        <div className="right">
+        <div className="right mt-4">
           <Outlet />
         </div>
       </div>

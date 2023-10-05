@@ -95,25 +95,29 @@ const EditGroup = () => {
 
     return (
         <form onSubmit={handleSubmit} className="w-full">
-        <div className="relative w-full h-[50vh]">
+        <div className="relative w-full h-[150px] lg:h-[300px]">
             <label htmlFor="group_profile" className="block absolute bottom-5 left-5 cursor-pointer">
             <img className="h-[120px] aspect-square rounded-full bg-white/5 shadow-lg shadow-black-900/50" src={group_profile} alt="" />
             <span className="absolute top-1 right-1 flex items-center justify-center h-[30px] aspect-square rounded-full bg-[#3f7fff] shadow-lg shadow-black-900/50">
                 <EditOutlined sx={{ fontSize: '1.2rem' }} />
             </span>
             </label>
-            <label htmlFor="group_cover" className="block h-[50vh] w-full rounded-lg">
-            <img className="h-full w-full rounded-lg" src={group_cover} alt="" />
+            <label htmlFor="group_cover" className="block h-full w-full">
+            <img className="h-full w-full rounded-b-lg" src={group_cover} alt="" />
             <span className="absolute bottom-5 right-5 flex items-center justify-center h-[50px] aspect-square rounded-full bg-[#3f7fff] shadow shadow-black-900/60">
                 <EditOutlined />
             </span>
             </label>
         </div>
-            <div className="flex flex-col gap-4 p-5">
-                <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-4 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                     <h2 className="text-3xl font-bold truncate max-w-full">Edit Group</h2>
                     <div className="flex items-center gap-2">
-                        <button className="pl-2 pr-4 h-[40px] rounded-[20px] flex items-center justify-center bg-[#2c2c2c] text-gray-200 font-semibold">
+                        <button
+                            type="button"
+                            onClick={() => navigate(-1)}
+                            className="pl-2 pr-4 h-[40px] rounded-[20px] flex items-center justify-center bg-[#2c2c2c] text-gray-200 font-semibold"
+                        >
                             <span className="flex items-center justify-center rotate-45"><Add /></span>
                             <span>Cancel</span>
                         </button>
@@ -123,7 +127,7 @@ const EditGroup = () => {
                         </button>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-2">
                     <input 
                         className="w-full px-4 border border-white/20 bg-white/5 rounded-[20px] h-[40px]" 
                         value={name} 

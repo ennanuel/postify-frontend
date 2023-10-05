@@ -18,6 +18,7 @@ type PostType = {
   liked_post: boolean;
   last_updated: string;
   date_posted: string;
+  is_yours: boolean;
   group_name?: string;
   group_id?: string;
 }
@@ -47,7 +48,7 @@ const Posts = ({ posts = [] }: { posts?: PostType[] }) => {
   }, [])
 
   return (
-    <div className='posts flex flex-col gap-[50px]'>
+    <div className='posts flex flex-col gap-4 md:gap-[50px]'>
       {
         dynamicPosts.map( (post) => (
           <Post key={post.id} {...post} />

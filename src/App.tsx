@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components'
 import { Home, Register, Login, Profile, Post, Friends, Groups, Group, Story, Shorts, Message, Channels, Settings } from './pages';
 import { ProfilePosts, ProfilePhotos, ProfileVideos, ProfileFriends, EditProfile } from "./scenes/profile"
-import { FriendsList, FriendRequests, FriendSuggestions, Friends as RealFriends, CustomList, SentRequests, CustomListSingle } from './scenes/friend';
+import { FriendsList, FriendRequests, FriendSuggestions, Friends as RealFriends, CustomList, SentRequests, CustomListSingle, CreateCustomList, EditCustomList } from './scenes/friend';
 import { AuthContext } from './context/authContext';
 import { GroupsList, Group as GroupInfo, GroupsPost, CreateGroup, EditGroup, GroupsDiscover, GroupMembers, GroupPhotos, GroupVideos, GroupInvites, GroupInvitedMembers } from './scenes/group';
 import { ChannelFeed, ChannelExplore, ChannelDetails, ChannelsAll, CreateChannel, EditChannel } from './scenes/channels/';
@@ -45,7 +45,9 @@ function App() {
               <Route path="suggestions" element={<FriendSuggestions />} />
               <Route path="list" element={<RealFriends />} />
               <Route path="custom" element={<CustomList />} />
-              <Route path="custom/:id" element={<CustomListSingle />} />
+                <Route path="custom/:id" element={<CustomListSingle />} />
+                <Route path="custom/create/" element={<CreateCustomList />} />
+                <Route path="custom/edit/:id" element={<EditCustomList />} />
             </Route>
             <Route path="/groups" element={<Groups />}>
               <Route path="posts" element={<GroupsPost />} />

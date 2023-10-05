@@ -91,22 +91,29 @@ const Share = () => {
   }
 
   return (
-    <div className="share rounded-[20px] mb-8">
-      <form onSubmit={handleSubmit} ref={formRef} className="relative container p-[10px] flex flex-col gap-2">
-        <div className="top flex items-center gap-[10px]">
+    <div className="share rounded-[20px] mt-4 lg:mt-0 lg:mb-8">
+      <form onSubmit={handleSubmit} ref={formRef} className="relative container px-4 lg:p-[10px] flex flex-col gap-2">
+        <div className="top flex items-center gap-3 lg:gap-[10px]">
           <img 
             className="rounded-full h-[40px] aspect-square"
             src={user.profile_pic || profile_pic}
             alt=""
           />
           <input 
-            className="w-full border-none outline-none p-[20px] bg-transparent rounded-[30px]"
+            className="w-full border-none outline-none p-2 lg:p-[20px] bg-transparent rounded-[30px]"
             value={post_desc}
             onChange={handleChange}
             name="post_desc"
             type="text" 
             placeholder={`What's on your mind ${user.name}?`} 
           />
+          <label htmlFor="files" className="lg:hidden flex items-center justify-center">
+            <PermMediaOutlined />
+          </label>
+          {
+            window.innerWidth < 1024 &&
+            <input id="files" type="file" onChange={handleFileChange} className='hidden' accept={`${post_type !== 'photo' && 'video/mp4'} ${post_type !== 'video' && 'image/png,image/jpg,image.jpeg'}`} />
+          }
           {
             post_type !== 'video' &&
             <input onChange={handleFileChange} className="hidden" type="file" id="file_photo" name="file" accept='images/png,image/jpg,image/jpeg' />
@@ -187,8 +194,8 @@ const Share = () => {
             </ul>
           }
         </div>
-        <hr className="border-none h-[.5px]" />
-        <div className="bottom flex items-center justify-between">
+        <hr className="hidden lg:block border-none h-[.5px]" />
+        <div className="bottom hidden lg:flex items-center justify-between">
           <div className="left flex items-center gap-[5px]">
             {
               post_type !== 'video' &&

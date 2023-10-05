@@ -36,7 +36,7 @@ const Menus = () => {
     };
 
     return (
-        <div className="menus right flex-[2] flex items-center justify-end gap-2">
+        <div className="menus right flex-[2] hidden lg:flex items-center justify-end gap-2">
             <div className="flex items-center justify-end gap-4">
                 <button
                     onClick={() => changeMenu('shortcut')}

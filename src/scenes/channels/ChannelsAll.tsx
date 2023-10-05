@@ -4,6 +4,7 @@ import { APIURL } from "../../assets/data";
 import { AuthContext } from '../../context/authContext';
 import { ChannelContext } from '../../pages/channel';
 import { fetchOptions } from '../../assets/data/data';
+import { ChannelCard } from '../../components/cards';
 
 type ChannelType = {
   id: string;
@@ -49,29 +50,23 @@ const ChannelsAll = () => {
   }, [refresh])
   
   return (
-    <div className='p-6'>
+    <div className='p-4 lg:p-6'>
       <h2 className="font-bold text-xl">Following</h2>
-      <ul className="mt-4 mb-6 gap-4 grid grid-cols-6">
+      <ul className="mt-4 mb-6 gap-4 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {
           following.map(({id, picture, name}) => (
             <li key={id}>
-              <Link to={`/channels/info/${id}`} className="w-full flex flex-col gap-2 items-center p-2">
-                <img src={`${APIURL}/image/profile_pics/${picture}`} alt="" className="w-full spect-square rounded-full bg-white/5" />
-                <p className="w-full text-sm font-bold truncate">{ name }</p>
-              </Link>
+              <ChannelCard id={id} picture={picture} name={name} />
             </li>
           ))
         }
       </ul>
       <h2 className="font-bold text-xl mt-10">Created Channels</h2>
-      <ul className="mt-4 mb-6 gap-4 grid grid-cols-6">
+      <ul className="mt-4 mb-6 gap-4 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {
           created.map(({ id, picture, name }) => (
             <li key={id}>
-              <Link to={`/channels/info/${id}`} className="w-full flex flex-col gap-2 items-center p-2">
-                <img src={`${APIURL}/image/profile_pics/${picture}`} alt="" className="w-full aspect-square rounded-full bg-white/5" />
-                <p className="w-full text-sm font-bold truncate">{ name }</p>
-              </Link>
+              <ChannelCard id={id} picture={picture} name={name} />
             </li>
           ))
         }

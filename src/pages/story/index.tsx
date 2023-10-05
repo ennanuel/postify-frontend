@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useMemo, useRef } from 'react';
-import { AddRounded, MoreHoriz, VolumeOff, SendOutlined, FavoriteBorderOutlined, ChevronLeft, ChevronRight, RemoveRedEyeRounded, } from '@mui/icons-material'
+import { AddRounded, MoreHoriz, VolumeOff, SendOutlined, FavoriteBorderOutlined, ChevronLeft, ChevronRight, RemoveRedEyeRounded, KeyboardArrowLeft, } from '@mui/icons-material'
 import './story.scss'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { APIURL } from '../../assets/data';
@@ -164,8 +164,8 @@ const Story = () => {
   }
 
   return (
-    <div className="stories-page p-[10px] absolute top-0 left-0 w-[100vw] h-[100vh] z-[99999] overflow-clip">
-      <div className="top px-[20px] py-[10px] w-full absolute top-0 left-0 flex items-center justify-between gap-[20px]">
+    <div className="stories-page lg:p-4 absolute top-0 left-0 w-[100vw] h-[100vh] z-[99999] overflow-clip">
+      <div className="top px-[20px] py-[10px] w-full absolute top-0 left-0 hidden md:flex items-center justify-between gap-[20px]">
         <h3 className="logo text-xl font-bold">postify</h3>
         <Link to="/" className="flex items-center justify-center rotate-45 rounded-full aspect-square h-[40px]">
           <AddRounded />
@@ -176,7 +176,7 @@ const Story = () => {
           prevStories.map(({ user_id, username, profile_pic, posted, file }) => (
             <li
               key={user_id}
-              className="story h-[250px] w-[150px] rounded-[10px] p-[10px] flex flex-col items-center justify-center gap-[10px]"
+              className="story h-[250px] w-[150px] rounded-[10px] p-[10px] hidden md:flex flex-col items-center justify-center gap-[10px]"
             >
               <div className="user-profile p-[3px] rounded-full w-[80px] aspect-square">
                 <img className='w-full h-full rounded-full' src={profile_pic} alt="" />
@@ -186,7 +186,7 @@ const Story = () => {
             </li>
           ))
         }
-        <li className="main-story group relative w-[360px] h-full rounded-lg border border-white/5 overflow-clip">
+        <li className="main-story group relative w-[360px] h-full md:max-h-[720px] lg:max-h-[1240px] md:rounded-lg md:border border-white/5 overflow-clip">
           {
             story.story_type === 'text' ?
               <p className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${from} ${via} ${to}`}>
@@ -212,8 +212,8 @@ const Story = () => {
                   />
                 </div>
           }
-          <button onClick={prev} className="absolute top-[50%] left-2 translate-y-[-50%] flex items-center justify-center h-[70px] px-2 rounded-md bg-black-900/30 text-white shadow-md backdrop-blur-lg shadow-black-900/50 transition-opacity opacity-0 group-hover:opacity-100"><ChevronLeft /></button>
-          <button onClick={next} className="absolute top-[50%] right-2 translate-y-[-50%] flex items-center justify-center h-[70px] px-2 rounded-md bg-black-900/30 text-white shadow-md backdrop-blur-lg shadow-black-900/50 transition-opacity opacity-0 group-hover:opacity-100"><ChevronRight /></button>
+          <button onClick={prev} className="absolute top-[50%] left-0 lg:left-2 translate-y-[-50%] flex items-center justify-center h-full lg:h-[70px] w-[40%] lg:w-auto px-2 rounded-md bg-black-900/30 text-white shadow-md backdrop-blur-lg shadow-black-900/50 transition-opacity opacity-0 group-hover:lg:opacity-100"><ChevronLeft /></button>
+          <button onClick={next} className="absolute top-[50%] right-0 lg:right-2 translate-y-[-50%] flex items-center justify-center h-full lg:h-[70px] w-[40%] lg:w-auto px-2 rounded-md bg-black-900/30 text-white shadow-md backdrop-blur-lg shadow-black-900/50 transition-opacity opacity-0 group-hover:lg:opacity-100"><ChevronRight /></button>
           <div className="w-full min-w-full absolute top-0 left-0 flex flex-col p-4 bg-gradient-to-b from-black-900/80 to-transparent transition-opacity">
             <div className="durations h-[4px] flex gap-[8px]">
               {
@@ -231,6 +231,7 @@ const Story = () => {
               }
             </div>
             <div className="details-action flex items-center gap-[4px] mt-[10px]">
+              <Link to="/" className="lg:hidden flex items-center justify-center w-2 mr-2"><KeyboardArrowLeft /></Link>
               <img className="w-[35px] aspect-square rounded-full object-cover" src={`${APIURL}/image/profile_pics/${activeStory.profile_pic}`} alt="" />
               <div className="flex-1 ml-[5px] flex flex-col">
                 <p className='mb-[-2px] font-bold'>{activeStory?.username}</p>
@@ -244,7 +245,7 @@ const Story = () => {
           </div>
           {
             story.is_yours ?
-              <div className='text-white px-4 py-2 w-full absolute bottom-0 left-0 flex flex-col gap-1 backdrop-blur-sm bg-gradient-to-t from-black-900/80 to-transparent transition-opacity group-hover:opacity-0'>
+              <div className='text-white px-4 py-2 w-full absolute bottom-0 left-0 flex flex-col gap-1 backdrop-blur-sm bg-gradient-to-t from-black-900/80 to-transparent transition-opacity group-hover:lg:opacity-0'>
                 {story.story_type !== 'text' && <p>{story.story_desc}</p>}
                 <div className="flex items-center justify-between gap-2">
                   <button className="flex items-center justify-center gap-1">
@@ -265,7 +266,7 @@ const Story = () => {
           nextStories.map(({ user_id, username, profile_pic, posted, file }) => (
             <li
               key={user_id}
-              className="story h-[250px] w-[150px] rounded-[10px] p-[10px] flex flex-col items-center justify-center gap-[10px]"
+              className="story h-[250px] w-[150px] rounded-[10px] p-[10px] hidden md:flex flex-col items-center justify-center gap-[10px]"
             >
               <div className="user-profile p-[3px] rounded-full w-[80px] aspect-square">
                 <img className='w-full h-full rounded-full' src={profile_pic} alt="" />

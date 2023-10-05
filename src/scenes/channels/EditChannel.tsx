@@ -114,25 +114,27 @@ const EditChannel = () => {
                 <input id="channel_profile_pic" name="profile_pic" onChange={handleFileChange} accept="image/jpg,image/jpeg,image/png" type="file" className="hidden" />
                 <input id="channel_cover" name="cover" onChange={handleFileChange} accept="image/jpg,image/jpeg,image/png" type="file" className="hidden" />
             </div>
-            <div className="flex gap-4 p-6 items-center">
+            <div className="flex flex-col lg:flex-row gap-4 p-6 lg:items-center">
                 <h2 className="text-2xl font-bold flex-1">Edit Channel</h2>
-                <Link to={`channels/info/${id}`} className="h-[34px] rounded-[17px] bg-white text-black-900 font-bold pr-3 pl-1 flex items-center justify-center">
-                    <span className="flex items-center justify-center rotate-45"><Add /></span>
-                    <span>Cancel</span>
-                </Link>
-                <button className="h-[34px] rounded-[17px] bg-white/10 text-white font-bold pr-3 pl-1 flex items-center justify-center">
-                    <CheckRounded />
-                    <span>Save</span>
-                </button>
+                <div className="flex gap-4">
+                    <Link to={`channels/info/${id}`} className="h-[34px] rounded-[17px] bg-white text-black-900 font-bold pr-3 pl-1 flex items-center justify-center">
+                        <span className="flex items-center justify-center rotate-45"><Add /></span>
+                        <span>Cancel</span>
+                    </Link>
+                    <button className="h-[34px] rounded-[17px] bg-white/10 text-white font-bold pr-3 pl-1 flex items-center justify-center">
+                        <CheckRounded />
+                        <span>Save</span>
+                    </button>
+                </div>
             </div>
-            <form onSubmit={handleSubmit} className="grid grid-cols-2">
-                <div className="flex flex-col gap-4 px-3">
-                    <input onChange={handleChange} value={name} name="name" className="h-[46px] rounded-md px-3 bg-white/5" type="text" placeholder="Channel name" />
-                    <input onChange={handleChange} value={website} name="website" className="h-[46px] rounded-md px-3 bg-white/5" type="text" placeholder="Website" />
-                    <div className="flex items-center gap-2">
-                        <input value={tagName} name="tagName" onChange={(e) => setTagName(e.target.value)} className="h-[46px] rounded-md px-3 bg-white/5 flex-1" type="text" placeholder="Add Tag" />
-                        <button type="button" onClick={addTag} className="flex items-center justify-center bg-white text-black-900 w-[40px] aspect-square rounded-full"><Add /></button>
-                    </div>
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 p-4 gap-4">
+                <input onChange={handleChange} value={name} name="name" className="h-[46px] rounded-md px-3 bg-white/5" type="text" placeholder="Channel name" />
+                <textarea onChange={handleChange} value={channel_desc} name="channel_desc" className="rounded-md row-span-2 bg-white/5 p-3" placeholder="Channel description"></textarea>
+                <input onChange={handleChange} value={website} name="website" className="h-[46px] rounded-md px-3 bg-white/5" type="text" placeholder="Website" />
+                <div className="flex items-center gap-2">
+                    <input value={tagName} name="tagName" onChange={(e) => setTagName(e.target.value)} className="h-[46px] rounded-md px-3 bg-white/5 flex-1" type="text" placeholder="Add Tag" />
+                    <button type="button" onClick={addTag} className="flex items-center justify-center bg-white text-black-900 w-[40px] aspect-square rounded-full"><Add /></button>
+                </div>
                     <div className="flex items-center gap-2">
                         {
                             tags.map( (tag, i) => (
@@ -150,8 +152,6 @@ const EditChannel = () => {
                             ))
                         }
                     </div>
-                </div>
-                <textarea onChange={handleChange} value={channel_desc} name="channel_desc" className="rounded-md bg-white/5 p-3 mx-3" placeholder="Channel description"></textarea>
             </form>
             <button
                 type="button"

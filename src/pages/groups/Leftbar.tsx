@@ -1,6 +1,6 @@
-import { Link, NavLink } from 'react-router-dom';
-import { Settings, Search, Add, VideoLabelRounded, ExploreRounded, PeopleAltRounded, KeyboardArrowRight, GroupAddRounded} from '@mui/icons-material'
-import { useState, useEffect, useContext } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Search, Add, VideoLabelRounded, ExploreRounded, PeopleAltRounded, KeyboardArrowRight, GroupAddRounded, KeyboardArrowDown } from '@mui/icons-material'
+import { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { groupContext } from '.';
@@ -16,6 +16,11 @@ const Leftbar = () => {
   const { user } = useContext(AuthContext);
   const { refresh } = useContext(groupContext);
 
+  const { pathname } = useLocation();
+
+  const menuRef = useRef<HTMLUListElement>(null);
+  
+  const [show, setShow] = useState(false)
   const [joinedGroups, setJoinedGroups] = useState<GroupType[]>([]);
 
   const fetchJoinedGroups = async () => {
@@ -29,24 +34,34 @@ const Leftbar = () => {
     fetchJoinedGroups()
   }, [refresh])
 
+  if (/(edit|create)/.test(pathname) && window.innerWidth < 1024) return;
+
   return (
-    <div className="left sticky top-[60px] py-[5px] px-[10px]">
+    <div
+      style={{ maxHeight: `${show && window.innerWidth < 1024 ? ((menuRef?.current?.offsetHeight || 0) + 170) + 'px' : window.innerWidth >= 1024 ? 'auto' : '110px'}` }}
+      className="left lg:sticky lg:h-[calc(100vh-60px)] top-[60px] py-1 px-2 overflow-clip transition-[max-height]"
+    >
       <div className="top p-[5px] flex items-center justify-between gap-[20px]">
-        <h3 className="font-bold">Groups</h3>
-        <button className="h-[44px] aspect-square rounded-full flex items-center justify-center"><Settings /></button>
+          <h3 className="text-2xl font-bold">Groups</h3>
+          <button
+            onClick={() => setShow(!show)}
+            className='h-[44px] lg:hidden aspect-square rounded-full flex items-center justify-center bg-transparent'
+          >
+          <KeyboardArrowDown />
+        </button>
       </div>
       <div className="search h-[40px] rounded-[20px] mb-[10px] py-[5px] px-[10px] flex items-center gap-[10px]">
         <Search />
         <input className="flex-1 h-full border-none outline-none" type="text" placeholder="Search groups"  />
       </div>
-      <ul className="flex flex-col gap-[5px]">
+      <ul ref={menuRef} className="flex flex-col gap-[5px]">
         <li>
           <NavLink 
             to="/groups/posts" 
             className={({ isActive }) => `${isActive && 'active_section'} section p-[5px] rounded-[8px] flex items-center justify-between gap-[10px] `}
           >
             <span className="icon top h-[38px] aspect-square rounded-full flex items-center justify-center"><VideoLabelRounded /></span>
-            <span className="title">Your Feed</span>
+            <span className="title flex-1">Your Feed</span>
           </NavLink>
         </li>
         <li>
@@ -55,7 +70,7 @@ const Leftbar = () => {
             className={({ isActive }) => `${isActive && 'active_section'} section p-[5px] rounded-[8px] flex items-center justify-between gap-[10px] `}
           >
             <span className="icon top h-[38px] aspect-square rounded-full flex items-center justify-center"><ExploreRounded /></span>
-            <span className="title">Discover</span>
+            <span className="title flex-1">Discover</span>
           </NavLink>
         </li>
         <li>
@@ -64,7 +79,7 @@ const Leftbar = () => {
             className={({ isActive }) => `${isActive && 'active_section'} section p-[5px] rounded-[8px] flex items-center justify-between gap-[10px] `}
           >
             <span className="icon top h-[38px] aspect-square rounded-full flex items-center justify-center"><PeopleAltRounded /></span>
-            <span className="title">Your Groups</span>
+            <span className="title flex-1">Your Groups</span>
           </NavLink>
         </li>
         <li>
@@ -73,15 +88,15 @@ const Leftbar = () => {
             className={({ isActive }) => `${isActive && 'active_section'} section p-[5px] rounded-[8px] flex items-center justify-between gap-[10px] `}
           >
             <span className="icon top h-[38px] aspect-square rounded-full flex items-center justify-center"><GroupAddRounded /></span>
-            <span className="title">Group Invites</span>
+            <span className="title flex-1">Group Invites</span>
           </NavLink>
         </li>
       </ul>
-      <Link to="/groups/create" className='create-new w-full flex items-center justify-center gap-[5px] p-[8px] rounded-[5px] mt-[10px] text-sm'>
+      <Link to="/groups/create" className='create-new w-full font-semibold flex items-center justify-center gap-[5px] p-[8px] rounded-[5px] mt-[10px] text-sm'>
         <Add />
         <span>Create New Group</span>
       </Link>
-      <div className="groups-list flex flex-col gap-[10px] mt-[20px] py-[20px]">
+      <div className="groups-list hidden lg:flex flex-col gap-[10px] mt-[20px] py-[20px]">
         <div className="top menu-top flex items-center justify-between">
           <h3 className="font-bold">Groups you've joined</h3>
           <Link to="/groups/list" className="text-xs">See all</Link>

@@ -53,9 +53,9 @@ const Register = () => {
         <div className="right flex-1 p-[30px] flex flex-col justify-center gap-[50px]">
           <h1 className="text-[#555] font-bold text-3xl">Register</h1>
           <form onSubmit={handleSubmit} className="flex flex-col gap-[30px]">
+            <input name="name" value={name} onChange={handleChange} type="name" placeholder="name" />
             <input name="username" value={username} onChange={handleChange} type="text" placeholder="username" />
             <input name="email" value={email} onChange={handleChange} type="email" placeholder="email" />
-            <input name="name" value={name} onChange={handleChange} type="name" placeholder="name" />
             <input name="password" value={password} onChange={handleChange} type="password" placeholder="password" />
             <input name="confirm" value={confirm} onChange={handleChange} type="password" placeholder="confirm password" />
 

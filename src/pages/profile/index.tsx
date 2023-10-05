@@ -57,7 +57,7 @@ const Profile = () => {
     <div className="profile">
       <ProfileContext.Provider value={profile}>
         <DetailsHeader />
-        <div className="content">
+        <div className="content lg:px-[12%]">
           <Outlet />
         </div>
       </ProfileContext.Provider>

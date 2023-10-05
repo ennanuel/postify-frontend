@@ -90,15 +90,15 @@ const CreateChannel = () => {
                 <h2 className="text-2xl font-bold">{name || 'New Channel'}</h2>
                 <button className="h-[34px] rounded-md bg-white text-black-900 font-bold px-4">Create Group</button>
             </div>
-            <div className="grid grid-cols-2">
-                <div className="flex flex-col gap-4 px-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
                     <input onChange={handleChange} value={name} name="name" className="h-[46px] rounded-md px-3 bg-white/5" type="text" placeholder="Channel name" />
+                <textarea onChange={handleChange} value={channel_desc} name="channel_desc" className="rounded-md row-span-2 bg-white/5 p-3" placeholder="Channel description"></textarea>
                     <input onChange={handleChange} value={website} name="website" className="h-[46px] rounded-md px-3 bg-white/5" type="text" placeholder="Website" />
-                    <div className="flex items-center gap-2">
+                    <div className="flex gap-2">
                         <input value={tagName} name="tagName" onChange={(e) => setTagName(e.target.value)} className="h-[46px] rounded-md px-3 bg-white/5 flex-1" type="text" placeholder="Add Tag" />
-                        <button type="button" onClick={addTag} className="flex items-center justify-center bg-white text-black-900 w-[40px] aspect-square rounded-full"><Add /></button>
+                        <button type="button" onClick={addTag} className="flex items-center justify-center bg-white text-black-900 w-[40px] h-[40px] rounded-full"><Add /></button>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                         {
                             tags.map( (tag, i) => (
                                 <button
@@ -115,8 +115,6 @@ const CreateChannel = () => {
                             ))
                         }
                     </div>
-                </div>
-                <textarea onChange={handleChange} value={channel_desc} name="channel_desc" className="rounded-md bg-white/5 p-3 mx-3" placeholder="Channel description"></textarea>
             </div>
         </form>
     )

@@ -67,7 +67,7 @@ const Group = () => {
         <div className="group w-full min-h-[100vh]">
             <GroupContext.Provider value={{ group: groupInfo, refreshDet, refreshPost }}>
                 <DetailsHeader />
-                <div className="px-[13%]">
+                <div className="lg:px-[13%]">
                     <Outlet />
                 </div>
             </GroupContext.Provider>

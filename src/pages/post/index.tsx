@@ -1,23 +1,15 @@
-import { useState, useContext, useEffect, useMemo } from 'react'
-import { 
-    Add,
-    FavoriteOutlined,
-    KeyboardArrowLeft, 
-    KeyboardArrowRight,
-    MessageOutlined, 
-    MoreHoriz, 
-    ShareOutlined, 
-    ZoomInOutlined, 
-    ZoomOutOutlined,
-    FavoriteBorderOutlined,
-} from '@mui/icons-material'
-import { useNavigate, useParams } from 'react-router-dom'
-import { APIURL } from '../../assets/data'
-import './post.scss'
-import { AuthContext } from '../../context/authContext'
+import { useState, useContext, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { IconButton } from '@mui/material'
+import { MoreHoriz } from '@mui/icons-material'
+import { AuthContext } from '../../context/authContext'
+import PostContent from './PostContent'
+import Actions from './Actions'
 import Comments from './Comments'
-import { fetchOptions, post_bgs } from '../../assets/data/data'
+import { APIURL } from '../../assets/data'
+import { fetchOptions } from '../../assets/data/data'
+import './post.scss'
+import UserDetails from './UserDetails'
 
 type PostType = {
     id: string;
@@ -52,16 +44,12 @@ type CommentType = {
 const Post = () => {
     const { id } = useParams()
     const { user, socket } = useContext(AuthContext)
-    const navigate = useNavigate()
 
     const [post, setPost] = useState({} as PostType)
     const [content, setContent] = useState('')
     const [commentDetails, setCommentDetails] = useState({} as CommentType)
     const [comments, setComments] = useState<CommentType[]>([])
     const [comment, setComment] = useState<string|null>(null)
-    const [index, setIndex] = useState(0);
-
-    const { from, via, to } = useMemo(() => post_bgs[post.post_bg] || {}, [post])
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault()
@@ -170,113 +158,34 @@ const Post = () => {
     }, [])
 
     return (
-        <div className="post flex">
-            <div className="left h-[100vh] flex-[3] relative top-[-60px] left-0">
-                {
-                    post.post_type === 'text' ?
-                        <div className='relative z-[0] bg-gradient-to-br font-bold text-white text-3xl w-full h-full flex items-center justify-center'>
-                            <div className={`absolute z-[0] top-0 left-0 w-full h-full bg-gradient-to-br ${from} ${via} ${to} opacity-60`}></div>
-                            <p className='relative flex items-center justify-center backdrop-blur-lg font-bold w-full max-w-[500px] min-h-[400px] rounded-lg p-[5%] overflow-hidden'>
-                                <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-tl ${from} ${via} ${to}`}></div>
-                                <span className='relative z-1 text-center'>{ post.post_desc }</span>
-                            </p>
-                        </div> :
-                        <div className="post-content relative z-[0] flex justify-center items-center">
-                            <div
-                                style={{ background: `url(${APIURL}/image/post_images /${post.files && post.files[index]})` }}
-                                className="content w-full h-[100vh]"
-                            >
-                                {
-                                    post.post_type === 'video' &&
-                                        <video className="absolute top-0 left-0 w-full h-full object-cover" src={`${APIURL}/video/post_videos/${post.files && post.files[index]}#t`}></video>
-                                }
-                                <div className="p-2 h-full w-full flex items-center overflow-scroll justify-center backdrop-blur-lg bg-black-900/50">
-                                    {
-                                        post.post_type === 'photo' ?
-                                            <img
-                                                src={`${APIURL}/image/post_images/${post.files && post.files[index]}`}
-                                                className="scale-[1] object-contain h-full max-w-[80%] block rounded-lg shadow-lg shadow-black-900/30" alt="post image"
-                                            /> :
-                                            <>
-                                                <video src={`${APIURL}/video/post_videos/${post.files && post.files[index]}`} className="relative z-1 h-full max-w-[80%] rounded-lg shadow-lg shadow-black-900/30 object-fit" controls={true} />
-                                            </>
-                                    }
-                                </div>
-                            </div>
-                        <button
-                            onClick={() => setIndex( prev => prev - 1 < 0 ? 0 : prev - 1)}
-                            className={`${index === 0 && 'opacity-60'} absolute top-[50%] translate-y-[-50%] py-[20px] px-[4px] rounded-[5px] left-[10px]`}
-                        >
-                            <KeyboardArrowLeft />
-                        </button>
-                        <button
-                            onClick={(() => setIndex( prev => prev + 1 > post?.files?.length - 1 ? post?.files?.length - 1 : prev + 1 ))}
-                            className={`${index === post?.files?.length - 1 && 'opacity-50'} absolute top-[50%] translate-y-[-50%] py-[20px] px-[4px] rounded-[5px] right-[10px]`}
-                        >
-                            <KeyboardArrowRight />
-                        </button>
-                    </div>
-                }
-                <button
-                    onClick={() => navigate(-1)}
-                    className="close z-1 w-[40px] aspect-square rounded-full rotate-45 absolute top-[15px] left-[15px] text-xl flex items-center justify-center"
-                ><Add fontSize="large" /></button>
-                <div className="zoom z-1 flex items-center absolute top-[15px] right-[15px]">
-                    <IconButton className="flex items-center justify-center w-[40px] aspect-square rounded-full text-lg"><ZoomInOutlined fontSize="inherit" /></IconButton>
-                    <IconButton className="flex items-center justify-center w-[40px] aspect-square rounded-full text-lg"><ZoomOutOutlined fontSize="inherit" /></IconButton>
-                </div>
-            </div>
-            <div className="right overflow-y-scroll overflow-x-clip flex-1 flex flex-col h-full relative p-2">
-                <div className={`info flex flex-col gap-3 ${comment ? 'h-0 mb-0 border-none overflow-hidden' : 'mb-4 py-3 border-b'}`}>
-                    <div className="top flex items-center justify-between gap-2">
-                        <div className="user-profile flex items-center gap-[10px]">
-                            <img className="h-[40px] aspect-square rounded-full" src={ post.profile_pic } alt="" />
-                            <div className="flex flex-col">
-                                <span className="text-sm font-bold">{ post.name }</span>
-                                <span className="text-xs">{ post.date_posted }</span>
-                            </div>
-                        </div>
-                        <IconButton className="more h-[35px]">
-                            <MoreHoriz />
-                        </IconButton>
-                    </div>
-                    { post.post_type !== 'text' && <p className="post-desc p-2 rounded-md">{post.post_desc}</p> }
-                    
-                    <div className="actions flex items-center gap-3">
-                        <IconButton
-                            onClick={() => likePost()}
-                        >
-                            {
-                                post.liked ?
-                                    <FavoriteOutlined /> :
-                                    <FavoriteBorderOutlined />
-                            }
-                            <span>{post.post_likes}</span>
-                        </IconButton>
-                        <IconButton>
-                            <label htmlFor="comment" className="flex items-center justify-between gap-1">
-                                <MessageOutlined />
-                                <span>{post.post_comments}</span>
-                            </label>
-                        </IconButton>
-                        <IconButton>
-                            <ShareOutlined />
-                            <span>{post.shares}</span>
-                        </IconButton>
-                    </div>
-                </div>
-                <Comments
-                    comment={comment}
-                    setComment={setComment}
-                    commentDetails={commentDetails}
-                    comments={comments}
-                    likeComment={likeComment}
-                    content={content}
-                    setContent={setContent}
-                    handleSubmit={handleSubmit}
-                    user={user}
-                />
-            </div>
+        <div className="post grid grid-cols-1 lg:grid-cols-[1fr,400px] grid-rows-[repeat(4,auto),1fr] lg:grid-rows-[repeat(3,auto),1fr] lg:h-[calc(100vh-60px)] h-[100vh] fixed lg:relative top-0 w-full z-[9999] md:overflow-clip">
+            <UserDetails comment={comment} name={post.name} date_posted={post.date_posted} profile_pic={post.profile_pic} />
+            <PostContent {...post} comment={comment} />
+            {
+                !comment &&
+                    <p className={`post-desc p-4 lg:mx-2 bg-black-900/50 lg:rounded-lg ${post.post_type === 'text' && 'h-0 p-0 overflow-clip'}`}>
+                        {post.post_desc}
+                    </p>
+            }
+            <Actions
+                comment={comment}
+                likePost={likePost}
+                liked={post.liked}
+                post_likes={post.post_likes}
+                post_comments={post.post_comments}
+                shares={post.shares}
+            />
+            <Comments
+                comment={comment}
+                setComment={setComment}
+                commentDetails={commentDetails}
+                comments={comments}
+                likeComment={likeComment}
+                content={content}
+                setContent={setContent}
+                handleSubmit={handleSubmit}
+                user={user}
+            />
         </div>
     )
 }

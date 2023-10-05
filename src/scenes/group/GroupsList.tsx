@@ -47,9 +47,9 @@ const GroupsList = () => {
   }, [refresh])
 
   return (
-    <div className='joined-groups w-full m-[20px] pl-[5%] pr-[8%]'>
+    <div className='joined-groups w-full p-4 lg:pl-[5%] lg:pr-[8%]'>
       <h3 className="font-bold text-lg">Created Groups ({createdGroups.length})</h3>
-      <ul className="mt-[20px] grid grid-cols-2 gap-[10px]">
+      <ul className="mt-[20px] grid grid-cols-1 md:grid-cols-2 gap-[10px]">
         {
           createdGroups.map( ({id, name, picture}) => (
             <li key={id} className="joined-group rounded-[10px] p-[15px]">
@@ -69,7 +69,7 @@ const GroupsList = () => {
         }
       </ul>
       <h3 className="font-bold text-lg mt-10 ">Joined Groups ({joinedGroups.length})</h3>
-      <ul className="mt-[20px] grid grid-cols-2 gap-[10px]">
+      <ul className="mt-[20px] grid grid-cols-1 md:grid-cols-2 gap-[10px]">
         {
           joinedGroups.map( ({id, name, picture}) => (
             <li key={id} className="joined-group rounded-[10px] p-[15px]">

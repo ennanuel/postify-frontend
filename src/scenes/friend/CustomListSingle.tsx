@@ -1,69 +1,57 @@
-import { MoreHoriz } from '@mui/icons-material';
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { ChatRounded, EditRounded, PersonRounded } from '@mui/icons-material';
+import { useState, useEffect, useMemo } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { APIURL } from '../../assets/data';
-import { fetchOptions } from '../../assets/data/data';
-
-type FriendType = {
-  id: string;
-  name: string;
-  profile_pic: string;
-  active: string;
-}
-
-type CustomGroupType = {
-  id: string;
-  group_name: string;
-}
+import { custom_group_bgs } from '../../assets/data/data';
+import { fetchCustomGroupInfo, fetchFriends } from '../../utils/friend';
+import { CustomFriendGroupInt, FriendType } from '../../types/friend.types';
 
 const CustomListSingle = () => {
-  const [groupInfo, setGroupInfo] = useState<CustomGroupType>({ id: '', group_name: '' })
+  const { id } = useParams();
+
+  const [{ group_name, color }, setGroupInfo] = useState<CustomFriendGroupInt>({ group_name: '', color: 'purple' })
   const [friends, setFriends] = useState<FriendType[]>([]);
-  const { id } = useParams()
+  const { from, via, to } = useMemo(() => custom_group_bgs[color] || {}, [color]);
 
-  const getCustomGroupInfo = async () => {
-      const response = await fetch(`${APIURL}/friend/group/${id}`, fetchOptions)
-
-      if(response.status !== 200) return alert('something went wrong')
-
-      const res = await response.json();
-      setGroupInfo(res)
-  }
-
-  const getCustomGoupFriends = async () => {
-      const response = await fetch(`${APIURL}/friend/group/friends/${id}`, fetchOptions)
-
-      if(response.status !== 200) return alert('something went wrong')
-
-      const res = await response.json();
-      setFriends(res)
-  }
-
-  useEffect( () => {
-    getCustomGroupInfo();
-    getCustomGoupFriends();
+  useEffect(() => {
+    fetchCustomGroupInfo(id || '')
+      .then(res => setGroupInfo(res as CustomFriendGroupInt))
+      .catch(error => alert(error));
+    fetchFriends(id || '', 'custom')
+      .then(res => setFriends(res as FriendType[]))
+      .catch(error => alert(error));
   }, [id])
 
   return (
     <div className="menu">
-      <div className="menu-title">
-        <h3>{ groupInfo.group_name }</h3>
-        <button className="more create-btn"><MoreHoriz /></button>
+      <div className="flex items-center justify-between gap-4 md:mt-4 px-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="font-bold text-3xl">{ group_name }</h2>
+          <hr className={`block h-2 rounded-md bg-gradient-to-r ${from} ${via} ${to} border-none outline-none`} />
+        </div>
+        <Link to={`/friends/custom/edit/${id}`} className="h-[40px] w-[40px] rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center">
+          <EditRounded />
+        </Link>
       </div>
 
-      <div className="container">
+      <div className="grid grid-cols-1 md:grid-cols-2 mt-6">
         {
           friends.map( ({id, name, profile_pic, active}) => (
-            <div key={id} className="friend">
-              <img src={profile_pic} alt="" className='profile-pic' />
-              <div className="info">
-                <p className="name">{name}</p>
-                <div className="mutual">
-                  <div className="dot"></div>
-                  <p className="close">Active</p>
-                </div>
+            <div key={id} className="flex items-center gap-2 p-2 border border-transparent bg-white/5 rounded-[35px] transition-[background-color] hover:bg-transparent hover:border-white/5 shadow shadow-black-900">
+              <img className="w-[40px] md:w-[50px] aspect-square rounded-full shadow shadow-black-900/50" src={`${APIURL}/image/profile_pics/${profile_pic}`} alt="" />
+              <div className="flex flex-1 flex-col">
+                <p className="">{name}</p>
+                <p className="text-xs font-semibold text-blue-300 flex items-center gap-1">
+                  <span className="w-0 h-0 border-2 border-blue-300 aspect-square rounded-full bg-gray-400"></span>
+                  <span>Active</span>
+                </p>
               </div>
-              <button>Send Message</button>
+              <button className="w-[40px] md:w-[50px] transition-[background-color] bg-green-500 hover:bg-green-700/20 hover:text-green-400 aspect-square rounded-full shadow shadow-black-900/50">
+                <PersonRounded />
+              </button>
+              <button className="w-[40px] md:w-[50px] transition-[background-color] bg-blue-500 hover:bg-blue-700/20 hover:text-blue-300 aspect-square rounded-full shadow shadow-black-900/50">
+                <ChatRounded />
+              </button>
             </div>
           ))
         }

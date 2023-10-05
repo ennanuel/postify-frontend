@@ -68,12 +68,12 @@ const Group = () => {
   useEffect(() => alert('someone posted something'), [refresh])
 
   return (
-    <div className='group-det'>
-      <div className="right-side">
+    <div className='group-det grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 md:gap-0'>
+      <div className="right-side p-4">
         <div className="menu">
-          <h3>Info</h3>
-          <p>{group_desc}</p>
-          <ul className="details">
+          <h3 className="px-2 lg:px-0 font-bold">Info</h3>
+          <p className="text-left mt-2">{group_desc}</p>
+          <ul className="details pt-2">
             <li>
               <Person /> 
               <span>Created by </span>
@@ -81,8 +81,10 @@ const Group = () => {
             </li>
             <li>
               <CalendarToday /> 
-              <span>Created on</span> 
-              <span>30th January, 2002</span>
+              <p>                  
+                <span>Created on</span> 
+                <span> 30th January, 2002</span>
+              </p>
             </li>
             <li>
               <PeopleAltRounded /> 
@@ -96,8 +98,8 @@ const Group = () => {
           </ul>
         </div>
         <div className="menu">
-          <div className="menu-top">
-            <h3>Photos</h3>
+          <div className="px-2 lg:px-0 menu-top">
+            <h3 className="font-bold">Photos</h3>
             <p>See all</p>
           </div>
           <ul className="photos">
@@ -108,7 +110,7 @@ const Group = () => {
         </div>
       </div>
       
-      <div className="left-side">
+      <div className="left-side flex flex-col gap-4 md:p-4">
         {
           is_member &&
           <Share />

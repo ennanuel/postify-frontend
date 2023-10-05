@@ -5,6 +5,8 @@ import Friends from "./Friends";
 import FriendsList from "./FriendsList";
 import FriendSuggestions from "./FriendSuggestions";
 import SentRequests from "./SentRequests";
+import CreateCustomList from "./CreateCustomList";
+import EditCustomList from "./EditCustomList";
 
 export {
     CustomList,
@@ -14,4 +16,6 @@ export {
     FriendsList,
     FriendSuggestions,
     SentRequests,
+    CreateCustomList,
+    EditCustomList
 }

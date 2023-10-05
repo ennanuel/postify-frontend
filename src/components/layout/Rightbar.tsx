@@ -28,7 +28,7 @@ const Rightbar = () => {
   }, [])
 
   return (
-    <div className="rightbar">
+    <div className="rightbar hidden lg:block sticky top-[70px] h-[calc(100vh-80px)] m-[10px] mt-0 rounded-md shadow-lg shadow-black-900/50 overflow-y-scroll overflow-x-clip">
     <div className="bar-actions flex items-center justify-between">
       <p>Friends</p>
       <div className="actions flex items-center">

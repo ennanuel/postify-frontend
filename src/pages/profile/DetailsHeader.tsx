@@ -9,21 +9,23 @@ const DetailsHeader = () => {
 
   return (
     <>
-      <div className="header w-full px-[15%] pb-6">
+      <div className="header w-full lg:px-[15%] pb-6">
         <img src={`${APIURL}/image/covers/${cover}`} alt="" className="cover h-[200px] w-full rounded-b-[10px] mt-[-4px]" />
-        <div className="profile-details flex items-center gap-[15px] px-[20px]">
-          <img src={`${APIURL}/image/profile_pics/${profile_pic}`} alt="" className="profile-img h-[150px] aspect-square rounded-full mt-[-40px]" />
+        <div className="profile-details flex flex-col lg:flex-row items-center gap-[15px] px-4 lg:px-[20px]">
+          <img src={`${APIURL}/image/profile_pics/${profile_pic}`} alt="" className="profile-img h-[80px] lg:h-[150px] aspect-square rounded-full mt-[-40px]" />
           <div className="profile-info flex-1">
-            <h2 className="text-[2rem]">
-              <span className="font-bold">{name}</span>
-              <span> ({username})</span>
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-2xl lg:text-[2rem]">
+                <span className="font-bold">{name}</span>
+                <span> ({username})</span>
+              </h2>
               {
                 is_user &&
                 <Link to={`/edit_profile/${id}`} className="float-right flex items-center justify-center h-[40px] aspect-square rounded-lg bg-white/10 text-white">
                   <EditRounded />
                 </Link>
               }
-            </h2>
+            </div>
             {
               !is_user &&
               <div className="mutual-friends flex items-center gap-[5px]">
@@ -62,8 +64,8 @@ const DetailsHeader = () => {
         </div>
       </div>
 
-      <div className="sections sticky top-[60px] px-[13%] flex items-center justify-between">
-        <ul className="pages flex gap-[10px] items-center">
+      <div className="sections sticky top-[60px] px-2 lg:px-[13%] flex items-center justify-between">
+        <ul className="pages flex flex-1 gap-[10px] items-center text-sm overflow-x-scroll lg:overflow-clip overflow-y-clip lg:text-base">
           <li>
             <NavLink to={`/profile/${id}`} className={({isActive}) => `${isActive && 'active-friend-link'} block p-[15px] relative text-center`}>Posts</NavLink>
           </li>

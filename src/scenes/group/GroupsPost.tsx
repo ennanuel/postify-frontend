@@ -10,6 +10,9 @@ type PostType = {
   name: string
   user_id: number;
   profile_pic: string;
+  post_type: string;
+  post_bg: 'none' | 'blue' | 'red' | 'white' | 'black';
+  files: string[];
   post_desc: string;
   post_likes: number;
   post_comments: number;
@@ -17,6 +20,8 @@ type PostType = {
   liked_post: boolean;
   last_updated: string;
   date_posted: string;
+  group_name?: string;
+  group_id?: string;
 }
 
 type GroupType = {
@@ -71,12 +76,12 @@ const GroupsPost = () => {
   }, [group])
 
   return (
-    <>
-      <div className="content px-4">
+    <div className="grid grid-cols-1 md:grid-cols-[1fr,300px]">
+      <div className="content lg:px-[5%] md:px-4">
         <h3 className="text-lg font-bold mx-4 mb-4">Recent Activity</h3>
         <Posts posts={posts} />
       </div>
-      <div className="right-bar flex-1 m-[20px] p-[10px] rounded-[10px]">
+      <div className="right-bar hidden sticky top-[80px] md:block flex-1 p-2 rounded-[10px] h-fit mr-4">
         <h3 className="p-[10px] font-bold">Suggested Groups</h3>
         <ul className='groups-list flex flex-col gap-[6px]'>
           {
@@ -96,7 +101,7 @@ const GroupsPost = () => {
           }
         </ul>
       </div>
-    </>
+    </div>
   )
 }
 

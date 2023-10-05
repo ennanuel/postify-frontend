@@ -11,12 +11,12 @@ const Login = () => {
 
   const [{ username, password }, setCredentials] = useState({ username: '', password: '' });
 
-  const loginUser = async () => {
+  async function loginUser () {
     const options = { ...fetchOptions, method: 'POST', body: JSON.stringify({ username, password })}
     const response = await fetch(`${APIURL}/auth/login`, options);
-    if (response.status !== 200) return alert(`failed to login`);
     const { message } = await response.json();
     alert(message)
+    if (response.status !== 200) return;
     login()
   }
 

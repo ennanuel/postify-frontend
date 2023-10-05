@@ -36,7 +36,7 @@ const GroupMembers = () => {
   }, [refresh])
   
   return (
-    <div className="group-members-page">
+    <div className="group-members-page p-4">
       <div className="search">
         <Search />
         <input type="text" placeholder="Search group members" />
@@ -48,7 +48,7 @@ const GroupMembers = () => {
           <KeyboardArrowDown />
         </button>
       </div>
-      <ul className="container">
+      <ul className="container grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-4">
         {
           groupMembers.map( ({ id, name, profile_pic, owner }) => (
             <li key={id} className="group-member">

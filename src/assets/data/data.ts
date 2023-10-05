@@ -43,4 +43,32 @@ export const post_bgs = {
     }
 }
 
+export const custom_group_bgs = {
+    purple: {
+        from: 'from-purple-800',
+        via: 'via-purple-400',
+        to: 'to-blue-300',
+    },
+    blue: {
+        from: 'from-blue-900',
+        via: 'via-blue-400',
+        to: 'to-blue-300',
+    },
+    red: {
+        from: 'from-red-900',
+        via: 'to-red-500',
+        to: 'to-red-200',
+    },
+    white: {
+        from: 'from-gray-200',
+        via: '',
+        to: 'to-gray-700',
+    },
+    black: {
+        from: 'from-gray-600',
+        via: '',
+        to: 'to-black-900',
+    }
+}
+
 export default APIURL;

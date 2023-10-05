@@ -43,11 +43,14 @@ const Stories = () => {
   return (
     <div className="stories-container">
       <CreateStory show={show} setShow={setShow} />
-      <div className="stories w-full">
-        <div className="relative min-w-[120px] rounded-lg overflow-clip shadow-lg shadow-black-900/50" onClick={() => setShow(true)}>
-          <img src={user.profile_pic} alt={user.name} className="w-full h-full object-cover" />
-          <div className="bottom absolute bottom-0 left-0 w-full h-[70px] bg-gray-800 flex flex-col items-center gap-1">
-            <button className="mt-[-15px]"><AddAPhoto /></button>
+      <div className="stories w-full p-4 h-[240px] flex gap-4 overflow-x-scroll overflow-y-clip">
+        <div
+          className="relative h-full w-[120px] rounded-lg overflow-clip shadow-lg shadow-black-900/50 bg-black-900 border border-white/5"
+          onClick={() => setShow(true)}
+        >
+        <img src={user.profile_pic} alt={user.name} className="w-full h-full object-cover opacity-75" />
+          <div className="bottom absolute bottom-0 left-0 w-full h-[70px] bg-black-500 flex flex-col items-center gap-1">
+            <button className="mt-[-15px] w-[50px] aspect-square rounded-full bg-gray-800"><AddAPhoto /></button>
             <span>Add Story</span>
           </div>
         </div>
@@ -57,7 +60,7 @@ const Stories = () => {
             return (
               <Link
                 to={`/story/${story.user_id}?seen=${story.seen}`}
-                className={`relative min-w-[120px] rounded-lg bg-gradient-to-br ${from} ${via} ${to} shadow-lg shadow-black-900/50`}
+                className={`relative h-full w-[120px] rounded-lg bg-gradient-to-br ${from} ${via} ${to} shadow-lg shadow-black-900/50`}
                 style={{ background: story.story_type === 'photo' ? `url(${APIURL}/image/stories/${story.file})` : '' }}
                 key={story.id}
               >

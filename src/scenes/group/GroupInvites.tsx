@@ -40,23 +40,23 @@ const GroupInvites = () => {
   }, [refresh])
 
   return (
-    <div className='joined-groups w-full m-[20px] pl-[5%] pr-[8%]'>
+    <div className='joined-groups w-full p-4 lg:pl-[5%] lg:pr-[8%]'>
       <h3 className="font-bold text-lg">Group Invites</h3>
-      <ul className="mt-[20px] grid grid-cols-2 gap-[10px]">
+      <ul className="mt-[20px] grid grid-cols-1 lg:grid-cols-2 gap-2">
         {
           groups.map( ({ id, name, cover }) => (
-            <li key={id} className="joined-group rounded-[10px] p-[15px]">
-              <div className="info flex items-end gap-[10px]">
+            <li key={id} className="joined-group rounded-[10px] p-3">
+              <div className="info flex items-end gap-2">
                 <img className="h-[70px] aspect-square rounded-[8px] " src={cover} alt="" />
                 <div className="details flex flex-col">
                   <h3 className="">{name}</h3>
                   <p className="text-xs">Last Visited 3 days ago</p>
                 </div>
               </div>
-              <div className="actions flex items-center h-[40px] gap-[10px] mt-[15px]">
-                <button onClick={() => joinGroup(id)} className="flex-1 flex items-center justify-center h-full rounded-[8px] p-[10px]">Accept</button>
-                <button onClick={() => rejectInvite(id)} className="flex-1 flex items-center justify-center h-full rounded-[8px] p-[10px]">Reject</button>
-                <button className="flex items-center justify-center h-full rounded-[8px] p-[10px]"><MoreHoriz /></button>
+              <div className="actions flex items-center h-[40px] gap-2 mt-3">
+                <button onClick={() => joinGroup(id)} className="flex-1 flex items-center justify-center h-full rounded-[8px] p-2">Accept</button>
+                <button onClick={() => rejectInvite(id)} className="flex-1 flex items-center justify-center h-full rounded-[8px] p-2">Reject</button>
+                <button className="flex items-center justify-center h-full rounded-[8px] p-2"><MoreHoriz /></button>
               </div>
             </li>
           ))

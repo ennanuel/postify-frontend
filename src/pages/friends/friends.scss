@@ -9,24 +9,21 @@
         $border: themed('border');
 
         color: $color;
-        display: flex;
-        gap: 10px;
-        min-height: 100vh;
         background-color: $bg;
 
         .left {
             flex: 1;
-            height: calc(100vh - 60px);
             background-color: $bg1;
+            
+            @include tablet {
+                background-color: transparent;
+                border-bottom: 1px solid $border;
+            }
 
             .top {
 
                 button {
                     background-color: $border;
-
-                    svg {
-                        font-size: 1.6rem;
-                    }
                 }
             }
 
@@ -63,7 +60,6 @@
         }
 
         .menu-title {
-            padding: 10px;
             @apply flex;
             @apply items-center;
             @apply justify-between;
@@ -146,75 +142,36 @@
         }
 
         .container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-gap: 15px;
-            padding: 10px;
+            @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-4 ;
 
             .friend {
-                overflow: hidden;
-                border-radius: 8px;
                 background-color: $bg1;
                 border: 1px solid $border;
 
                 img {
-                    width: 100%;
-                    aspect-ratio: 1;
                     background-color: $border;
                 }
-
-                .info {
-                    padding: 10px;
-
-                    .mutual {
-                        display: flex;
-                        align-items: center;
-                        gap: 5px;
-
-                        p {
-                            font-size: .9rem;
-                            margin-top: 3px;
-                        }
-
-                        .close {
-                            font-size: .8rem;
-                            color:rgb(77, 117, 249)
-                        }
-
-                        .dot {
-                            width: 0;
-                            border-radius: 50%;
-                            aspect-ratio: 1;
-                            border: 3px solid rgb(77, 117, 249);
-                        }
-                    }
+                
+                .close {
+                    color: rgb(77, 117, 249)
                 }
-
-                .friends-list {
-                    display: flex;
-                    align-items: center;
-
-                    .friend-list {
-                        width: 20px;
-                        height: 20px;
-                        border-radius: 50%;
-                        border: 2px solid $bg1;
-                        background-color: $border;
-
-                        &:not(:first-child) {
-                            margin-left: -10px;
-                        }
+                
+                .dot {
+                    background-color: rgb(77, 117, 249);
+                }
+                
+                .friend-list {
+                    border: 2px solid $bg1;
+                    background-color: $border;
+                
+                    &:not(:first-child) {
+                        margin-left: -10px;
                     }
                 }
 
                 button {
-                    margin: 0 10px 10px;
-                    display: block;
-                    padding: 7px 10px;
-                    width: calc(100% - 20px);
+                    @apply w-full block py-1 px-2 text-gray-200 rounded-[5px];
                     background-color: rgba(0, 76, 255, 0.4);
-                    color:rgb(190, 219, 255);
-                    border-radius: 5px;
 
                     &.accept {
                         background-color: rgb(77, 117, 249);
@@ -230,19 +187,7 @@
         }
 
         .create-btn {
-            height: 100%;
-            padding: 5px 10px;
-            border-radius: 7px;
-            background-color: $border;
-            background-color: rgb(67, 111, 255);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-
-            &.more {
-                background-color: $bg1;
-            }
+            background-color: $bg1;
         }
 
         .custom-lists {

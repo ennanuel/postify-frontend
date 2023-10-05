@@ -24,10 +24,6 @@
 
             li {
 
-                * {
-                    font-size: 1.85rem;
-                }
-
                 .nav-link {
                     color: $color1;
 
@@ -111,10 +107,7 @@
         $color1: themed("textColorSoft");
         $logo: themed("logo");
         $border: themed("border");
-        background-color: $bg;
         
-        height: calc(100vh - 60px);
-        border-right: 1px solid $border;
         background-color: $bg1;
 
         @include mobile {
@@ -178,13 +171,7 @@
         $color1: themed("textColorSoft");
         $logo: themed("logo");
         $border: themed("border");
-
-        flex: 2.5;
-        position: sticky;
-        top: 60px;
-        height: calc(100vh - 60px);
-        overflow: scroll;
-        background-color: $bg;
+        background-color: $bg1;
 
         @include tablet {
         display: none;
@@ -237,5 +224,12 @@
                 background-color: greenyellow;
             }
         }
+    }
+}
+
+.home {
+    @include themify($themes) {
+        $bg: themed("bg");
+        background-color: $bg;
     }
 }

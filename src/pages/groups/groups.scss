@@ -9,36 +9,28 @@
         $border: themed("border");
 
         background-color: $bg;
-        min-height: calc(100vh - 60px);
         color: $color;
 
         .left {
-            flex: 1;
-            min-height: calc(100vh - 60px);
             background-color: $bg1;
             border-right: 1px solid $border;
 
+            @include tablet {
+                background-color: transparent;
+                border: none;
+                border-bottom: 1px solid $border;
+            }
+
             .top {
                 &.menu-top {
-                    h3 {
-                        font-size: 1.2rem;
-                    }
 
                     p {
                         color: rgb(96, 165, 255);
                     }
                 }
 
-                h3 {
-                    font-size: 1.5rem;
-                }
-
                 button {
                     background-color: $border;
-
-                    svg {
-                        font-size: 1.6rem;
-                    }
                 }
             }
 
@@ -56,11 +48,6 @@
                     background-color: $border;
                 }
 
-                .title {
-                    flex: 1;
-                    font-size: 1.1rem;
-                }
-
                 &:hover,
                 &.active_section {
                     background-color: $border;
@@ -74,14 +61,6 @@
             .create-new {
                 background-color: rgba(0, 110, 255, 0.2);
                 color: rgb(61, 144, 253);
-
-                svg {
-                    font-size: 1.2rem;
-                }
-
-                span {
-                    font-size: 1.05rem;
-                }
             }
 
             .groups-list {
@@ -102,20 +81,6 @@
         }
 
         .right {
-            flex: 3;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-
-            .title {
-                font-size: .9rem;
-                margin-bottom: 10px;
-            }
-            
-            .content {
-                flex: 2;
-                margin: 20px 0;
-            }
 
             .right-bar {
                 background-color: $bg1;

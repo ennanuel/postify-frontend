@@ -2,7 +2,6 @@ import { useEffect, useContext, useState } from 'react';
 import { Stories, Posts, Share } from '../../components';
 import Rightbar from '../../components/layout/Rightbar';
 import Leftbar from '../../components/layout/Leftbar';
-import './home.scss';
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { fetchOptions } from '../../assets/data/data';
@@ -36,11 +35,13 @@ const Home = () => {
   }, [socket, friend, group])
 
   return (
-    <div className="home">
+    <div className="home grid grid-cols-1 md:grid-cols-[300px,1fr] lg:grid-cols-[300px,1fr,300px] md:gap-4 lg:gap-6 md:pr-4 lg:p-0">
       <Leftbar />
       <div className="center">
-        <Stories />
-        <Share />
+        <div className="flex flex-col-reverse lg:flex-col">
+          <Stories />
+          <Share />
+        </div>
         <Posts posts={posts} />
       </div>
       <Rightbar />

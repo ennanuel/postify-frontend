@@ -4,7 +4,7 @@ import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import './editpost.scss';
 import { fetchOptions, post_bgs } from '../../assets/data/data';
-import { Add, Check, CheckRounded, DeleteForever, PermMediaRounded, VideocamRounded } from '@mui/icons-material';
+import { Add, Check, CheckRounded, DeleteForever, PermMediaRounded, VideocamRounded, KeyboardArrowLeft } from '@mui/icons-material';
 
 type EditType = {
   post_desc: string;
@@ -128,9 +128,14 @@ const EditPost = () => {
   useEffect(() => { fetchDetails() }, [])
 
   return (
-    <section className="edit-post h-[calc(100vh_-_60px)] grid grid-cols-2 gap-[10%] p-6">
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4 object-cover'>
-        <h3 className="font-bold text-2xl">Edit Post</h3>
+    <section className="edit-post h-[100vh] fixed top-0 left-0 z-[9999] lg:relative lg:h-[calc(100vh_-_60px)] grid grid-cols-1 grid-rows-[auto,1fr] lg:grid-rows-1 lg:grid-cols-2 gap-4 lg:gap-[10%] p-4 lg:p-6">
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+        <div className="flex items-center gap-2 lg:hidden">
+          <button type="button" onClick={() => navigate(-1)} className="float-left flex items-center justify-center"><KeyboardArrowLeft /></button>
+          <h3 className="font-bold text-2xl">
+            Edit Post
+          </h3>
+        </div>
         <input
           name="post_desc"
           id="post_desc"
@@ -140,7 +145,7 @@ const EditPost = () => {
           className="h-[60px] rounded-lg px-3 bg-white/5 border border-white/10 focus:bg-transparent"
           placeholder="post description"
         />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <ul className={`flex-1 flex items-center gap-2 ${post_type !== 'text' && 'hidden'}`}>
             {
               Object.entries(post_bgs).map(([value, { from, via, to }]) => (
@@ -209,7 +214,8 @@ const EditPost = () => {
           </div>
         </div>
       </form>
-      <article className="p-3 rounded-md bg-white/5 shadow-lg shadow-black-900/50 flex flex-col gap-2 max-w-[500px]">
+      <div className="flex justify-center items-center">
+      <article className="p-3 rounded-md bg-white/5 shadow-lg shadow-black-900/50 flex flex-col gap-2 w-full h-full max-w-[500px]">
         <div className="flex gap-2 items-center">
           <img src="" alt="" className="w-[50px] aspect-square rounded-full boder border-white/5" />
           <div className="flex flex-col gap-2">
@@ -246,6 +252,7 @@ const EditPost = () => {
           <button className='h-full w-[70px] rounded-[18px] bg-white/5'></button>
         </div>
       </article>
+      </div>
     </section>
   )
 }

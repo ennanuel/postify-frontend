@@ -1,40 +1,20 @@
 import { useState, useEffect, useContext } from 'react'
-import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext'
 import { Search, SortRounded } from '@mui/icons-material';
 import { friendContext } from '../../pages/friends';
-import { fetchOptions } from '../../assets/data/data';
-
-type FriendType = {
-  id: string;
-  name: string;
-  profile_pic: string;
-  mutual_friends: [];
-}
+import { FriendCard } from '../../components/cards';
+import { FriendType } from '../../types/friend.types';
+import { fetchFriends } from '../../utils/friend';
 
 const Friends = () => {
   const { refresh } = useContext(friendContext);
-  const { user, socket } = useContext(AuthContext)
-  
+  const { user } = useContext(AuthContext)
   const [friends, setFriends] = useState<FriendType[]>([])
 
-  async function getFriends() {
-    const response = await fetch(`${APIURL}/friend/${user.id}`, fetchOptions)
-    if(response.status !== 200) {
-      alert('something went wrong');
-      return;
-    } else {
-      const res = await response.json();
-      setFriends(res)
-    }
-  }
-
-  async function unFriend(other_user_id: string) {
-    socket.emit('friend-action', { user_id: user.id, other_user_id }, 'unfriend')
-  }
-
   useEffect(() => {
-    getFriends();
+    fetchFriends(user.id)
+      .then(res => setFriends(res as FriendType[]))
+      .catch(error => alert(error));
   }, [refresh])
 
   return (
@@ -59,22 +39,7 @@ const Friends = () => {
       </div>
 
       <div className="container">
-        {
-          friends.map( (friend) => (
-            <div key={friend.id} className="friend">
-              <img src={friend.profile_pic} alt="" className='profile-pic' />
-              <div className="info">
-                <p className="name">{friend.name}</p>
-                <div className="mutual">
-                  <div className="dot"></div>
-                  <p className="close">Active</p>
-                </div>
-              </div>
-              <button>Send Message</button>
-              <button onClick={() => unFriend(friend.id)}>Unfriend</button>
-            </div>
-          ))
-        }
+        { friends.map((friend) => <FriendCard {...friend} key={friend.id} type="friend" />) }
       </div>
     </div>
   )

@@ -115,14 +115,14 @@ const CreateGroup = () => {
         </label>
       </div>
       <div className="flex flex-col gap-4 p-5">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <h2 className="text-3xl font-bold truncate max-w-full">
-            <span>{name || 'New Group'}</span> 
+            <span className="truncate">{name || 'New Group'}</span> 
             <span className="font-normal text-xl"> ({invites.length} Invites)</span>
           </h2>
           <button className="py-2 px-4 rounded-md bg-[#152648] text-[#83abfb] font-semibold">Create Group</button>
         </div>
-        <div className="flex gap-4 mt-4">
+        <div className="flex flex-col-reverse md:flex-row gap-4 mt-4">
           <div className="flex-[2] flex flex-col gap-4">
             <input 
               className="w-full p-2 border rounded-lg" 

@@ -67,8 +67,8 @@ const ProfilePosts = () => {
   }, [])
 
   return (
-    <div className="profile-content">
-      <div className="left">
+    <div className="profile-content grid grid-cols-1 md:grid-cols-[300px,1fr] lg:grid-cols-[400px,1fr] gap-4">
+      <div className="left p-4">
         <div className="menu">
           <h3 className="title">Intro</h3>
           <p className="intro-text text-left">{bio}</p>
@@ -137,15 +137,13 @@ const ProfilePosts = () => {
         </div>
       </div>
 
-      <div className="right">
-        <div className="menu">
-          <div className="menu-top">
-            <h3 className="title">Posts</h3>
-            <button className="filter">
-              <FilterList />
-              <span>Filter</span>
-            </button>
-          </div>
+      <div className="right md:p-4">
+        <div className="flex mt-4 items-center justify-between mx-4 text-white">
+          <h3 className="title flex-1">Posts</h3>
+          <button className="flex items-center justify-center gap-1 pl-1 pr-2 py-1 text-sm rounded-md bg-white/5">
+            <FilterList />
+            <span>Filter</span>
+          </button>
         </div>
 
         <Posts posts={posts} />

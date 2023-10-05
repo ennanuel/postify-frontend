@@ -137,8 +137,8 @@ const EditProfile = () => {
     }, [])
 
     return (
-        <div className="edit-profile min-h-[100vh] px-[13%]">
-            <label htmlFor="cover_img" className="relative w-full h-[40vh] block">
+        <div className="edit-profile min-h-[100vh] lg:px-[13%]">
+            <label htmlFor="cover_img" className="relative w-full h-[150px] md:h-[300px] block">
                 <img src={cover_img} alt="" className="w-full h-full rounded-b-lg" />
                 <span className="edit_img absolute bottom-5 right-5 flex items-center justify-center h-[50px] aspect-square rounded-full">
                     <EditRounded fontSize="large" />
@@ -153,8 +153,8 @@ const EditProfile = () => {
                 </label>
                 <h3 className="font-bold text-2xl mt-6">Edit Profile</h3>
             </div>
-            <form className="flex flex-col gap-6 mx-[5%]" onSubmit={handleSubmit}>
-                <div className="grid grid-cols-2 grid-rows-[repeat(4,40px)] gap-4">
+            <form className="flex flex-col gap-6 md:mx-[5%] px-4" onSubmit={handleSubmit}>
+                <div className="grid gris-cols-1 md:grid-cols-2 grid-rows-[repeat(8,40px)] md:grid-rows-[repeat(4,40px)] gap-4">
                     <input id="profile_img" onChange={handleFileChange} name="profile_pic" className="hidden" type="file" accept="image/jpg,image/jpeg,image/png" />
                     <input id="cover_img" onChange={handleFileChange} name="cover" className="hidden" type="file" accept="image/jpg,image/jpeg,image/png" />
                     <input name="name" value={name} onChange={handleChange} className="rounded-md bg-white/5 px-3" type="text" placeholder="Emmanuel Ezema" />
@@ -167,16 +167,16 @@ const EditProfile = () => {
                 </div>
                 <div className="flex flex-col gap-2">
                     <label htmlFor="work" className="text-sm">Employment</label>
-                    <div className="flex items-center gap-4 h-[40px]">
+                    <div className="grid grid-cols-2 gap-4 h-[40px]">
                         <input id="company" name="work" onChange={handleChangeOthers} value={work.company} className="flex-1 bg-white/5 rounded-md h-full px-3" type="text" placeholder="Company" />
                         <input id="role" name="work" onChange={handleChangeOthers} value={work.role} className="flex-1 bg-white/5 rounded-md h-full px-3" type="text" placeholder="Role" />
                     </div>
                 </div>
                 <div className="flex flex-col gap-4">
-                    <div className="flex gap-4 items-end">
-                        <div className="flex flex-col gap-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+                        <div className="flex flex-col gap-2 col-span-2">
                             <label htmlFor="schools" className="text-sm">Education</label>
-                            <div className="flex items-center gap-2 h-[40px]">
+                            <div className="grid grid-cols-2 gap-2 h-[40px]">
                                 <input id="school" name="education" value={education.school} onChange={handleChangeOthers} type="text" className="h-full px-2 bg-white/5 rounded-md" placeholder="School" />
                                 <input id="degree" name="education" value={education.degree} onChange={handleChangeOthers} type="text" className="h-full px-2 bg-white/5 rounded-md" placeholder="Degree" />
                             </div>
@@ -201,7 +201,7 @@ const EditProfile = () => {
                                 return (
                                     <li
                                         key={i}
-                                        className="flex items-center justify-between gap-1 pl-3 pr-1 h-[40px] text-sm bg-white/5 border border-white/5 rounded-sm hover:bg-white/5"
+                                        className="flex items-center justify-between gap-1 pl-3 pr-1 py-1 min-h-[40px] text-sm bg-white/5 border border-white/5 rounded-sm hover:bg-white/5"
                                     >
                                         <p>
                                             Studied <span className='font-bold'>{degree}</span> at <span className="font-bold">{school}</span>

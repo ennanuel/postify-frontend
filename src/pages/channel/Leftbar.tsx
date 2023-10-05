@@ -1,6 +1,6 @@
-import { useState, useEffect, useContext } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { Search, TvRounded, Explore, VideoLibrary, Add, Settings, KeyboardArrowRight } from '@mui/icons-material'
+import { useState, useEffect, useContext, useRef } from 'react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Search, TvRounded, Explore, VideoLibrary, Add, KeyboardArrowDown, KeyboardArrowRight } from '@mui/icons-material'
 import { AuthContext } from '../../context/authContext';
 import { APIURL } from '../../assets/data';
 import { ChannelContext } from '.';
@@ -15,6 +15,12 @@ type ChannelType = {
 const Leftbar = () => {
     const { user } = useContext(AuthContext)
     const { refresh } = useContext(ChannelContext);
+
+    const { pathname } = useLocation();
+
+    const menuRef = useRef<HTMLUListElement>(null);
+  
+    const [show, setShow] = useState(false)
     const [following, setFollowing] = useState<ChannelType[]>([])
 
     async function getFollowingChannels() { 
@@ -28,17 +34,27 @@ const Leftbar = () => {
         getFollowingChannels();
     }, [refresh])
 
+    if (/(info|create|edit)/.test(pathname) && window.innerWidth < 1024) return;
+
     return (
-        <div className="left-bar flex-[2] sticky top-[60px] p-4 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Channels</h2>
-                <button className="icon flex items-center justify-center h-[40px] aspect-square rounded-full"><Settings /></button>
+        <div 
+            style={{ maxHeight: `${show && window.innerWidth < 1024 ? ((menuRef?.current?.offsetHeight || 0) + 130) + 'px' : window.innerWidth >= 1024 ? 'auto' : '120px'}` }}
+            className="left-bar lg:sticky lg:h-[calc(100vh-60px)] top-[60px] p-4 flex flex-col gap-3 overflow-clip transition-[max-height]"
+        >
+            <div className="top flex items-center justify-between gap-4">
+                <h3 className="text-2xl font-bold">Channels</h3>
+                <button
+                    onClick={() => setShow(!show)}
+                    className='h-[44px] lg:hidden aspect-square rounded-full flex items-center justify-center bg-transparent'
+                >
+                <KeyboardArrowDown />
+                </button>
             </div>
             <div className="search flex items-center h-[40px] rounded-[20px] pl-2 pr-4 gap-1">
                 <label htmlFor="search" className="flex items-center justify-center"><Search /></label>
                 <input className="h-[40px] outline-none border-none flex-1" id="search" placeholder="Search channels" type="text" />
             </div>
-            <ul className="flex flex-col gap-2">
+            <ul ref={menuRef} className="flex flex-col gap-2">
                 <li>
                     <NavLink
                         to="/channels/feed"
@@ -73,7 +89,7 @@ const Leftbar = () => {
                     </NavLink>
                 </li>
             </ul>
-            <div className="bottom mt-1 py-2">
+            <div className="bottom hidden lg:block mt-1 py-2">
                 <h3 className="font-bold text-lg">Your Channels</h3>
                 <ul className="flex flex-col gap-2 mt-3">
                     <li>

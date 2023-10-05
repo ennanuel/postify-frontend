@@ -31,7 +31,7 @@ const GroupVideos = () => {
   }, [refresh])
 
   return (
-    <div className="group-photos">
+    <div className="group-photos p-4">
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-xl">Videos</h3>
         <button className="h-[35px] pl-3 pr-2 text-sm font-semibold text-black-900 flex items-center justify-center gap-1 rounded-[17.5px] bg-gray-200">
@@ -39,7 +39,7 @@ const GroupVideos = () => {
           <KeyboardArrowDown />
         </button>
       </div>
-      <ul className="photos">
+      <ul className="photos grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
         {
           videos.map( ({id, file, like_count, comment_count}) => (
             <li key={id} className="photo">

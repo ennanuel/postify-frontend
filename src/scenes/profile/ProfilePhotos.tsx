@@ -30,15 +30,15 @@ const ProfilePhotos = () => {
   useEffect(() => { fetchPhotos() }, [])
 
   return (
-    <div className="profile-photos">
-      <div className="title-filter">
-        <h3 className="title">Photos of { name }</h3>
-        <button className="text-sm">
-          <span>Sort Photos</span>
+    <div className="profile-photos px-4">
+      <div className="flex items-center justify-between text-white mt-4">
+        <h3 className="text-xl font-bold ">Photos of { name }</h3>
+        <button className="text-sm flex items-center justify-center gap-1 rounded-md bg-white/5 pr-1 pl-2 py-1">
+          <span>Sort</span>
           <KeyboardArrowDown />
         </button>
       </div>
-      <ul className="photos">
+      <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-4">
         {
           photos.map(({ id, file, file_count, like_count, comment_count }) => (
             <li key={id}>

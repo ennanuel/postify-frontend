@@ -15,7 +15,7 @@ type UserType = {
 }
 
 const ProfileFriends = () => {
-  const { user_friends, mutual_friends } = useContext(ProfileContext)
+  const { user_friends, mutual_friends, is_user } = useContext(ProfileContext)
   const { user, socket } = useContext(AuthContext)
   const { id } = useParams();
   const [friends, setFriends] = useState<UserType[]>([])
@@ -36,13 +36,18 @@ const ProfileFriends = () => {
   }, [])
   
   return (
-    <div className='profile-friends'>
-      <div className="top">
-        <h3 className="font-bold text-lg">Friends</h3>
-        <div className="friend-count">
-            <p>{ user_friends } Friends</p>
-            <div className="dot"></div>
-            <p>{ mutual_friends } Mutual</p>
+    <div className='profile-friends p-4'>
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="font-bold text-xl">Friends</h3>
+        <div className="text-sm flex items-center justify-center gap-2">
+          <p>{user_friends} Friends</p>
+          {
+            !is_user &&
+            <>
+              <span className="w-1 h-1 rounded-full bg-white block"></span>
+              <p>{ mutual_friends } Mutual</p>
+            </>
+          }
         </div>
       </div>
 
