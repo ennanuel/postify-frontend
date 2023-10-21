@@ -186,7 +186,7 @@ const Story = () => {
             </li>
           ))
         }
-        <li className="main-story group relative w-[360px] h-full md:max-h-[720px] lg:max-h-[1240px] md:rounded-lg md:border border-white/5 overflow-clip">
+        <li className="main-story group relative w-full h-full md:w-[360px] md:max-h-[720px] lg:max-h-[1240px] md:rounded-lg md:border border-white/5 overflow-clip">
           {
             story.story_type === 'text' ?
               <p className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${from} ${via} ${to}`}>

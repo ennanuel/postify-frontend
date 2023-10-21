@@ -358,8 +358,7 @@
 
             .photos {
     
-                .photo {
-                    position: relative;
+                .post-media {
                     color: $color;
 
                     .type {
@@ -371,12 +370,15 @@
                             font-size: 1.8em;
                         }
                     }
-    
-                    img {
+                    
+                    img,
+                    video {
                         width: 100%;
                         aspect-ratio: 1;
-                        border-radius: 5px;
                         background-color: $bg1;
+                        object-fit: cover;
+                        transition: 0.3s ease transform;
+                        opacity: 0;
                     }
     
                     .overlay {
@@ -390,11 +392,8 @@
                         justify-content: center;
                         gap: 10px;
                         opacity: 0;
-
-                        &:hover {
-                            opacity: 1;
-                            transition: 0.3s ease opacity;
-                        }
+                        background-color: rgba(0, 0, 0, 0.5);
+                        transition: 0.3s ease opacity;
 
                         .reaction {
                             display: flex;
@@ -417,8 +416,18 @@
 
                             &:nth-child(1) {
                                 color: rgb(255, 123, 123);
-                                background-color: rgba(255, 84, 84, 0.2);
+                                background-color: rgba(255, 84, 84, 0.3);
                             }
+                        }
+                    }
+
+                    &:hover {
+                        .overlay {
+                            opacity: 1;
+                        }
+                        video,
+                        img {
+                            transform: scale(1.1);
                         }
                     }
                 }

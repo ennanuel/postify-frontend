@@ -2,50 +2,36 @@ import { useEffect, useContext, useState } from 'react';
 import Post from './Post'
 import './posts.scss'
 import { AuthContext } from '../../context/authContext';
+import { PostType } from '../../types/post.types';
 
-type PostType = {
-  id: string;
-  name: string
-  user_id: number;
-  profile_pic: string;
-  post_type: string;
-  post_bg: 'none' | 'blue' | 'red' | 'white' | 'black';
-  files: string[];
-  post_desc: string;
-  post_likes: number;
-  post_comments: number;
-  shares: number;
-  liked_post: boolean;
-  last_updated: string;
-  date_posted: string;
-  is_yours: boolean;
-  group_name?: string;
-  group_id?: string;
-}
+const Posts = ({ posts }: { posts: PostType[] }) => {
+  const { user, socket } = useContext(AuthContext);
+  const [dynamicPosts, setDynamicPosts] = useState(posts);
 
-const Posts = ({ posts = [] }: { posts?: PostType[] }) => {
-  const { user, socket } = useContext(AuthContext)
-  const [dynamicPosts, setDynamicPosts] = useState(posts)
+  function updatePostLikes({ post_id, post_likes, user_id, liked }: { post_id: string, post_likes: number, user_id: string, liked: boolean }) {
+    const foundPost = dynamicPosts.find( post => post.id === post_id );
+    if (!foundPost) return;
+    foundPost.liked = user.id == user_id ? liked : foundPost.liked;
+    foundPost.post_likes = post_likes;
+    setDynamicPosts((prev) => prev.map(post => post.id == post_id ? foundPost : post));
+  };
+  function updatePostComments({ post_id, post_comments }: { post_id: string; post_comments: number; }) {
+    const foundPost = dynamicPosts.find(post => post.id === post_id);
+    if (!foundPost) return;
+    foundPost.post_comments = post_comments;
+    setDynamicPosts(prev => prev.map(post => post.id === post_id ? foundPost : post));
+  };
 
   useEffect(() => {
-    setDynamicPosts( posts )
-  }, [posts])
+    setDynamicPosts(posts);
+  }, [posts]);
     
-  useEffect(() => { 
-    socket.on('someone-liked', ({ id, likes, user_id, type }: { id: string, likes: number, user_id: string, type: string }) => {
-      setDynamicPosts((prev) => prev.map( post => post.id == id ?
-        ({
-          ...post,
-          post_likes: likes,
-          liked_post: type == 'add' ? user.id == user_id || post.liked_post : user.id != user_id && post.liked_post
-        }) : post
-      ))
-    })
-
-    socket.on('someone-commented', ({ post_id, comments }) => {
-      setDynamicPosts( prev => prev.map( post => post.id === post_id ? ({ ...post, post_comments: comments }) : post) )
-    })
-  }, [])
+  useEffect(() => {
+    socket.removeAllListeners('someone-liked');
+    socket.removeAllListeners('someone-commented');
+    socket.on('someone-liked', updatePostLikes);
+    socket.on('someone-commented', updatePostComments);
+  }, [dynamicPosts]);
 
   return (
     <div className='posts flex flex-col gap-4 md:gap-[50px]'>

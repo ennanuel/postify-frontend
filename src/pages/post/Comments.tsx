@@ -1,84 +1,46 @@
+import { useState, useContext, useMemo } from 'react';
 import { IconButton } from "@mui/material";
-import { MessageOutlined, SendRounded, Favorite, KeyboardArrowLeft } from '@mui/icons-material';
+import { SendRounded, KeyboardArrowDown } from '@mui/icons-material';
 import Comment from "./Comment";
-import { APIURL } from '../../assets/data';
+import { PostContext } from "../../context/postContext";
+import { AuthContext } from '../../context/authContext';
 
-type CommentType = {
-    id: string;
-    content: string;
-    date_uploaded: string;
-    user_id: string;
-    name: string;
-    profile_pic: string;
-    likes: number;
-    liked: boolean;
-    comments: number;
-    reply_to: string;
-}
+const Comments = () => {
+    const { user } = useContext(AuthContext)
+    const { comments, commentId, commentInFocus, showForMobile, updateCommentId, handlePostComment, handleLikeComment, hideAll } = useContext(PostContext);
+    const show = useMemo(() => showForMobile === 'comment', [showForMobile])
 
-type CommentPropsType = {
-    comment: string|null;
-    setComment: React.Dispatch<React.SetStateAction<string|null>>;
-    commentDetails: CommentType;
-    comments: CommentType[];
-    content: string;
-    setContent: React.Dispatch<React.SetStateAction<string>>;
-    handleSubmit: React.FormEventHandler<HTMLFormElement>;
-    likeComment: ( comment_id: string, liked: boolean) => void;
-    user: {
-        id: string;
-        name: string;
-        profile_pic: string;
+    const [reply, setReply] = useState('');
+
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+        e.preventDefault();
+        handlePostComment(reply);
     }
-}
 
-const Comments = ({ comment, setComment, commentDetails, comments, likeComment, content, setContent, handleSubmit, user } : CommentPropsType) => {
+    function hideComments() {
+        updateCommentId(null);
+        hideAll();
+    }
 
     return (
-        <div className={`post-comments grid grid-rows-[auto,auto,1fr,auto] overflow-y-scroll h-full ${comment && 'row-span-full'}`}>
+        <div className={`post-comments absolute z-[999999] lg:relative w-full top-0 bg-black-500 left-0 grid grid-rows-[auto,auto,1fr,auto] overflow-y-scroll h-full transition-transform ${show ? 'lg:row-span-full' : 'translate-y-[110%] lg:translate-y-0'}`}>
             <div className="flex items-center justify-end sticky top-0 py-2 px-4 border-y">
-                {
-                    comment &&
-                    <button className="w-8 flex items-center justify-center" onClick={() => setComment(null)}>
-                        <KeyboardArrowLeft fontSize="small" />
-                    </button>
-                }
+                <button
+                    className={`${show ? 'flex' : 'hidden'} w-8 flex items-center justify-center`}
+                    onClick={hideComments}
+                >
+                    <KeyboardArrowDown fontSize="small" />
+                </button>
                 <p className="flex-1 text-right font-bold">Comments</p>
             </div>
             <div className="flex flex-col gap-2">
-                {
-                    comment &&
-                        <div className="grid grid-cols-[40px,1fr] gap-2 border-b px-4 py-2">
-                            <div>
-                                <img className="w-full aspect-square rounded-full bg-white" src={`${APIURL}/image/profile_pics/${commentDetails.profile_pic}`} alt="" />
-                            </div>
-                                <div className="flex flex-col gap-2">
-                                <div className="flex flex-col gap-1 text-sm">
-                                    <p className="font-bold">
-                                        {commentDetails.name},
-                                        <span className='font-normal text-xs'>{commentDetails.date_uploaded}</span>
-                                    </p> 
-                                    <p className="p-1 px-2 rounded-md bg-white/5">{commentDetails.content}</p>
-                                </div>
-                            <div className="flex items-center gap-2 text-xs">
-                                    <button className='flex items-center justify-center gap-1 px-2 py-[3px] rounded-[12px] bg-white/5'>
-                                        <Favorite fontSize="small" />
-                                        {commentDetails.likes}
-                                    </button>
-                                    <button className='flex items-center justify-center gap-1 px-2 py-[3px] rounded-[12px] bg-white/5'>
-                                        <MessageOutlined fontSize="small" />
-                                        {commentDetails.comments}
-                                    </button>
-                            </div>
-                        </div>
-                    </div>
-                }
+                {commentId && <Comment likeComment={handleLikeComment} updateCommentId={updateCommentId} {...commentInFocus} /> }
             </div>
             <ul className="comments-container max-h-full flex flex-col gap-3 p-3">
                 {
                     comments.map((comment) => (
                         <li key={comment.id}>
-                            <Comment likeComment={likeComment} setComment={setComment} {...comment} />
+                            <Comment likeComment={handleLikeComment} updateCommentId={updateCommentId} {...comment} />
                         </li>
                     ))
                 }
@@ -88,12 +50,12 @@ const Comments = ({ comment, setComment, commentDetails, comments, likeComment, 
                 <img className='w-[40px] h-[40px] rounded-full' src={user.profile_pic} alt={user.name} />
                 <div className="textarea flex items-center gap-2 flex-1 h-[40px] rounded-[40px] px-1">
                     <input
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
+                        value={reply}
+                        onChange={(e) => setReply(e.target.value)}
                         className="px-2 h-full outline-none border-none text-sm flex-1"
                         id="comment"
                         type="text"
-                        placeholder={comment ? "Reply comment..." : "Post a Comment..."}
+                        placeholder={commentId ? "Reply comment..." : "Post a Comment..."}
                     />
                     <IconButton
                         type="submit"

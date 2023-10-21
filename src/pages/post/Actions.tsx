@@ -1,21 +1,15 @@
 import { IconButton } from "@mui/material"
 import { ShareOutlined, FavoriteOutlined, FavoriteBorderOutlined, MessageOutlined } from "@mui/icons-material"
+import { useContext, useMemo } from "react";
+import { PostContext } from "../../context/postContext";
 
-type ActionProps = {
-    likePost: () => void;
-    liked: boolean;
-    post_likes: number;
-    post_comments: number;
-    shares: number;
-    comment: string|null;
-}
-
-const Actions = ({ liked, post_likes, post_comments, shares, comment, likePost }: ActionProps) => {
-    if (comment) return;
+const Actions = () => {
+    const { showForMobile, handleLikePost, showMobileComments, post: { post_likes, post_comments, shares, liked } } = useContext(PostContext);
+    const showingComments = useMemo(() => showForMobile === 'comment', [showForMobile]);
     return (
-         <div className="actions flex items-center gap-3 p-2 px-4">
+         <div className={`actions flex items-center gap-3 p-2 px-4 ${showingComments ? 'lg:hidden' : 'flex'}`}>
             <IconButton sx={{ padding: '0' }}
-                onClick={() => likePost()}
+                onClick={handleLikePost}
             >
                 <span className="flex items-center justify-center gap-1 h-[34px] rounded-[17px] bg-white/5 text-white px-3 text-sm">
                     {
@@ -26,7 +20,7 @@ const Actions = ({ liked, post_likes, post_comments, shares, comment, likePost }
                     <span>{post_likes}</span>
                 </span>
             </IconButton>
-            <IconButton sx={{ padding: '0' }}>
+            <IconButton onClick={showMobileComments} sx={{ padding: '0' }}>
                 <label htmlFor="comment" className="flex items-center justify-center gap-1 h-[34px] rounded-[17px] bg-white/5 text-white text-sm px-3">
                     <MessageOutlined fontSize="small" />
                     <span>{post_comments}</span>

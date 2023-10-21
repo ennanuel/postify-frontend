@@ -20,20 +20,14 @@
                 border-bottom: 1px solid $border;
             }
 
-            .top {
-
-                button {
-                    background-color: $border;
-                }
+            .search {
+                background-color: $border;
             }
 
             .section {
                 a {
                     .icon {
-
-                        &.first {
-                            background-color: $border;
-                        }
+                        background-color: $border;
 
                         &.last {
                             height: auto;
@@ -46,14 +40,15 @@
                     }
 
                     &.active_link {
-                        .icon.first {
-                            background-color: rgb(77, 117, 249);
+                        background-color: $border;
+
+                        .icon {
+                            @apply bg-gradient-to-br from-blue-500 to-purple-600;
                         }
                     }
 
-                    &:hover,
-                    &.active_link {
-                        background-color: $border;
+                    &:hover {
+                        background-color: $bg;
                     }
                 }
             }
@@ -93,56 +88,8 @@
             }
         }
 
-        .menu {
-
-            .filter-search {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 20px;
-                height: 40px;
-                margin-bottom: 20px;
-
-                .sort {
-                    background-color: rgba(67, 111, 255, 0.6);
-                    color: $color;
-                }
-
-                .search {
-                    display: flex;
-                    align-items: center;
-                    background-color: $border;
-                    border-radius: 20px;
-                    width: 300px;
-                    margin-top: 10px;
-                    height: 100%;
-    
-                    label {
-                        padding-left: 10px;
-                        height: 100%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    }
-                    
-                    input {
-                        flex: 1;
-                        color: $color;
-                        height: 100%;
-                        outline: none;
-                        border: none;
-                        padding: 0 8px 0 13px;
-                    }
-                }
-            }
-
-            &:not(:first-child) {
-                margin-top: 20px;
-            }
-        }
-
         .container {
-            @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-4 ;
+            @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-6;
 
             .friend {
                 background-color: $bg1;
@@ -188,77 +135,6 @@
 
         .create-btn {
             background-color: $bg1;
-        }
-
-        .custom-lists {
-            grid-template-columns: repeat(2, 1fr);
-
-            .custom-list {
-                padding: 4px;
-                background-color: $bg1;
-                border-radius: 10px;
-
-                .img-name {
-                    position: relative;
-                    height: 150px;
-
-                    img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        border-radius: 10px;
-                        background-color: $bg;
-                    }
-
-                    .name {
-                        position: absolute;
-                        bottom: 5px;
-                        left: 5px;
-                        font-size: 2rem;
-                    }
-
-                    button {
-                        position: absolute;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        top: 5px;
-                        right: 5px;
-                        height: 30px;
-                        width: 30px;
-                        border-radius: 50%;
-                        background-color: $border;
-                    }
-                }
-
-                .info {
-                    padding: 10px 5px 5px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 5px;
-
-                    .members {
-                        font-size: .9rem;
-                    }
-
-                    .friends-list {
-                        display: flex;
-                        align-items: center;
-
-                        .friend-list {
-                            height: 20px;
-                            aspect-ratio: 1;
-                            border-radius: 50%;
-                            background-color: $bg1;
-                            border: 2px solid $bg;
-
-                            &:not(:first-child) {
-                                margin-left: -10px;
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }

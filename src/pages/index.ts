@@ -11,12 +11,15 @@ import Story from "./story";
 import Message from "./message";
 import Channels from './channel'
 import Settings from './settings';
+import Search from './search';
+import EditProfile from './edit_profile';
 
 export { 
     Home,
     Login,
     Register,
     Profile,
+    EditProfile,
     Friends,
     Post,
     Groups,
@@ -25,5 +28,6 @@ export {
     Story,
     Message,
     Channels,
-    Settings
+    Settings,
+    Search
 }

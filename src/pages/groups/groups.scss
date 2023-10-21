@@ -1,137 +1,124 @@
 @import "../../theme.scss";
 
 .groups {
-    @include themify($themes) {
-        $bg: themed("bg");
-        $bg1: themed("bgSoft");
-        $color: themed("textColor");
-        $color1: themed("textColorSoft");
-        $border: themed("border");
+  @include themify($themes) {
+    $bg: themed("bg");
+    $bg1: themed("bgSoft");
+    $color: themed("textColor");
+    $color1: themed("textColorSoft");
+    $border: themed("border");
 
-        background-color: $bg;
-        color: $color;
+    background-color: $bg;
+    color: $color;
 
-        .left {
+    .left {
+      background-color: $bg1;
+
+      @include tablet {
+        background-color: transparent;
+        border: none;
+        border-bottom: 1px solid $border;
+      }
+
+      .top {
+        &.menu-top {
+          p {
+            color: rgb(96, 165, 255);
+          }
+        }
+      }
+
+      .search {
+        background-color: $border;
+
+        input {
+          color: $color1;
+        }
+      }
+
+      .section {
+        .icon {
+          background-color: $border;
+        }
+
+        &:hover,
+        &.active_section {
+          background-color: $border;
+        }
+
+        &.active_section .icon {
+          @apply bg-gradient-to-br from-blue-500 to-purple-600;
+        }
+      }
+
+      .create-new {
+        background-color: rgba(0, 110, 255, 0.2);
+        color: rgb(61, 144, 253);
+      }
+
+      .groups-list {
+        border-top: 1px solid $border;
+
+        .group-list {
+          background-color: $border;
+
+          img {
             background-color: $bg1;
-            border-right: 1px solid $border;
+          }
 
-            @include tablet {
-                background-color: transparent;
-                border: none;
-                border-bottom: 1px solid $border;
-            }
-
-            .top {
-                &.menu-top {
-
-                    p {
-                        color: rgb(96, 165, 255);
-                    }
-                }
-
-                button {
-                    background-color: $border;
-                }
-            }
-
-            .search {
-                background-color: $border;
-
-                input {
-                    color: $color1;
-                }
-            }
-
-            .section {
-                
-                .icon {
-                    background-color: $border;
-                }
-
-                &:hover,
-                &.active_section {
-                    background-color: $border;
-                }
-
-                &.active_section .icon {
-                    background-color: rgb(67, 111, 255);
-                }
-            }
-            
-            .create-new {
-                background-color: rgba(0, 110, 255, 0.2);
-                color: rgb(61, 144, 253);
-            }
-
-            .groups-list {
-                border-top: 1px solid $border;
-
-                .group-list {
-                    background-color: $border;
-
-                    img {
-                        background-color: $bg1;
-                    }
-                    
-                    button {
-                        background-color: $bg1;
-                    }
-                }
-            }
+          button {
+            background-color: $bg1;
+          }
         }
-
-        .right {
-
-            .right-bar {
-                background-color: $bg1;
-
-                .groups-list {
-
-                    .group-list {
-
-                        img {
-                            background-color: $border;
-                        }
-
-                        button {
-                            background-color: rgba(0, 110, 255, 0.3);
-                            color: rgb(165, 204, 254);
-                        }
-
-                        &:hover {
-                            background-color: $bg;
-                        }
-                    }
-                }
-            }
-
-            .joined-groups {
-
-
-                .joined-group {
-                        background-color: $bg1;
-
-                        .info {
-
-                            img {
-                                background-color: $border;
-                            }
-                        }
-
-                .actions {
-
-                    button, .btn {
-                        background-color: $border;
-                        color: $color;
-
-                        &:first-child {
-                                background-color: rgba(0, 110, 255, 0.2);
-                                color: rgb(96, 165, 255);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+      }
     }
+
+    .right {
+      .right-bar {
+        background-color: $bg1;
+
+        .groups-list {
+          .group-list {
+            img {
+              background-color: $border;
+            }
+
+            button {
+              background-color: rgba(0, 110, 255, 0.3);
+              color: rgb(165, 204, 254);
+            }
+
+            &:hover {
+              background-color: $bg;
+            }
+          }
+        }
+      }
+
+      .joined-groups {
+        .joined-group {
+          background-color: $bg1;
+
+          .info {
+            img {
+              background-color: $border;
+            }
+          }
+
+          .actions {
+            button,
+            .btn {
+              background-color: $border;
+              color: $color;
+
+              &:first-child {
+                background-color: rgba(0, 110, 255, 0.2);
+                color: rgb(96, 165, 255);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

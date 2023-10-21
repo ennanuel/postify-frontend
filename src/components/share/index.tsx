@@ -3,24 +3,24 @@ import { useContext, useRef, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import { profile_pic } from "../../assets/images";
 import { PermMediaOutlined, EmojiEmotionsOutlined, AddRounded, VideoCameraBack, CheckOutlined } from "@mui/icons-material";
-import { APIURL } from "../../assets/data";
-import { fetchOptions, post_bgs } from "../../assets/data/data";
-import { useLocation, useParams } from "react-router-dom";
+import { post_bgs } from "../../assets/data/data";
+import { useParams } from "react-router-dom";
+import { convertFileToBase64 } from "../../utils";
+import { postContent } from "../../utils/post";
 
 type FormDataType = {
   post_desc: string;
   files: File[];
   post_type: 'text' | 'photo' | 'video';
-  post_bg: string;
+  post_bg: 'none' | 'blue' | 'red' | 'white' | 'black';
 }
 
 const Share = () => {
   const { id } = useParams();
-  const { pathname } = useLocation();
   const [{ post_type, post_bg, post_desc, files }, setPost] = useState<FormDataType>({ post_type: 'text', post_bg: 'none', post_desc: '', files: [] });
   const [images, setImages] = useState<{ id: string, src: string }[]>([])
 
-  const { user, socket } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const formRef = useRef<HTMLFormElement>(null);
   const imagesRef = useRef<HTMLUListElement>(null);
 
@@ -28,65 +28,36 @@ const Share = () => {
     setPost( prev => ({...prev, [e.target.name]: e.target.value}) )
   }
 
-  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    if (e.target.files) {
-      const file = e.target.files[0]
-      const reader = new FileReader()
-      const post_type = /video/i.test(file.type) ? 'video' : 'photo'
-
-      if (file.size > 1024*1024*3) {
-        return alert('file size too big!')
-      }
-
-      reader.readAsDataURL(file)
-      reader.onload = () => {
-          setImages( prev => [...prev, { id: file.name, src: String(reader.result || '') }] )
-      };
-      setPost(prev => ({ ...prev, files: [...prev.files, file], post_type }))
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+    try {
+      if (!e.target.files) return;
+      const file = e.target.files[0];
+      const post_type = /video/i.test(file.type) ? 'video' : 'photo';
+      const fileName = await convertFileToBase64(file);
+      setImages(prev => [...prev, { id: file.name, src: fileName }]);
+      setPost(prev => ({ ...prev, files: [...prev.files, file], post_type }));
+    } catch (error) {
+      alert(error);
     }
   }
 
   const removeImage = (id: string) => {
+    setImages(prev => prev.filter(image => image.id !== id));
     setPost(prev => ({
       ...prev,
       files: prev.files.filter(file => file.name !== id),
-      post_type: prev.files.length === 1 ? 'text' : 'photo'
-    }))
-    setImages( prev => prev.filter( image => image.id !== id ))
+      post_type: prev.files.length === 1 ? 'text' : prev.post_type
+    }));
   }
 
-  const handleSubmit : React.FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    const headers = new Headers();
-    headers.append('Access-Control-Allow-Origin', APIURL)
-    
-    formData.append('user_id', user.id);
-    formData.append('post_type', post_type);
-    formData.append('post_desc', post_desc);
-    formData.append('post_bg', post_bg);
-    files.forEach(file => {
-      formData.append('files', file)
-    });
-
-    if (/group/i.test(pathname)) {
-      formData.append('type', 'group')
-      formData.append('group_id', id || '');
-    } else if (/channel/i.test(pathname)) {
-      formData.append('type', 'channel')
-      formData.append('channel_id', id || '');
-    }
-
-    const options : RequestInit = { ...fetchOptions, headers, method: 'POST', body: formData }
-    const response = await fetch(APIURL + '/post/create', options);
-    const { message } = await response.json()
-    if(response.status !== 200) {
-      alert(message);
-      return;
-    } else {
-      setPost({ post_desc: '', post_bg: 'none', files: [], post_type: 'text' })
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    try {
+      e.preventDefault();
+      await postContent({ user_id: user.id, post_type, post_desc, post_bg, files, group_id: id });
+      setPost({ post_type: 'text', post_bg: 'none', post_desc: '', files: [] });
       setImages([])
-      socket.emit('post-action', { user_id: user.id })
+    } catch (error) {
+      console.error(error);
     }
   }
 

@@ -1,4 +1,5 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext'
 import { friendContext } from '../../pages/friends';
 import { FriendCard } from '../../components/cards';
@@ -27,20 +28,20 @@ const Friends = () => {
   return (
     <div className="friends">
       <div className="menu">
-        <div className="menu-title">
-          <h3>Friend Requests</h3>
-            <p>See all</p>
-        </div>
+      <div className="flex items-center justify-between mt-4">
+        <h3 className="font-bold text-3xl">Friend Requests</h3>
+        <Link to="/friends/requests" className='text-sm opacity-80'>more</Link>
+      </div>
 
-        <div className="container">
-        { received.map(friend => <FriendCard {...friend} key={friend.id} type="received" />) }
+        <div className="container min-h-[30vh]">
+        { received.map(friend => <FriendCard {...friend} key={friend.id} />) }
         </div>
       </div>
 
       <div className="menu">
-        <div className="menu-title">
-          <h3>Suggested Friends</h3>
-            <p>See all</p>
+        <div className="flex items-center justify-between mt-4">
+          <h3 className="font-bold text-3xl">Suggestions</h3>
+          <Link to="/friends/suggestions" className='text-sm opacity-80'>more</Link>
         </div>
 
         <div className="container">

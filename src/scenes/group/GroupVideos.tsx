@@ -1,33 +1,22 @@
 import { useState, useEffect, useContext } from 'react';
-import { FavoriteOutlined, KeyboardArrowDown, MessageOutlined, Videocam } from '@mui/icons-material'
-import { APIURL } from '../../assets/data';
+import { FavoriteOutlined, KeyboardArrowDown, MessageOutlined, Videocam } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import { GroupContext } from '../../pages/group';
-
-type PostType = {
-  id: string;
-  file: string;
-  file_count: string;
-  like_count: string;
-  comment_count: string;
-}
+import { AuthContext } from '../../context/authContext';
+import { fetchGroupPosts } from '../../utils/group';
+import { PostType } from '../../types/post.types';
+import { MediaCard } from '../../components/cards';
 
 const GroupVideos = () => {
-  const { id } = useParams()
-  
-  const { refreshPost : refresh } = useContext(GroupContext)
-
-  const [videos, setVideos] = useState<PostType[]>([])
-
-  const fetchVideos = async () => {
-    const response = await fetch(`${APIURL}/group/posts/${id}?type=video`)
-    if (response.status !== 200) return alert('something went wrong')
-    const res = await response.json();
-    setVideos(res)
-  }
+  const { id } = useParams();
+  const { user } = useContext(AuthContext)
+  const { refreshPost: refresh } = useContext(GroupContext);
+  const [videos, setVideos] = useState<PostType[]>([]);
   
   useEffect(() => {
-    fetchVideos()
+    fetchGroupPosts({ group_or_user_id: id, user_id: user.id, postType: 'video' })
+      .then(res => setVideos(res))
+      .catch(error => alert(error));
   }, [refresh])
 
   return (
@@ -41,20 +30,9 @@ const GroupVideos = () => {
       </div>
       <ul className="photos grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
         {
-          videos.map( ({id, file, like_count, comment_count}) => (
-            <li key={id} className="photo">
-              <div className="type"><Videocam /></div>
-              <img src={file} alt="" />
-              <div className="overlay">
-                <div className="reaction">
-                  <FavoriteOutlined />
-                  <span>{like_count}</span>
-                </div>
-                <div className="reaction">
-                  <MessageOutlined />
-                  <span>{comment_count}</span>
-                </div>
-              </div>
+          videos.map( (post) => (
+            <li key={post.id}>
+              <MediaCard {...post} />
             </li>
           ))
         }

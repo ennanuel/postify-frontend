@@ -18,10 +18,7 @@ const FriendSuggestions = () => {
 
   return (
     <div className="menu">
-      <div className="menu-title">
-        <h3>Suggested Friends</h3>
-      </div>
-
+      <h3 className="font-bold text-3xl mt-4">Suggestions</h3>
       <div className="container">
         { suggestions.map(friend => <FriendCard {...friend} key={friend.id} />) }
       </div>

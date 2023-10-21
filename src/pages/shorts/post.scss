@@ -1,0 +1,154 @@
+@import '../../theme.scss';
+
+.post {
+    @include themify($themes) {
+        $bg: themed("bg");
+        $bg1: themed("bgSoft");
+        $color: themed("textColor");
+        $color1: themed("textColorSoft");
+        $border: themed("border");
+
+        background-color: $bg1;
+        color: $color;
+
+        .left {
+            background-color: $bg;
+            z-index: 9999999;
+
+            .close {
+                color: $color;
+
+                &:hover {
+                    background-color: $bg1;
+                }
+            }
+
+            .zoom {
+
+                button {
+
+                    * {
+                        color: $color;
+                    }
+                }
+            }
+
+            .post-content {
+
+                .content {
+                    background-color: $bg1;
+                }
+
+                button {
+                    color: $color;
+                    background-color: $bg1;
+                }
+            }
+
+            @include tablet {
+                position: relative;
+                top: 0;
+                left: 0;
+            }
+        }
+
+        .right {
+            color: $color;
+            
+            .info {
+
+                img {
+                    border: 1px solid $border;
+                }
+
+                .more {
+                    color: $color;
+                }
+
+                .post-desc {
+                    color: $color1;
+                    background-color: $border;
+                }
+
+                .actions {
+
+                    button {
+                        @apply flex;
+                        @apply items-center;
+                        @apply justify-center;
+                        @apply h-[30px];
+                        @apply rounded-[15px];
+                        @apply px-3;
+                        @apply text-sm;
+                        @apply gap-[4px];
+                        @apply transition-transform;
+                        color: $color1;
+                        background-color: $border;
+
+                        svg {
+                            font-size: medium;
+                        }
+
+                        &:active {
+                            @apply scale-90;
+                        }
+                    }
+                }
+            }
+
+            .comments-container {
+                border-color: $border;
+
+                img {
+                    border-color: $border;
+                }
+
+                .comment-msg {
+
+                    .msg {
+
+                        .comment-text {
+                            background-color: $border;
+                        }
+
+                        .comment-actions {
+                            color: $color;
+
+                            .reaction {
+                                background-color: $border;
+                                color: $color;
+                            }
+
+                            button {
+                                @apply text-xs rounded-[13px];
+                                color: inherit;
+                                height: 25px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .create-comment {
+                border-color: $border;
+
+                img {
+                    border: 1px solid $border;
+                }
+
+                .textarea {
+                    background-color: $border;
+
+                    button {
+                        @apply w-[30px];
+                        @apply h-[40px];
+                        @apply flex;
+                        @apply items-center;
+                        @apply justify-center;
+                        color: $color;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import { Add, Search, CheckRounded } from '@mui/icons-material'
+import { Add, Search, CheckRounded, KeyboardArrowLeft } from '@mui/icons-material'
 import APIURL, { custom_group_bgs } from '../../assets/data/data';
-import { createCustomFriendGroups, fetchFriends } from '../../utils/friend';
+import { createOrEditCustomFriendGroups, fetchFriends } from '../../utils/friend';
 import { AuthContext } from '../../context/authContext';
 import { FriendType } from '../../types/friend.types';
+import { useNavigate, Link } from 'react-router-dom';
 
 type ValueType = { group_name: string; users: string[]; color: 'purple' | 'blue' | 'red' | 'white' | 'black' }
 
@@ -11,22 +12,23 @@ const CreateCustomList = () => {
     const { user } = useContext(AuthContext)
     const [{ group_name, users, color }, setValues] = useState<ValueType>({ group_name: '', users: [], color: 'purple' })
     const [friends, setFriends] = useState<FriendType[]>([]);
+    const navigate = useNavigate();
 
     const addUser = (id: string) => {
         if (users.includes(id)) return;
         setValues(prev => ({ ...prev, users: [...prev.users, id] }));
     }
-
     const removeUser = (id: string) => {
         setValues(prev => ({ ...prev, users: prev.users.filter(user_id => user_id !== id) }));
     }
-
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        setValues(prev => ({...prev, [e.target.name]: e.target.value}))
+        setValues(prev => ({ ...prev, [e.target.name]: e.target.value }));
     }
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
-        createCustomFriendGroups({ user_id: user.id, group_name, users, color });
+        createOrEditCustomFriendGroups({ user_id: user.id, group_name, users, color })
+            .then(() => navigate('/friends/custom'))
+            .catch(error => alert(error));
     }
 
     useEffect(() => { 
@@ -36,10 +38,12 @@ const CreateCustomList = () => {
     })
 
     return (
-        <div className='p-4'>
-            <form onSubmit={handleSubmit}>
-                <div className="flex items-center justify-between gap-4 flex-wrap">
+        <form onSubmit={handleSubmit}>
+            <div className="flex items-center justify-between gap-4 flex-wrap mt-4">
+                <div className="flex items-center gap-2">
+                    <Link to="/friends/custom" className="flex lg:hidden items-center justify-center"><KeyboardArrowLeft /></Link>
                     <h2 className="font-bold text-3xl">New Friend Group</h2>
+                </div>
                     <button className="h-[40px] rounded-[20px] bg-white/5 hover:bg-white/10 px-4 font-bold">Create</button>
                 </div>
                 <div className="flex items-center justify-between flex-wrap gap-4 mt-6">
@@ -86,6 +90,7 @@ const CreateCustomList = () => {
                                 <img className="w-[50px] aspect-square rounded-full shadow shadow-black-900/50" src={`${APIURL}/image/profile_pics/${profile_pic}`} alt="" />
                                 <p className="flex-1">{name}</p>
                                 <button
+                                    type="button"
                                     onClick={() => users.includes(id) ? removeUser(id) : addUser(id)}
                                     className={`w-[50px] h-[50px] rounded-full  rounded-full transition-transform ${users.includes(id) ? 'bg-red-600 rotate-45' : 'bg-white/10'} active:scale-90`}
                                 ><Add /></button>
@@ -93,8 +98,7 @@ const CreateCustomList = () => {
                         ))
                     }
                 </div>
-            </form>
-        </div>
+        </form>
     )
 }
 

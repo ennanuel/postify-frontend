@@ -1,71 +1,73 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import { register } from '../../utils/auth';
 import './register.scss';
-import { APIURL } from '../../assets/data';
 
 const Register = () => {
   const navigate = useNavigate()
-  const [{username, email, name, password, confirm}, setCredentials] = useState({ username: '', email: '', name: '', password: '', confirm: '' })
-
-  const handleSubmit : React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-
-  }
-
-  const register = async () => {
-    const requestBody = { username, email, name, password };
-
-    const fetchOptions = {
-      method: "POST",
-      body: JSON.stringify(requestBody),
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8"
-      }
-    }
-
-    const response = await fetch(`${APIURL}/auth/register`, fetchOptions);
-    const res = await response.json();
-
-    alert(res.message);
-  }
-
-  const handleClick = () => {
-    if( username && email && name && password && confirm && ( password === confirm )) {
-      register();
-    } else {
-      alert('not complete');
-    }
-  }
+  const [{ username, email, name, password, confirm_password }, setCredentials] = useState({ username: '', email: '', name: '', password: '', confirm_password: '' })
+  const [{ failed, key, message }, setError] = useState<{ failed: Boolean; key: undefined | string; message: undefined | string; }>({ failed: false, key: '', message: '' })
 
   const handleChange : React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    setCredentials(prev => ({ ...prev, [event.target.name]: event.target.value }))
+    setCredentials(prev => ({ ...prev, [event.target.name]: event.target.value }));
+    if (failed && key === event.target.name) clearMessage();
   }
 
-  return (
-    <div className="register bg-[rgb(193,190,255)] flex items-center justify-center min-h-[100vh]">
-      <div className="card w-[60%] flex flex-row-reverse rounded-[10px] bg-white overflow-hidden">
-        <div className="left flex-1 p-[30px] gap-[30px] flex flex-col text-white">
-          <h1 className="text-[100px]">Register Social.</h1>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo mollitia esse commodi nisi libero exercitationem nostrum enim? Eveniet error, in, eum cupiditate quisquam aliquam praesentium non id corrupti, eaque doloribus!</p>
-        <span className="text-[14px]">Already have an account?</span>
-        <Link className="btn w-[50%] p-[10px] border-none bg-white text-[rebeccapurple] font-bold flex items-center justify-center" to="/login">Login</Link>
-        </div>
-        <div className="right flex-1 p-[30px] flex flex-col justify-center gap-[50px]">
-          <h1 className="text-[#555] font-bold text-3xl">Register</h1>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-[30px]">
-            <input name="name" value={name} onChange={handleChange} type="name" placeholder="name" />
-            <input name="username" value={username} onChange={handleChange} type="text" placeholder="username" />
-            <input name="email" value={email} onChange={handleChange} type="email" placeholder="email" />
-            <input name="password" value={password} onChange={handleChange} type="password" placeholder="password" />
-            <input name="confirm" value={confirm} onChange={handleChange} type="password" placeholder="confirm password" />
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    register({ username, email, name, password, confirm_password })
+      .then(handleSuccess)
+      .catch(setError);
+  }
+  function handleSuccess() {
+    clearMessage();
+    navigate('/login');
+  }
+  function clearMessage() { setError({ failed: false, key: undefined, message: undefined }) };
 
-            <button onClick={handleClick} className="w-[50%] p-[10px] border-none bg-[#938eef] text-white font-bold flex items-center justify-center">
-              Register
-            </button>
-          </form>
+  return (
+    <section className="register p-4 bg-purple-100 flex items-center justify-center min-h-[100vh]">
+      <div className="card max-w-[400px] w-full p-4 flex flex-col gap-4 rounded-lg bg-white overflow-hidden shadow-lg shadow-purple-400/50">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="font-bold text-xl text-purple-900">Postify</h2>
+          <h1 className="text-purple-800 font-bold text-3xl">Register</h1>
         </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
+          <div className="flex flex-col gap-[3px]">
+            <input name="name" value={name} onChange={handleChange} type="name" placeholder="firstname lastname" className={`${failed && key === 'name' && 'failed'}`} />
+            {failed && key === 'name' && <p className="px-2 text-red-600 text-xs">{message}</p>}
+          </div>
+          <div className="flex flex-col gap-[3px]">
+            <input name="username" value={username} onChange={handleChange} type="text" placeholder="username" className={`${failed && key === 'username' && 'failed'}`} />
+            {failed && key === 'username' && <p className="px-2 text-red-600 text-xs">{message}</p>}
+          </div>
+          <div className="flex flex-col gap-[3px]">
+            <input name="email" value={email} onChange={handleChange} type="email" placeholder="email" className={`${failed && key === 'email' && 'failed'}`} />
+            {failed && key === 'email' && <p className="px-2 text-red-600 text-xs">{message}</p>}
+          </div>
+          <div className="flex flex-col gap-[3px]">
+            <input name="password" value={password} onChange={handleChange} type="password" placeholder="password" className={`${failed && key === 'password' && 'failed'}`} />
+            {failed && key === 'password' && <p className="px-2 text-red-600 text-xs">{message}</p>}
+          </div>
+          <div className="flex flex-col gap-[3px]">
+            <input name="confirm_password" value={confirm_password} onChange={handleChange} type="password" placeholder="confirm password" className={`${failed && key === 'confirm_password' && 'failed'}`} />
+            {failed && key === 'confirm_password' && <p className="px-2  text-red-600 text-xs">{message}</p>}
+          </div>
+          <button
+            className="register-btn mt-2"
+          >
+            Register
+          </button>
+        </form>
+        <p className="">
+          <span className="text-xs semibold text-gray-500 mr-1">Already have an account?</span>
+          <Link
+            to="/login"
+            className="link-to-login"
+          >Login</Link>
+        </p>
       </div>
-    </div>
+    </section>
   )
 }
 

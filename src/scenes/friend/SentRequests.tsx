@@ -19,13 +19,11 @@ const SentRequests = () => {
 
   return (
     <div className="menu">
-      <div className="menu-title">
-        <h3>Sent Requests</h3>
-      </div>
+      <h3 className="font-bold text-3xl mt-4">Sent Requests</h3>
 
       <div className="container">
         {
-          requests.map(request => <FriendCard {...request} key={request.id} type="sent" />)
+          requests.map(request => <FriendCard {...request} key={request.id} />)
         }
       </div>
     </div>

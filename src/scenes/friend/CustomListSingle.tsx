@@ -1,4 +1,4 @@
-import { ChatRounded, EditRounded, PersonRounded } from '@mui/icons-material';
+import { ChatRounded, EditRounded, KeyboardArrowLeft, PersonRounded } from '@mui/icons-material';
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { APIURL } from '../../assets/data';
@@ -23,18 +23,23 @@ const CustomListSingle = () => {
   }, [id])
 
   return (
-    <div className="menu">
-      <div className="flex items-center justify-between gap-4 md:mt-4 px-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="font-bold text-3xl">{ group_name }</h2>
-          <hr className={`block h-2 rounded-md bg-gradient-to-r ${from} ${via} ${to} border-none outline-none`} />
+    <section className="">
+      <article className="flex items-center justify-between gap-4 mt-4 md:px-4">
+        <div className="flex items-center gap-2 md:gap-4">
+          <Link to="/friends/custom" className="flex lg:hidden items-center justify-center">
+            <KeyboardArrowLeft />
+          </Link>
+          <div className="flex flex-col gap-1">
+            <h2 className="font-bold text-3xl">{ group_name }</h2>
+            <hr className={`block h-2 rounded-md bg-gradient-to-r ${from} ${via} ${to} border-none outline-none`} />
+          </div>
         </div>
         <Link to={`/friends/custom/edit/${id}`} className="h-[40px] w-[40px] rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center">
           <EditRounded />
         </Link>
-      </div>
+      </article>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 mt-6">
+      <article className="grid grid-cols-1 md:grid-cols-2 mt-6">
         {
           friends.map( ({id, name, profile_pic, active}) => (
             <div key={id} className="flex items-center gap-2 p-2 border border-transparent bg-white/5 rounded-[35px] transition-[background-color] hover:bg-transparent hover:border-white/5 shadow shadow-black-900">
@@ -46,17 +51,19 @@ const CustomListSingle = () => {
                   <span>Active</span>
                 </p>
               </div>
-              <button className="w-[40px] md:w-[50px] transition-[background-color] bg-green-500 hover:bg-green-700/20 hover:text-green-400 aspect-square rounded-full shadow shadow-black-900/50">
+              <Link
+                to={`/profile/${id}`}
+                className="w-[40px] flex items-center justify-center md:w-[50px] transition-[background-color] bg-green-500 hover:bg-green-700/20 hover:text-green-400 aspect-square rounded-full shadow shadow-black-900/50">
                 <PersonRounded />
-              </button>
+              </Link>
               <button className="w-[40px] md:w-[50px] transition-[background-color] bg-blue-500 hover:bg-blue-700/20 hover:text-blue-300 aspect-square rounded-full shadow shadow-black-900/50">
                 <ChatRounded />
               </button>
             </div>
           ))
         }
-      </div>
-    </div>
+      </article>
+    </section>
   )
 }
 

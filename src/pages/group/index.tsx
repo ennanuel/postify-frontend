@@ -2,18 +2,9 @@ import { useState, useEffect, createContext, useContext } from 'react';
 import { Outlet, useParams } from "react-router-dom";
 import DetailsHeader from './DetailHeader';
 import { AuthContext } from '../../context/authContext';
-import { APIURL } from '../../assets/data';
 import './group.scss';
-import { fetchOptions } from '../../assets/data/data';
-
-type GroupType = {
-    id: string;
-    name: string;
-    cover: string;
-    member_pics: string[];
-    is_member: boolean;
-    owner: boolean;
-}
+import { GroupType } from '../../types/group.types';
+import { getGroupInfo } from '../../utils/group';
 
 type GroupContextType = {
     group: GroupType;
@@ -31,35 +22,22 @@ const Group = () => {
     const [refreshPost, setRefreshPost] = useState<boolean>(false)
     const [refreshDet, setRefreshDet] = useState<boolean>(false)
 
-    const fetchGroupInfo = async () => {
-        const response = await fetch(`${APIURL}/group/info/${id}?user_id=${user.id}`, fetchOptions)
-        if (response.status !== 200) return alert('something went wrong')
-        const res = await response.json();
-        setGroupInfo(res);
-    }
-
     useEffect(() => {
-        fetchGroupInfo();
-    }, [id])
+        getGroupInfo({ group_id: id, user_id: user.id })
+            .then(res => setGroupInfo(res))
+            .catch(error => alert(error));
+    }, [refreshDet])
 
     useEffect(() => {
         socket.removeAllListeners('post-event');
         socket.removeAllListeners('group-event');
 
         socket.on('group-event', ({ group_id, user_id }) => {
-            if (group_id === id) {
-                fetchGroupInfo();
-                setRefreshDet(!refreshDet)
-            };
-            if (user_id === user.id) {
-                getIds('group');
-            }
+            if (group_id === id) setRefreshDet(!refreshDet);
+            if (user_id === user.id) getIds('group');
         })
-
         socket.on('post-event', ({ group_id }) => {
-            if (group_id === id) {
-                setRefreshPost(!refreshPost)
-            }
+            if (group_id === id) setRefreshPost(!refreshPost);
         })
     }, [socket, refreshPost, refreshDet, id])
 

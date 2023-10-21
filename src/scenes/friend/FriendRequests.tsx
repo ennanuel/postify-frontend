@@ -19,14 +19,14 @@ const FriendRequests = () => {
 
   return (
     <div className="menu">
-      <div className="menu-title">
-        <h3>Friend Requests</h3>
-          <p>See all</p>
+      <div className="flex items-center justify-between mt-4">
+        <h3 className="font-bold text-3xl">Friend Requests</h3>
+        <p className="text-sm">See all</p>
       </div>
 
       <div className="container">
         {
-          requests.map((friend) => <FriendCard {...friend} key={friend.id} type="received" />)
+          requests.map((friend) => <FriendCard {...friend} key={friend.id} />)
         }
       </div>
     </div>

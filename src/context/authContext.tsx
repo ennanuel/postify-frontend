@@ -1,30 +1,21 @@
 import { createContext, useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { io, Socket } from 'socket.io-client';
-import { APIURL } from '../assets/data';
-import { fetchOptions } from '../assets/data/data';
+import { io } from 'socket.io-client';
+import { ContextArgumentTypes, UserType } from '../types/user.types';
+import { fetchUserDetails } from '../utils/auth';
+import { fetchFriendIds } from '../utils/friend';
+import { fetchGroupIds } from '../utils/group';
 
-type UserType = {
-    name: string;
-    profile_pic: string;
-    id: string;
-}
- 
-type ContextArgTypes = { 
-    user: UserType;
-    login: () => void;
-    logout: () => void;
-    friend: string[];
-    group: string[];
-    getIds: (type: string) => void;
-    socket: Socket
-}
+const socket = io('http://localhost:4000');
 
-const socket = io('http://localhost:4000')
+const FETCH_ID_TYPES = [
+    { key: 'friend', fetchIds: fetchFriendIds },
+    { key: 'group', fetchIds: fetchGroupIds }
+]
 
-export const AuthContext = createContext<ContextArgTypes>({
+export const AuthContext = createContext<ContextArgumentTypes>({
     user: { name: "", profile_pic: "", id: ""  }, 
-    login: () => null,
+    logUserIn: () => null,
     logout: () => null,
     friend: [],
     group: [],
@@ -37,40 +28,33 @@ export function AuthContextProvider({ children }: { children: JSX.Element }) {
     const navigate = useNavigate()
     const [{ friend, group }, setIds] = useState<{ friend: string[];  group: string[] }>({ friend: [], group: [] })
 
-    async function login() {
-        const response = await fetch(`${APIURL}/auth`, fetchOptions)
-        const { profile_pic, name, id, message } = await response.json()
-        if (response.status !== 200) return alert(message);
-        if (!id) return;
-        setUser({ id, name, profile_pic: `${APIURL}/image/profile_pics/${profile_pic}` })
-    }
-
-    async function getIds(type: string) {
-        if (!['group', 'friend'].includes(type)) return;
-        const response = await fetch(`${APIURL}/${type}/id/${user.id}`, fetchOptions)
-        if (response.status !== 200) alert('something went wrong');
-        const res : { results: string[] } = await response.json();
-        setIds( prev => ({ ...prev, [type]: res?.results || [] }) );
-    }
-
+    function logUserIn() {
+        fetchUserDetails()
+            .then(res => setUser(res))
+            .catch(error => alert(error.message));
+    };
+    function getIds() {
+        for (let { key, fetchIds } of FETCH_ID_TYPES) {
+            fetchIds(user.id)
+                .then((res) => setIds(prev => ({ ...prev, [key]: res })))
+                .catch(error => console.error(error));
+        }
+    };
     function logout() {
         setUser({} as UserType);
         navigate('/')
-    }
+    };
 
     useEffect(() => {
-        if (Boolean(user.id)) {
-            getIds('friend');
-            getIds('group');
-        }
+        if (Boolean(user.id)) getIds();
     }, [user])
 
     useLayoutEffect(() => {
-        login()
+        logUserIn();
     }, [])
     
     return (
-        <AuthContext.Provider value={{ user, login, logout, socket, friend, group, getIds }}>
+        <AuthContext.Provider value={{ user, logUserIn, logout, socket, friend, group, getIds }}>
             {children}
         </AuthContext.Provider>
     )

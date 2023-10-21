@@ -1,68 +1,49 @@
-import { useState, useContext, useEffect } from 'react'
-import { KeyboardArrowDown, Search } from '@mui/icons-material'
-import { useParams } from 'react-router-dom'
-import { APIURL } from '../../assets/data'
+import { useState, useContext, useEffect, useMemo } from 'react';
+import { Search } from '@mui/icons-material';
+import { useParams } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext'
 import { GroupContext } from '../../pages/group'
-import { fetchOptions } from '../../assets/data/data'
-
-type UserType = {
-  id: string;
-  name: string;
-  profile_pic: string;
-  owner: string;
-}
+import { addOrRemoveMember, fetchGroupMembers } from '../../utils/group';
+import { UserType } from '../../types/user.types';
+import GroupMember from '../../components/cards/GroupMember'
 
 const GroupMembers = () => {
-  const { user, socket } = useContext(AuthContext)
-  const { group: { owner: groupOwner }, refreshDet: refresh } = useContext(GroupContext);
+  const { user } = useContext(AuthContext)
+  const { refreshDet: refresh } = useContext(GroupContext);
 
-  const { id } = useParams()
-  const [groupMembers, setGroupMembers] = useState<UserType[]>([])
+  const { id } = useParams();
+  const [groupMembers, setGroupMembers] = useState<UserType[]>([]);
+  const [filter, setFilter] = useState('');
+  const filterRegExp = useMemo(() => new RegExp(filter.split(' ').join('|'), 'i'), [filter]);
 
   const removeUser = async (user_id: string) => {
-    socket.emit('group-action', { user_id, group_id: id }, 'remove')
-  }
-
-  const fetchGroupMembers = async () => {
-    const response = await fetch(`${APIURL}/group/members/${id}`, fetchOptions)
-    if (response.status !== 200) return alert('something went wrong')
-    const res = await response.json();
-    setGroupMembers(res);
+    addOrRemoveMember({ user_id, group_id: id || '', actionType: 'remove' });
   }
 
   useEffect(() => {
-    fetchGroupMembers()
+    fetchGroupMembers({ group_id: id, user_id: user.id })
+      .then(res => setGroupMembers(res))
+      .catch(error => alert(error));
   }, [refresh])
   
   return (
     <div className="group-members-page p-4">
+      <h3 className="font-bold text-xl mb-4">Group Members</h3>
       <div className="search">
-        <Search />
-        <input type="text" placeholder="Search group members" />
-      </div>
-      <div className="menu-top">
-        <h3 className="font-bold text-xl">Group Members</h3>
-        <button>
-          <span>Filter</span>
-          <KeyboardArrowDown />
-        </button>
+          <Search />
+        <input
+          type="text"
+          className="shadow shadow-black-900/50"
+          placeholder="Search group members"
+          onChange={(e) => setFilter(e.target.value)} />
       </div>
       <ul className="container grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-4">
         {
-          groupMembers.map( ({ id, name, profile_pic, owner }) => (
-            <li key={id} className="group-member">
-              <img src={profile_pic} alt="" />
-              <div className="bottom-info">
-                <p className="member-info">
-                  <span className="role">{owner ? 'Admin' : 'Member'}</span>
-                  <span>{ id === user.id ? 'You' : name }</span>
-                </p>
-                <button>Add Friend</button>
-                <button
-                  onClick={() => (groupOwner && !owner) && removeUser(id)}
-                >{groupOwner && !owner ? 'Remove' : 'View Profile'}</button>
-              </div>
+          groupMembers
+            .filter(groupMember => filterRegExp.test(groupMember.name))
+            .map((groupMember) => (
+            <li key={groupMember.id} className="group-member">
+              <GroupMember removeInvite={() => removeUser(groupMember.id)} {...groupMember} />
             </li>
           ))
         }

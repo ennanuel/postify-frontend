@@ -10,7 +10,7 @@ const Leftbar = () => {
   const { user } = useContext(AuthContext)
 
   return (
-    <div className="leftbar flex flex-col lg:w-auto h-[calc(100vh-60px)] lg:h-[calc(100vh_-_80px)] md:h-[calc](100vh-150px)] md:m-[10px] mt-0 md:rounded-md shadow-lg shadow-black-900/50 md:sticky top-[60px] lg:top-[70px] md:top-[130px] border-t md:border-none overflow-y-scroll">
+    <div className="leftbar flex flex-col lg:w-auto h-[calc(100vh-120px)] lg:h-[calc(100vh_-_80px)] md:h-[calc](100vh-150px)] md:m-[10px] mt-0 md:rounded-md shadow-lg shadow-black-900/50 sticky md:top-[100px] lg:top-[70px] md:top-[130px] border-t md:border-none overflow-y-scroll">
       <div className="container flex-1 p-[10px]">
         <Link to={`/profile/${user.id}`} className="p-[10px] user flex items-center gap-[10px]">
           <img src={ user.profile_pic || profile_pic } alt={ user.name } className="w-[30px] aspect-square rounded-full" />

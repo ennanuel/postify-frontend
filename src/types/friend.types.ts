@@ -1,3 +1,4 @@
+import { UserType } from "./user.types";
 
 
 export interface CustomFriendGroupInt {
@@ -5,17 +6,14 @@ export interface CustomFriendGroupInt {
     color: 'purple' | 'blue' | 'red' | 'white' | 'black';
 }
 
-export type FriendType = {
-    id: string;
-    profile_pic: string;
-    name: string;
-    mutual_pics?: string[];
-    type?: 'sent' | 'friend' | 'received';
-    active?: boolean;
+export interface FriendType extends UserType {
+    mutual_pics: string[];
 }
 
 export interface CustomFriendGroupValues extends CustomFriendGroupInt {
     users: string[];
+    group_id?: string;
+    user_id?: string;
 }
 
 export interface CustomFriendGroupType extends CustomFriendGroupInt {

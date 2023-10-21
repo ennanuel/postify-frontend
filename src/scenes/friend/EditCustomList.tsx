@@ -1,16 +1,18 @@
 import { useContext, useEffect, useState } from 'react';
-import { Add, Search, CheckRounded } from '@mui/icons-material'
+import { Add, Search, CheckRounded, DeleteForever, KeyboardArrowLeft } from '@mui/icons-material'
 import APIURL, { custom_group_bgs } from '../../assets/data/data';
-import { createCustomFriendGroups, fetchCustomGroupInfo, fetchFriends } from '../../utils/friend';
+import { createOrEditCustomFriendGroups, deleteCustomFriendGroup, fetchCustomGroupInfo, fetchFriends } from '../../utils/friend';
 import { AuthContext } from '../../context/authContext';
-import { CustomFriendGroupValues, FriendType } from '../../types/friend.types';
-import { useParams } from 'react-router-dom';
+import { CustomFriendGroupValues } from '../../types/friend.types';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { UserType } from '../../types/user.types';
 
 const EditCustomList = () => {
     const { id } = useParams();
     const { user } = useContext(AuthContext)
     const [{ group_name, users, color }, setValues] = useState<CustomFriendGroupValues>({ group_name: '', users: [], color: 'purple' })
-    const [friends, setFriends] = useState<FriendType[]>([]);
+    const [friends, setFriends] = useState<UserType[]>([]);
+    const navigate = useNavigate();
 
     const addUser = (id: string) => {
         if (users.includes(id)) return;
@@ -26,32 +28,50 @@ const EditCustomList = () => {
     }
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
         e.preventDefault();
-        createCustomFriendGroups({ user_id: user.id, group_name, users, color });
+        createOrEditCustomFriendGroups({ group_id: id, user_id: user.id, group_name, users, color }, 'edit')
+            .then(() => navigate(`/friends/custom/${id}`))
+            .catch(error => alert(error));
+    }
+
+    function deleteGroup() {
+        deleteCustomFriendGroup({ group_id: id || '', user_id: user.id })
+            .then(() => navigate('/friends/custom'))
+            .catch(error => alert(error));
+    }
+    async function handleFetch(customGroup: CustomFriendGroupValues) {
+        try {
+            const users = customGroup.users || [];
+            setValues({ ...customGroup, users });
+            const userFriends = await fetchFriends(user.id);
+            const sortedFriends = userFriends.sort(a => users.includes(a.id) ? -1 : 1);
+            setFriends(sortedFriends);
+        } catch (error) {
+            alert(error);
+        }
     }
 
     useEffect(() => { 
         fetchCustomGroupInfo(id || '', 'edit')
-            .then(res => setValues(res as CustomFriendGroupValues))
+            .then(handleFetch)
             .catch(error => alert(error));
-        
-        fetchFriends(id || '', 'custom')
-            .then(res => {
-                fetchFriends(user.id)
-                    .then(results => setFriends(
-                        [...(res as FriendType[]), ...(results as FriendType[])]
-                            .reduce((a: FriendType[], b: FriendType) => a.some( elem => elem.id === b.id) ? a : [...a, b], [])
-                    ))
-                    .catch(error => alert(error))
-            })
-            .catch(error => alert(error))
-    })
+    }, [])
 
     return (
-        <div className='p-4'>
-            <form onSubmit={handleSubmit}>
-                <div className="flex items-center justify-between gap-4 flex-wrap">
+        <form onSubmit={handleSubmit}>
+            <div className="flex items-center justify-between gap-4 flex-wrap mt-4">
+                <div className="flex items-center gap-2">
+                    <Link to="/friends/custom" className="flex lg:hidden items-center justify-center"><KeyboardArrowLeft /></Link>
                     <h2 className="font-bold text-3xl">Edit Friend Group</h2>
-                    <button className="h-[40px] rounded-[20px] bg-white/5 hover:bg-white/10 px-4 font-bold">Create</button>
+                </div>
+                    <div className="flex items-center gap-4">
+                        <button type="button" onClick={deleteGroup} className="h-[40px] w-[40px] flex items-center justify-center rounded-[20px] text-red-400 bg-red-700/20 hover:bg-red-700/30 px-4 font-bold">
+                            <DeleteForever />
+                        </button>
+                        <button className="h-[40px] flex items-center justify gap-1 rounded-[20px] bg-white/5 hover:bg-white/10 pl-4 pr-2">
+                            <span>Save</span>
+                            <CheckRounded />
+                        </button>
+                    </div>
                 </div>
                 <div className="flex items-center justify-between flex-wrap gap-4 mt-6">
                     <input
@@ -97,6 +117,7 @@ const EditCustomList = () => {
                                 <img className="w-[50px] aspect-square rounded-full shadow shadow-black-900/50" src={`${APIURL}/image/profile_pics/${profile_pic}`} alt="" />
                                 <p className="flex-1">{name}</p>
                                 <button
+                                    type="button"
                                     onClick={() => users.includes(id) ? removeUser(id) : addUser(id)}
                                     className={`w-[50px] h-[50px] rounded-full  rounded-full transition-transform ${users.includes(id) ? 'bg-red-600 rotate-45' : 'bg-white/10'} active:scale-90`}
                                 ><Add /></button>
@@ -105,7 +126,6 @@ const EditCustomList = () => {
                     }
                 </div>
             </form>
-        </div>
     )
 }
 

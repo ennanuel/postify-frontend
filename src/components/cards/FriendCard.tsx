@@ -1,28 +1,28 @@
-import { useContext, useState } from 'react';
-import { friendAction } from '../../utils/friend';
+import { useContext, useState, useMemo } from 'react';
+import { addOrRemoveFriend, sendOrDeclineRequest } from '../../utils/friend';
 import { APIURL } from '../../assets/data';
 import { AuthContext } from '../../context/authContext'
 import { FriendType } from '../../types/friend.types';
 
-const FriendCard = ({ id, profile_pic, name, mutual_pics, type, active }: FriendType) => {
+const FriendCard = ({ id, profile_pic, name, mutual_pics, is_friend, is_sent_request, is_received_request, active }: FriendType) => {
   const [hide, setHide] = useState(false);
-  const { user, socket } = useContext(AuthContext);
-  function sendFriendRequest() { friendAction(user.id, id, 'send', socket) };
-  function declineFriendRequest() { friendAction(user.id, id, 'decline', socket) };
-  function acceptFriendRequest() { friendAction(user.id, id, 'accept', socket) };
-  function unfriend() { friendAction(user.id, id, 'unfriend', socket) };
+  const { user } = useContext(AuthContext);
+  const sendFriendRequest = useMemo(() => function () { sendOrDeclineRequest({ user_id: user.id, other_user_id: id, actionType: 'add' }) }, []);
+  const declineFriendRequest = useMemo(() => function () { sendOrDeclineRequest({ user_id: user.id, other_user_id: id, actionType: 'remove' }) }, []);
+  const acceptFriendRequest = useMemo(() => function () { addOrRemoveFriend({ user_id: user.id, other_user_id: id, actionType: 'add' }) }, []);
+  const unfriend = useMemo(() => function () { addOrRemoveFriend({ user_id: user.id, other_user_id: id, actionType: 'remove' }) }, []);
 
   if (hide) return;
 
   return (
     <div key={id} className="friend rounded-md overflow-clip">
-          <img src={`${APIURL}/image/profile_pics/${profile_pic}`} alt="" className='w-full aspect-square' />
-          <div className="info p-2">
-          <p className="name">{name}</p>
+      <img src={`${APIURL}/image/profile_pics/${profile_pic}`} alt="" className='w-full aspect-square' />
+      <div className="info p-2">
+        <p className="truncate">{name}</p>
           <div className="flex items-center gap-1">
             {
-            type === 'friend' ?
-              true &&
+            is_friend ?
+              active &&
                 <>
                   <div className="dot w-1 h-1 rounded-full"></div>
                   <p className="close">Active</p>
@@ -45,14 +45,14 @@ const FriendCard = ({ id, profile_pic, name, mutual_pics, type, active }: Friend
       </div>
       <div className='flex flex-col gap-2 p-2 pt-0'>
         {
-          type === 'sent' ?
-            <button onClick={declineFriendRequest} className="cancel">Cancel Request</button> :
-            type === 'friend' ?
+          is_sent_request ?
+            <button onClick={declineFriendRequest} className="cancel">Remove</button> :
+            is_friend ?
               <>
-              <button>Send Message</button>
+              <button>Message</button>
               <button onClick={unfriend}>Unfriend</button>
               </> :
-              type === 'received' ?
+              is_received_request ?
                 <>
                 <button className='accept' onClick={acceptFriendRequest}>Accept</button>
                 <button onClick={declineFriendRequest}>Decline</button>
@@ -63,7 +63,7 @@ const FriendCard = ({ id, profile_pic, name, mutual_pics, type, active }: Friend
                 </>
       }
       </div>
-      </div>
+    </div>
   )
 }
 

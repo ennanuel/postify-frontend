@@ -1,111 +1,120 @@
-import { useState, useEffect, useContext, useRef } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
-import { Search, TvRounded, Explore, VideoLibrary, Add, KeyboardArrowDown, KeyboardArrowRight } from '@mui/icons-material'
+import { useState, useEffect, useContext, useRef, useMemo } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Search, TvRounded, Explore, VideoLibrary, Add, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { AuthContext } from '../../context/authContext';
-import { APIURL } from '../../assets/data';
 import { ChannelContext } from '.';
-import { fetchOptions } from '../../assets/data/data';
+import { getChannels } from '../../utils/channel';
+import { ChannelType } from '../../types/channel.types';
+import { ChannelAltCard } from '../../components/cards';
 
-type ChannelType = {
-    id: string;
-    name: string;
-    picture: string;
-}
+const NAVIGATIONS = [
+    { to: 'feed', text: 'Your Feed', Icon: VideoLibrary },
+    { to: 'explore', text: 'Discover', Icon: Explore },
+    { to: 'list/all', text: 'My Channels', Icon: TvRounded },
+]
 
 const Leftbar = () => {
     const { user } = useContext(AuthContext)
     const { refresh } = useContext(ChannelContext);
-
     const { pathname } = useLocation();
+    const navigate = useNavigate();
+
+    const [show, setShow] = useState(true);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+    const [following, setFollowing] = useState<ChannelType[]>([]);
+    const [search, setSearch] = useState('');
 
     const menuRef = useRef<HTMLUListElement>(null);
-  
-    const [show, setShow] = useState(false)
-    const [following, setFollowing] = useState<ChannelType[]>([])
+    const topRef = useRef<HTMLDivElement>(null);
+    const hideForMobile = useMemo(() => /(info|create|edit)/.test(pathname) && isMobile, [pathname, isMobile]);
+    const style = useMemo(getMaxHeight, [show, window.innerWidth]);
 
-    async function getFollowingChannels() { 
-        const response = await fetch(`${APIURL}/channel/${user.id}?type=following`, fetchOptions)
-        if (response.status !== 200) return alert('something went wrong!');
-        const res = await response.json();
-        setFollowing(res);
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+        e.preventDefault();
+        if (!search) return;
+        navigate(`/channels/search/${search}`);
     }
-    
+
+    function expandMobileMenu() { setShow(true) };
+    function collapseMobileMenu() {
+        if (window.innerWidth >= 1024) return;
+        setShow(false)
+    };
+    function getMaxHeight() {
+        const totalMobileMenuHeightInPx = (Number(menuRef.current?.offsetHeight) + Number(topRef.current?.offsetHeight)) + 'px';
+        const maxHeight = !isMobile ? 'auto' : show ? totalMobileMenuHeightInPx : topRef.current?.offsetHeight + 'px';
+        return { maxHeight };
+    }
+    function handleWindowResize() {
+        setIsMobile(window.innerWidth < 1024);
+    };
+
     useEffect(() => {
-        getFollowingChannels();
+        window.removeEventListener('resize', handleWindowResize)
+        window.addEventListener('resize', handleWindowResize);
+        return () => window.removeEventListener('resize', handleWindowResize);
+    }, [])
+    useEffect(() => {
+        getChannels(user.id, 'created')
+            .then(res => setFollowing(res))
+            .catch(error => alert(error));
     }, [refresh])
 
-    if (/(info|create|edit)/.test(pathname) && window.innerWidth < 1024) return;
+    if (hideForMobile) return;
 
     return (
         <div 
-            style={{ maxHeight: `${show && window.innerWidth < 1024 ? ((menuRef?.current?.offsetHeight || 0) + 130) + 'px' : window.innerWidth >= 1024 ? 'auto' : '120px'}` }}
-            className="left-bar lg:sticky lg:h-[calc(100vh-60px)] top-[60px] p-4 flex flex-col gap-3 overflow-clip transition-[max-height]"
+            style={style}
+            className="left-bar lg:sticky lg:h-[calc(100vh-80px)] top-[70px] lg:p-2 lg:mx-2 lg:rounded-md flex flex-col gap-3 overflow-clip transition-[max-height] lg:shadow-lg shadow-black-900/40"
         >
-            <div className="top flex items-center justify-between gap-4">
-                <h3 className="text-2xl font-bold">Channels</h3>
+            <div ref={topRef} className="px-2 py-1 lg:p-0">
+                <div className="top p-1 lg:pb-4 flex items-center justify-between gap-4">
+                <h3 className="text-xl lg:text-2xl font-bold">Channels</h3>
                 <button
-                    onClick={() => setShow(!show)}
-                    className='h-[44px] lg:hidden aspect-square rounded-full flex items-center justify-center bg-transparent'
+                    onClick={show ? collapseMobileMenu : expandMobileMenu}
+                    className={`h-[44px] lg:hidden flex items-center justify-center`}
                 >
-                <KeyboardArrowDown />
+                    { show ? <KeyboardArrowUp /> : <KeyboardArrowDown /> }
                 </button>
+                </div>
+                <form onSubmit={handleSubmit} className="search rounded-md mb-2 pr-[3px] flex items-center">
+                    <input value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 h-[40px] px-3 border-none outline-none" type="text" placeholder="Search channels" />
+                    <button onClick={collapseMobileMenu} className="flex items-center justify-center h-[34px] aspect-square rounded-md bg-black-900/30">
+                        <Search />
+                    </button>
+                </form>
             </div>
-            <div className="search flex items-center h-[40px] rounded-[20px] pl-2 pr-4 gap-1">
-                <label htmlFor="search" className="flex items-center justify-center"><Search /></label>
-                <input className="h-[40px] outline-none border-none flex-1" id="search" placeholder="Search channels" type="text" />
-            </div>
-            <ul ref={menuRef} className="flex flex-col gap-2">
+            <ul ref={menuRef} className="flex flex-col gap-2 px-2 pb-5 lg:p-0">
+                {
+                    NAVIGATIONS.map(({ to, text, Icon }) => (
+                        <li key={to}>
+                            <NavLink
+                                to={`/channels/${to}`}
+                                className={({ isActive }) => `channel-nav ${isActive && 'active-channel-nav'} p-1 flex items-center gap-2 rounded-md`}
+                            >
+                                <span className="icon flex items-center justify-center h-[36px] aspect-square rounded-lg"><Icon /></span>
+                                <span>{text}</span>
+                            </NavLink>
+                        </li>
+                    ))
+                }
                 <li>
-                    <NavLink
-                        to="/channels/feed"
-                        className={({ isActive }) => `channel-nav ${isActive && 'active-channel-nav'} p-1 flex items-center gap-2 rounded-md`}
-                    >
-                        <span className="icon flex items-center justify-center h-[36px] aspect-square rounded-lg"><VideoLibrary /></span>
-                        <span>Your Feed</span>
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink
-                        to="/channels/explore"
-                        className={({ isActive }) => `channel-nav ${isActive && 'active-channel-nav'} p-1 flex items-center gap-2 rounded-md`}
-                    >
-                        <span className="icon flex items-center justify-center h-[36px] aspect-square rounded-lg"><Explore /></span>
-                        <span>Discover</span>
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink
-                        to="/channels/list"
-                        className={({ isActive }) => `channel-nav ${isActive && 'active-channel-nav'} p-1 flex items-center gap-2 rounded-md`}
-                    >
-                        <span className="icon flex items-center justify-center h-[36px] aspect-square rounded-lg"><TvRounded /></span>
-                        <span>My Channels</span>
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/channels/create" className="create-channel mt-2 flex p-2 rounded-md w-full items-center justify-center gap-2">
-                        <Add />
-                        <span>Create Channel</span>
-                    </NavLink>
+                <NavLink
+                    onClick={collapseMobileMenu}
+                    to="/channels/create"
+                    className={({ isActive }) => `bg-blue-400/20 text-blue-300 w-full font-semibold flex items-center justify-center gap-[5px] p-[8px] rounded-[5px] mt-[10px] text-sm ${isActive && 'bg-gradient-to-r from-blue-600/40 via-blue-400/40 to-purple-500/40 text-white shadow'}`}
+                >
+                    <Add />
+                    <span>Create Channel</span>
+                </NavLink>
                 </li>
             </ul>
             <div className="bottom hidden lg:block mt-1 py-2">
                 <h3 className="font-bold text-lg">Your Channels</h3>
                 <ul className="flex flex-col gap-2 mt-3">
-                    <li>
-                        {
-                            following.map(({ id, name, picture }) => (
-                                <Link to={`/channels/info/${id}`} className="bottom-channel flex items-center gap-3 p-[10px] rounded-md">
-                                    <img className="w-[50px] aspect-square rounded-full bg-white/5" src={picture} alt="" />
-                                    <div className="flex flex-col flex-1">
-                                        <p className="font-bold text-sm">{ name }</p>
-                                        <p className="text-xs">Posted 2 days ago</p>
-                                    </div>
-                                    <KeyboardArrowRight />
-                                </Link>
-                            ))
-                        }
-                    </li>
+                    {
+                        following.map((channel, i) => <li key={i}><ChannelAltCard {...channel} /></li>)
+                    }
                 </ul>
             </div>
         </div>

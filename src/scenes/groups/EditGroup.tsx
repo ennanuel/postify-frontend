@@ -2,44 +2,37 @@ import { Add, CheckRounded, DeleteForever, EditOutlined } from '@mui/icons-mater
 import { useState, useEffect, useContext } from 'react'
 import { APIURL } from '../../assets/data'
 import { AuthContext } from '../../context/authContext';
-import { fetchOptions } from '../../assets/data/data';
 import { useNavigate, useParams } from 'react-router-dom';
-
-type FormValTypes = {
-    name: string;
-    group_desc: string;
-    tags: string[];
-    prev_pic: string;
-    prev_cover: string;
-    profile_pic: File|undefined;
-    cover: File|undefined;
-}
+import { EditGroupValues, GroupInfo } from '../../types/group.types';
+import { deleteGroup, getGroupInfo, submitGroupValues } from '../../utils/group';
+import { convertFileToBase64 } from '../../utils';
 
 const EditGroup = () => {
-    const { user } = useContext(AuthContext);   
+    const { user } = useContext(AuthContext);
     const { id } = useParams();
     const navigate = useNavigate();
 
     const [tag, setTag] = useState('')
     const [{ group_profile, group_cover }, setImages] = useState({ group_profile: '', group_cover: '' })
-    const [{ name, group_desc, tags, prev_pic, prev_cover, profile_pic, cover }, setValues] = useState<FormValTypes>({ name: '', group_desc: '', tags: [], prev_pic: '', prev_cover: '', profile_pic: undefined, cover: undefined })
+    const [{ name, group_desc, tags, prev_pic, prev_cover, profile_pic, cover }, setValues] = useState<EditGroupValues>({ name: '', group_desc: '', tags: [], prev_pic: '', prev_cover: '', profile_pic: undefined, cover: undefined })
 
     const handleChange : React.ChangeEventHandler<HTMLInputElement|HTMLTextAreaElement> = (e) => {
         setValues( prev => ({...prev, [e.target.name]: e.target.value }))
     }
 
-    const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        if (!e.target.files) return;
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = () => {
-        setImages( prev => ({ ...prev, [e.target.id]: reader.result}) )
+    const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+        try {
+            if (!e.target.files) return;
+            const file = e.target.files[0];
+            const fileSrc = await convertFileToBase64(file);
+            setImages(prev => ({ ...prev, [e.target.id]: fileSrc }));
+            setValues(prev => ({ ...prev, [e.target.name]: file }));
+        } catch (error) {
+            console.error(error);
         }
-        setValues( prev => ({ ...prev, [e.target.name]: file }) )
     }
 
-    const addTag = () => {
+    function addTag() {
         setValues( prev => {
             if (tag.length < 1 || prev.tags.includes(tag)) return prev;
             setTag('');
@@ -47,51 +40,38 @@ const EditGroup = () => {
         })
     }
 
-    const removeTag = (tagName: string) => {
+    function removeTag(tagName: string) {
         setValues( prev => ({...prev, tags: prev.tags.filter( item => item != tagName )}))
     }
 
     const handleSubmit : React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault()
-        const requestBody = { user_id: user.id, group_id: id ||'', name, group_desc, prev_pic, prev_cover, profile_pic, cover };
-        const formData = new FormData();
-        const headers = new Headers();
-
-        for(let [key, value] of Object.entries(requestBody)) {
-        if ((!value || value?.length < 1) && /(group_desc|name|user_id|group_id)/.test(key)) {
-            return alert(`'${key.toUpperCase()}' field cannot be empty`)
-        } else if(value) {
-            formData.append(key, value);
-        }
-        }
-        tags.forEach( tag => formData.append('tags[]', tag) )
-        headers.append('Access-Control-Allow-Origin', APIURL)
-            
-        const options = { ...fetchOptions, method: "PUT", body: formData, headers }
-
-        const response = await fetch(`${APIURL}/group/edit`, options);
-        const res = await response.json()
-        return alert(res.message)
+        const user_id = user.id;
+        const group_id = id || '';
+        const values = { user_id, group_id, name, group_desc, prev_pic, prev_cover, tags, profile_pic, cover, editGroup: true }
+        submitGroupValues(values)
+            .then(() => navigate(-1))
+            .catch(error => alert(error));
     }
 
-    async function deleteGroup() {
-        const options = { ...fetchOptions, method: "DELETE", body: JSON.stringify({ user_id: user.id, group_id: id }) };
-        const response = await fetch(`${APIURL}/group/delete`, options);
-        const { message } = await response.json();
-        alert(message);
-        if(response.status === 200) navigate('/groups/list')
+    function handleGroupDelete() {
+        deleteGroup({ user_id: user.id, group_id: id })
+            .then(() => navigate(-1))
+            .catch(error => alert(error));
     }
-
-    async function getGroupInfo() { 
-        const response = await fetch(`${APIURL}/group/info/${id}?user_id=${user.id}&type=full`, fetchOptions);
-        const { message, name, group_desc, picture, cover, tags, owner } = await response.json();
-        if (response.status !== 200) return alert(message);
-        if(!owner) return navigate(-1)
-        setValues(prev => ({ ...prev, name, group_desc, prev_pic: picture, prev_cover: cover, tags }));
+    
+    async function inputGroupValues(res: GroupInfo) { 
+        const { name, group_desc, picture, cover, tags, owner } = res;
+        if (!owner) return navigate(-1);
+        setValues(prev => ({ ...prev, name, group_desc: group_desc || '', prev_pic: picture, prev_cover: cover, tags }));
         setImages({ group_profile: `${APIURL}/image/profile_pics/${picture}`, group_cover: `${APIURL}/image/covers/${cover}` })
     }
         
-    useEffect(() => { getGroupInfo() }, [])
+    useEffect(() => {
+        getGroupInfo({ group_id: id, user_id: user.id, fetchType: 'full' })
+            .then(inputGroupValues)
+            .catch(error => alert(error));
+    }, [])
 
     return (
         <form onSubmit={handleSubmit} className="w-full">
@@ -183,7 +163,7 @@ const EditGroup = () => {
                     </div>
                 </div>
             </div>
-            <button type="button" onClick={deleteGroup} className="mx-6 mb-4 pl-2 pr-4 h-[40px] rounded-md flex items-center justify-center gap-2 bg-red-600/10 text-red-400 font-semibold border border-transparent hover:border-red-400/50">
+            <button type="button" onClick={handleGroupDelete} className="mx-6 mb-4 pl-2 pr-4 h-[40px] rounded-md flex items-center justify-center gap-2 bg-red-600/10 text-red-400 font-semibold border border-transparent hover:border-red-400/50">
                 <DeleteForever />
                 <span>Delete Group</span>
             </button>

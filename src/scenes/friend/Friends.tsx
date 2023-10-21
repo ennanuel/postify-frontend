@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import { AuthContext } from '../../context/authContext'
-import { Search, SortRounded } from '@mui/icons-material';
+import { KeyboardArrowDown, Search } from '@mui/icons-material';
 import { friendContext } from '../../pages/friends';
 import { FriendCard } from '../../components/cards';
 import { FriendType } from '../../types/friend.types';
@@ -19,28 +19,26 @@ const Friends = () => {
 
   return (
     <div className="menu">
-      <div className="filter-search">
-        <div className="search">
-          <label htmlFor="search">
+      <div className="flex items-center justify-between mt-4">
+        <h3 className="font-bold text-3xl">Friends</h3>
+        <p className='text-sm opacity-80'>{friends.length} Friend{friends.length === 1 ? '' : 's'}</p>
+      </div>
+      <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center pl-2 rounded-[20px] bg-white/5">
+          <label htmlFor="flex items-center justify-center">
             <Search />
           </label>
-          <input type="text" id="search" placeholder="Search Friends" />
+          <input className="h-[40px] px-2 border-none outline-none" type="text" id="search" placeholder="Search Friends" />
         </div>
-        <button className="sort h-full px-[15px] gap-1 rounded-md flex items-center justify-center text-sm">
-          <SortRounded />
+        <button className="h-[34px] pl-2 pr-3 gap-1 rounded-md bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm">
+          <KeyboardArrowDown />
           <span>Sort</span>
         </button>
       </div>
-      <div className="menu-title">
-        <h3>Friends</h3>
-        <div className="count">
-          <p>{friends.length} Friends</p>
-        </div>
-      </div>
 
-      <div className="container">
-        { friends.map((friend) => <FriendCard {...friend} key={friend.id} type="friend" />) }
-      </div>
+      <ul className="container">
+        { friends.map((friend) => <FriendCard {...friend} key={friend.id} />) }
+      </ul>
     </div>
   )
 }

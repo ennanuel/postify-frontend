@@ -8,9 +8,7 @@ export const ChannelContext = createContext({ refresh: false })
 
 const Channels = () => {
     const { id } = useParams();
-
     const { user, socket } = useContext(AuthContext);
-
     const [refresh, setRefresh] = useState(false);
 
     useEffect(() => {
@@ -23,9 +21,9 @@ const Channels = () => {
         <ChannelContext.Provider value={{ refresh }}>
             <div className="channels grid grid-cols-1 grid-rows-[auto,1fr] lg:grid-rows-1 lg:grid-cols-[300px,1fr] min-h-[100vh]">
                 <Leftbar />
-                <div className="">
+                <section className="grid grid-cols-1 lg:grid-cols-[1fr,300px]">
                     <Outlet />
-                </div>
+                </section>
             </div>
         </ChannelContext.Provider>
     )

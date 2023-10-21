@@ -1,34 +1,22 @@
 import { useState, useEffect, useContext } from 'react';
-import { FavoriteOutlined, KeyboardArrowDown, MessageOutlined, PhotoAlbum } from '@mui/icons-material'
-import { APIURL } from '../../assets/data';
+import { KeyboardArrowDown } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import { GroupContext } from '../../pages/group';
-import { fetchOptions } from '../../assets/data/data';
-
-type PostType = {
-  id: string;
-  file: string;
-  file_count: string;
-  like_count: string;
-  comment_count: string;
-}
+import { fetchGroupPosts } from '../../utils/group';
+import { AuthContext } from '../../context/authContext';
+import { PostType } from '../../types/post.types';
+import { MediaCard } from '../../components/cards';
 
 const GroupPhotos = () => {
-  const { id } = useParams()
-
+  const { id } = useParams();
+  const { user } = useContext(AuthContext)
   const { refreshPost: refresh } = useContext(GroupContext)
-
-  const [photos, setPhotos] = useState<PostType[]>([])
-
-  const fetchVideos = async () => {
-    const response = await fetch(`${APIURL}/group/posts/${id}?type=photo`, fetchOptions)
-    if (response.status !== 200) return alert('something went wrong')
-    const res = await response.json();
-    setPhotos(res)
-  }
+  const [photos, setPhotos] = useState<PostType[]>([]);
   
   useEffect(() => {
-    fetchVideos()
+    fetchGroupPosts({ group_or_user_id: id, user_id: user.id, postType: 'photo' })
+      .then(res => setPhotos(res))
+      .catch(error => alert(error));
   }, [refresh])
 
   return (
@@ -42,23 +30,9 @@ const GroupPhotos = () => {
       </div>
       <ul className="photos grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
         {
-          photos.map( ({id, file, like_count, comment_count, file_count}) => (
-            <li key={id} className="photo">
-              <div className="type">
-                <span>{file_count}</span>
-                <PhotoAlbum />
-              </div>
-              <img src={file} alt="" />
-              <div className="overlay">
-                <div className="reaction">
-                  <FavoriteOutlined />
-                  <span>{like_count}</span>
-                </div>
-                <div className="reaction">
-                  <MessageOutlined />
-                  <span>{comment_count}</span>
-                </div>
-              </div>
+          photos.map( post => (
+            <li key={post.id} className="photo">
+              <MediaCard {...post} />
             </li>
           ))
         }

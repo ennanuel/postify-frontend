@@ -1,20 +1,12 @@
 import { Add, CheckRounded, DeleteForever, Edit } from "@mui/icons-material"
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useContext, useEffect, useState } from "react"
-import { AuthContext } from "../../context/authContext"
-import { APIURL } from '../../assets/data'
-import { fetchOptions } from "../../assets/data/data"
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../context/authContext";
+import { APIURL } from '../../assets/data';
+import { CreateChannelValues } from "../../types/channel.types";
+import { deleteChannel, editChannel, getChannelInfo } from "../../utils/channel";
 
-type ChannelProps = {
-    name: string;
-    channel_desc: string;
-    website: string;
-    tags: string[];
-    prev_pic: string;
-    prev_cover: string;
-    profile_pic: File|undefined;
-    cover: File|undefined;
-}
+type ChannelInfoType = { name: string, picture: string, cover: string, channel_desc: string, tags: string[], website: string };
 
 const EditChannel = () => {
     const { user } = useContext(AuthContext);
@@ -24,7 +16,7 @@ const EditChannel = () => {
 
     const [tagName, setTagName] = useState('');
     const [{ channel_profile_pic, channel_cover }, setSrc] = useState({ channel_profile_pic: '', channel_cover: '' })
-    const [{ name, channel_desc, website, tags, prev_pic, prev_cover, profile_pic, cover }, setValues] = useState<ChannelProps>({
+    const [{ name, channel_desc, website, tags, prev_pic, prev_cover, profile_pic, cover }, setValues] = useState<CreateChannelValues>({
         name: '', channel_desc: '', website: '', tags: [], prev_pic: '', prev_cover: '', profile_pic: undefined, cover: undefined
     })
 
@@ -43,61 +35,39 @@ const EditChannel = () => {
         setValues(prev => ({ ...prev, [event.target.name]: file }))
     }
 
-    const addTag = () => {
+    const handleSubmit : React.FormEventHandler<HTMLFormElement> = async (e) => {
+        e.preventDefault()
+        const status = await editChannel({ user_id: user.id, channel_id: id, name, channel_desc, tags, website, prev_cover, prev_pic, profile_pic, cover });
+        if(status === 200) navigate(`/channels/info/${id}`)
+    }
+
+    function addTag() {
         if (tagName.length < 1 || tags.includes(tagName)) return;
         setTagName('')
         setValues(prev => ({ ...prev, tagName: '', tags: [...prev.tags, tagName] }))
     }
-
-    const removeTag = ( tag : string ) => {
+    function removeTag(tag: string) {
         setValues( prev => ({...prev, tags: prev.tags.filter( (tag1) => tag1 !== tag )}) )
     }
-
-    async function fetchInfo() {
-        const response = await fetch(`${APIURL}/channel/info/${id}?user_id=${user.id}`, fetchOptions);
-        const { message, name, picture, cover, channel_desc, tags, website } = await response.json();
-        if (response.status !== 200) return alert(message);
+    async function inputInfo(values: any) {
+        const fetchValues = values as ChannelInfoType;
+        const { name, picture, cover, channel_desc, tags, website } = fetchValues;
         setValues(prev => ({ ...prev, prev_pic: picture, prev_cover: cover, name, channel_desc, tags, website }));
         setSrc({ channel_profile_pic: `${APIURL}/image/profile_pics/${picture}`, channel_cover: `${APIURL}/image/covers/${cover}` });
     }
-
-    const handleSubmit : React.FormEventHandler<HTMLFormElement> = async (e) => {
-        e.preventDefault()
-        const requestBody = { channel_id: id || '', user_id: user.id, name, channel_desc, website, prev_cover, prev_pic, profile_pic, cover };
-        const formData = new FormData();
-        const headers = new Headers();
-
-        for(let [key, value] of Object.entries(requestBody)) {
-            const pardon = /[website|profile_pic|cover|prev_cover|prev_profile]/;
-            if ((!value || value?.length < 1) && !pardon.test(key)) {
-                console.log(pardon.test(key), key)
-                return alert(`'${key.toUpperCase()}' field cannot be empty`);
-            } else if(value) {
-                formData.append(key, value);
-            }
-        }
-        tags.forEach( tag => formData.append('tags', tag) )
-        headers.append('Access-Control-Allow-Origin', APIURL)
-        
-        const options = { ...fetchOptions, method: "PUT", body: formData, headers }
-
-        const response = await fetch(`${APIURL}/channel/edit`, options);
-        const res = await response.json()
-        return alert(res.message)
+    async function handleDelete() {
+        const status = await deleteChannel({ user_id: user.id, channel_id: id });
+        if (status === 200) navigate('/channels/list');
     }
 
-    async function deleteChannel() {
-        const options = { ...fetchOptions, method: "DELETE", body: JSON.stringify({ user_id: user.id, channel_id: id }) };
-        const response = await fetch(`${APIURL}/channel/delete`, options);
-        const { message } = await response.json();
-        alert(message);
-        if(response.status === 200) navigate('/groups/list')
-    }
-
-    useEffect(() => { fetchInfo() }, [])
+    useEffect(() => {
+        getChannelInfo({ user_id: user.id, channel_id: id })
+            .then(inputInfo)
+            .catch(error => alert(error));
+    }, [])
 
     return (
-        <div>
+        <div className="lg:col-span-2">
             <div className="relative h-[250px] bg-gradient-to-br from-gray-500/20 to-black-900/50 flex items-end justify-between">
                 <label htmlFor="channel_cover" className="absolute block w-full h-full top-0 left-0 cursor-pointer">
                     <img className="w-full h-full" src={channel_cover} alt="cover_image" />
@@ -117,7 +87,7 @@ const EditChannel = () => {
             <div className="flex flex-col lg:flex-row gap-4 p-6 lg:items-center">
                 <h2 className="text-2xl font-bold flex-1">Edit Channel</h2>
                 <div className="flex gap-4">
-                    <Link to={`channels/info/${id}`} className="h-[34px] rounded-[17px] bg-white text-black-900 font-bold pr-3 pl-1 flex items-center justify-center">
+                    <Link to={`/channels/info/${id}`} className="h-[34px] rounded-[17px] bg-white text-black-900 font-bold pr-3 pl-1 flex items-center justify-center">
                         <span className="flex items-center justify-center rotate-45"><Add /></span>
                         <span>Cancel</span>
                     </Link>
@@ -155,7 +125,7 @@ const EditChannel = () => {
             </form>
             <button
                 type="button"
-                onClick={deleteChannel}
+                onClick={handleDelete}
                 className="h-[40px] m-4 rounded-md bg-red-600/20 text-red-400 font-bold pr-3 pl-1 flex items-center justify-center border border-transparent hover:border-red-600/50"
             >
                 <DeleteForever />

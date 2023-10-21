@@ -1,0 +1,37 @@
+@import '../../theme.scss';
+
+.search-page {
+    background-color: orange;
+
+    @include themify($themes) {
+        $bg: themed("bg");
+        $bg1: themed("bgSoft");
+        $color: themed("textColor");
+        $color1: themed("textColorSoft");
+        $border: themed("border");
+
+        background-color: $bg;
+        color: $color;
+
+        .search-link {
+            color: $color1;
+
+            &:before {
+                @apply absolute h-1 w-full bottom-0 left-0;
+                content: '';
+                background-color: transparent;
+            }
+            
+            &:hover {
+                color: $color;
+            }
+
+            &.active-search-link {
+                color: $color;
+                &:before {
+                    background-color: $color;
+                }
+            }
+        }
+    }
+}

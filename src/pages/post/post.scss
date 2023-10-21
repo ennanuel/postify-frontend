@@ -13,7 +13,6 @@
 
         .left {
             background-color: $bg;
-            z-index: 9999999;
 
             .close {
                 color: $color;
@@ -41,14 +40,7 @@
 
                 button {
                     color: $color;
-                    background-color: $bg1;
                 }
-            }
-
-            @include tablet {
-                position: relative;
-                top: 0;
-                left: 0;
             }
         }
 
@@ -56,11 +48,6 @@
             color: $color;
             
             .info {
-
-                img {
-                    border: 1px solid $border;
-                }
-
                 .more {
                     color: $color;
                 }
